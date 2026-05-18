@@ -5,6 +5,7 @@ from app import app
 
 class AppTestCase(unittest.TestCase):
     def setUp(self):
+        app.config["TESTING"] = True
         self.client = app.test_client()
 
     def test_home_page_loads(self):
