@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+  <h1>Alumnos</h1>
+
+  <div class="panel">
+    <table>
+      <thead>
+        <tr>
+          <th>Legajo</th>
+          <th>Nombre</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for alumno in alumnos %}
+          <tr>
+            <td>{{ alumno.legajo }}</td>
+            <td>{{ alumno.nombre }}</td>
+            <td>{{ alumno.estado }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

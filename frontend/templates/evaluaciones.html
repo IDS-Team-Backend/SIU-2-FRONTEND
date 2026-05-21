@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+  <h1>Evaluaciones</h1>
+
+  <div class="card-grid">
+    {% for evaluacion in evaluaciones %}
+      <article class="card">
+        <h2>{{ evaluacion.nombre }}</h2>
+        <p>Fecha: {{ evaluacion.fecha }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
