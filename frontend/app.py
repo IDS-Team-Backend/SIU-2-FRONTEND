@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
 
@@ -31,6 +31,17 @@ evaluaciones = [
 def index():
     return redirect(url_for("materias"))
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if username == "admin" and password == "1234":
+            return redirect(url_for('materias')) 
+            
+    return render_template('login.html')
 
 @app.route("/materias")
 def materias():

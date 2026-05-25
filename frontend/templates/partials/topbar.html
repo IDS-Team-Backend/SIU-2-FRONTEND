@@ -1,6 +1,14 @@
 <header class="topbar">
-  <a class="{% if active_page == 'materias' %}active{% endif %}" href="{{ url_for('materias') }}">Materias</a>
-  <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos_page') }}">Alumnos</a>
-  <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones_page') }}">Evaluaciones</a>
-  <a class="{% if active_page == 'perfil' %}active{% endif %}" href="{{ url_for('perfil') }}">Perfil</a>
+  <a class="{% if active_page == 'materias' %}active{% endif %}" href="{{ url_for('materias') }}">
+    <span class="material-symbols-rounded">menu_book</span>Materias
+  </a>
+  <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos_page') }}">
+    <span class="material-symbols-rounded">person</span>Alumnos
+  </a>
+  <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones_page') }}">
+    <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
+  </a>
+  <a class="{% if active_page == 'metricas' %}active{% endif %}" href="{{ url_for('metricas') }}">
+    <span class="material-symbols-rounded">bar_chart</span>Métricas
+  </a>
 </header>
