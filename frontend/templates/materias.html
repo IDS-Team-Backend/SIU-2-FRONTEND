@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+  <h1>Materias</h1>
+
+  <div class="card-grid">
+    {% for materia in materias %}
+      <article class="card">
+        <h2>{{ materia.nombre }}</h2>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

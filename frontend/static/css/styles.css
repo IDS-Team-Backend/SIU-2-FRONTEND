@@ -1,0 +1,553 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f0f5fa;
+  --surface: #ffffff;
+  --sidebar-bg: #3b82f6; /* El azul vivo de tu captura */
+  --sidebar-hover: rgba(255, 255, 255, 0.15);
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --border: #e2e8f0;
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.05);
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL (Sidebar full-height, sin padding externo)
+   ========================================================================== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   SIDEBAR (Fiel a la captura)
+   ========================================================================== */
+.sidebar {
+  background: var(--sidebar-bg);
+  color: white;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  padding-left: 8px;
+}
+
+.sidebar-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo-icon {
+  font-size: 2rem !important;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  transition: var(--transition);
+}
+
+.sidebar a .material-symbols-rounded {
+  font-size: 1.3rem;
+  transition: var(--transition);
+}
+
+.sidebar a:hover {
+  background: var(--sidebar-hover);
+  color: white;
+}
+
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 600;
+}
+
+/* Footer del Sidebar (Usuario) */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  margin-top: auto;
+  cursor: pointer;
+}
+
+.user-avatar {
+  font-size: 2.2rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.user-arrow {
+  font-size: 1.2rem !important;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* ==========================================================================
+   MAIN CONTENT & TOPBAR
+   ========================================================================== */
+.main {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 40px;
+  overflow-y: auto;
+}
+
+.topbar {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  align-self: center;
+  width: auto;
+  min-width: 500px;
+}
+
+.topbar a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: var(--transition);
+}
+
+.topbar a .material-symbols-rounded {
+  font-size: 1.2rem;
+}
+
+.topbar a:hover {
+  color: var(--primary);
+  background: #f1f5f9;
+}
+
+.topbar a.active {
+  color: var(--primary);
+  font-weight: 600;
+  position: relative;
+}
+
+/* El indicador de línea azul abajo del item activo en la topbar */
+.topbar a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 99px;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+
+
+/* ==========================================================================
+   COMPONENTES (Tablas, Tarjetas, Paneles)
+   ========================================================================== */
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Tablas estilizadas tipo Dashboard */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  background: #f8fafc;
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 18px 24px;
+  font-size: 0.95rem;
+  color: var(--text);
+  border-bottom: 1px solid #f1f5f9;
+  transition: var(--transition);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: #f8fafc;
+  color: var(--primary);
+}
+
+/* Contenedor de Evaluaciones (Cards) */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    height: auto;
+    position: relative;
+    padding: 20px;
+  }
+
+  .sidebar-header {
+    margin-bottom: 20px;
+  }
+
+  .sidebar nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-user {
+    display: none; /* Ocultamos el widget de usuario en mobile */
+  }
+
+  .main {
+    padding: 20px;
+  }
+
+  .topbar {
+    min-width: 100%;
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    display: none; /* En pantallas muy chicas dejamos solo el sidebar */
+  }
+  
+  td, th {
+    padding: 12px 16px;
+  }
+}
+
+/* ==========================================================================
+   PANTALLA DE LOGIN
+   ========================================================================== */
+
+/* Fondo específico para el Login, usando un degradé suave */
+.login-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f5fa 0%, #e2effe 100%);
+  padding: 20px;
+}
+
+/* Tarjeta contenedora del Login */
+.login-container {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Encabezado del Formulario */
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-logo {
+  font-size: 3rem !important;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.login-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.login-header p {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+/* Campos de Formulario */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* Wrapper para posicionar los iconos dentro de los inputs */
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-wrapper .input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-soft);
+  font-size: 1.25rem !important;
+  pointer-events: none;
+}
+
+.input-icon-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 42px; /* Espacio extra a la izquierda para el icono */
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background-color: #f8fafc;
+  transition: var(--transition);
+}
+
+.input-icon-wrapper input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+/* Acciones secundarias (Recordarme / Olvidé contraseña) */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  font-size: 0.85rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: var(--primary);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: var(--primary);
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.forgot-password:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Botón de envío */
+.btn-login {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.btn-login .material-symbols-rounded {
+  font-size: 1.2rem;
+  transition: var(--transition);
+}
+
+.btn-login:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-login:hover .material-symbols-rounded {
+  transform: translateX(2px);
+}
+
+/* Mensajes Flash de Error (Flask) */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.alert-error, .alert-danger {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+}
+
+.alert-error .material-symbols-rounded, .alert-danger .material-symbols-rounded {
+  color: #ef4444;
+  font-size: 1.2rem;
+}

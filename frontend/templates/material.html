@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+  <h1>Material</h1>
+
+  <div class="panel">
+    {% for material in materiales %}
+      <div class="list-item">{{ material.titulo }}</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
