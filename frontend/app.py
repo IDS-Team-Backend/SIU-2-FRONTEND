@@ -21,11 +21,10 @@ listar_materiales = [
 ]
 
 evaluaciones = [
-    {"nombre": "Evaluación 1", "fecha": "01/01"},
-    {"nombre": "Evaluación 2", "fecha": "02/01"},
-    {"nombre": "Evaluación 3", "fecha": "03/01"},
+    {"titulo": "Evaluación 1", "curso_id": 1, "fecha": "01/01", "tipo_evaluacion_id": 1, "descripcion": "Descripción de la evaluación 1"},
+    {"titulo": "Evaluación 2", "curso_id": 2, "fecha": "02/01", "tipo_evaluacion_id": 2, "descripcion": "Descripción de la evaluación 2"},
+    {"titulo": "Evaluación 3", "curso_id": 3, "fecha": "03/01", "tipo_evaluacion_id": 3, "descripcion": "Descripción de la evaluación 3"},
 ]
-
 
 @app.route("/")
 def index():

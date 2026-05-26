@@ -2,15 +2,101 @@
 
 {% block content %}
 <section>
-  <h1>Evaluaciones</h1>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h1>Evaluaciones</h1>
+    <button id="btnNuevaEvaluacion" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+      <span class="material-symbols-rounded" style="font-size: 1.2rem;">add</span>
+      Nueva Evaluación
+    </button>
+  </div>
 
   <div class="card-grid">
     {% for evaluacion in evaluaciones %}
       <article class="card">
-        <h2>{{ evaluacion.nombre }}</h2>
-        <p>Fecha: {{ evaluacion.fecha }}</p>
+        <h2>{{ evaluacion.titulo }}</h2>
+        <p><strong>Tipo:</strong> {{ evaluacion.tipo_evaluacion_id }}</p>
+        <p><strong>Fecha:</strong> {{ evaluacion.fecha }}</p>
+        {% if evaluacion.descripcion %}
+          <p><strong>Descripción:</strong> {{ evaluacion.descripcion }}</p>
+        {% endif %}
+        <p><strong>Estado:</strong> {{ 'Activo' if evaluacion.activo else 'Inactivo' }}</p>
       </article>
     {% endfor %}
   </div>
 </section>
+
+<!-- Modal para nueva evaluación -->
+<div id="modalEvaluacion" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+  <div style="background: white; border-radius: 16px; padding: 32px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <h2 style="margin: 0;">Nueva Evaluación</h2>
+      <button class="modal-close" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+    </div>
+
+    <form action="{{ url_for('evaluaciones_page') }}" method="POST">
+      <div style="margin-bottom: 16px;">
+        <label for="titulo" style="display: block; margin-bottom: 8px; font-weight: 500;">Título *</label>
+        <input type="text" id="titulo" name="titulo" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label for="tipo_evaluacion_id" style="display: block; margin-bottom: 8px; font-weight: 500;">Tipo de Evaluación *</label>
+        <select id="tipo_evaluacion_id" name="tipo_evaluacion_id" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+          <option value="">Seleccionar tipo...</option>
+          {% for tipo in tipos_evaluacion %}
+            <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label for="fecha" style="display: block; margin-bottom: 8px; font-weight: 500;">Fecha *</label>
+        <input type="date" id="fecha" name="fecha" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label for="descripcion" style="display: block; margin-bottom: 8px; font-weight: 500;">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="3" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button type="button" class="modal-cancel" style="padding: 10px 20px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+        <button type="submit" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Modal functionality
+  const modal = document.getElementById('modalEvaluacion');
+  const btnNueva = document.getElementById('btnNuevaEvaluacion');
+  const closeButtons = document.querySelectorAll('.modal-close, .modal-cancel');
+  
+  function openModal() {
+    modal.style.display = 'flex';
+  }
+  
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+  
+  btnNueva.onclick = openModal;
+  
+  closeButtons.forEach(btn => {
+    btn.onclick = closeModal;
+  });
+  
+  // Close modal when clicking outside
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  };
+  
+  // Set default date to today
+  const fechaInput = document.getElementById('fecha');
+  const today = new Date().toISOString().split('T')[0];
+  fechaInput.value = today;
+</script>
 {% endblock %}
