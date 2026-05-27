@@ -1,0 +1,374 @@
+{
+  "1": [
+    {
+      "semana": 1,
+      "teorica": {
+        "fecha": "10/03",
+        "modalidad": "Virtual",
+        "temas": [
+          "Presentación de la materia",
+          "Introducción a Linux: historia y usos",
+          "FileSystem y carpetas principales",
+          "Terminal y comandos básicos: cd, ls, cat, pwd, cp, mv, rm, mkdir, sudo"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "12/03",
+        "modalidad": "Virtual",
+        "temas": [
+          "Opciones de instalación: WSL, VM, Dual Boot",
+          "¿Qué es Bash?",
+          "Editores de terminal",
+          "Variables de entorno",
+          "Mi primer Script"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 2,
+      "teorica": {
+        "fecha": "17/03",
+        "modalidad": "Virtual",
+        "temas": [
+          "Bash: continuación",
+          "Estructuras condicionales e iterativas",
+          "Pipelines y redirecciones",
+          "Scripts: búsqueda, reemplazo, manejo de archivos"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "19/03",
+        "modalidad": "Presencial",
+        "temas": [
+          "Ejercitación integral de comandos",
+          "Consultas Linux",
+          "Ejercicios de Scripting"
+        ],
+        "tags": ["Obligatoria"]
+      }
+    },
+    {
+      "semana": 3,
+      "teorica": {
+        "fecha": "24/03",
+        "modalidad": "Virtual",
+        "temas": [
+          "Introducción a Front End",
+          "Intro a Flask",
+          "Intro a HTML",
+          "Intro a CSS",
+          "Intro a JavaScript",
+          "Mi primer código en Flask"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "26/03",
+        "modalidad": "Virtual",
+        "temas": [
+          "Flask con HTML + CSS (ejemplo asistido)"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 4,
+      "teorica": {
+        "fecha": "31/03",
+        "modalidad": "Virtual",
+        "temas": [
+          "HTML: estructura básica",
+          "Etiquetas: div, p, a, img, ul/ol, table, form, input, button",
+          "CSS: clases e IDs",
+          "Atributos de estilo: color, display, font, margin, padding, border",
+          "Flexbox"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "02/04",
+        "modalidad": "Virtual",
+        "temas": [
+          "JavaScript + HTML",
+          "Ejercitación"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 5,
+      "teorica": {
+        "fecha": "07/04",
+        "modalidad": "Virtual",
+        "temas": [
+          "JavaScript"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "09/04",
+        "modalidad": "Presencial",
+        "temas": [
+          "Ejercitación integral Flask + JavaScript + HTML"
+        ],
+        "tags": ["Obligatoria"]
+      }
+    },
+    {
+      "semana": 6,
+      "teorica": {
+        "fecha": "14/04",
+        "modalidad": "Virtual",
+        "temas": [
+          "API RESTful (Python): qué es una API, qué es REST",
+          "Ejemplo de API"
+        ],
+        "tags": ["Parcialito"]
+      },
+      "practica": {
+        "fecha": "16/04",
+        "modalidad": "—",
+        "temas": [],
+        "tags": ["Feriado"]
+      }
+    },
+    {
+      "semana": 7,
+      "teorica": {
+        "fecha": "21/04",
+        "modalidad": "Virtual",
+        "temas": [
+          "Testing"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "23/04",
+        "modalidad": "Virtual",
+        "temas": [
+          "Depuración (debugging)",
+          "Ejercitación de debugging"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 8,
+      "teorica": {
+        "fecha": "28/04",
+        "modalidad": "Virtual",
+        "temas": [
+          "Introducción a la agilidad",
+          "Kanban",
+          "Herramientas: Jira, Trello, Asana, Basecamp",
+          "CI/CD"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "30/04",
+        "modalidad": "—",
+        "temas": [],
+        "tags": ["Feriado"]
+      }
+    },
+    {
+      "semana": 9,
+      "teorica": {
+        "fecha": "05/05",
+        "modalidad": "Virtual",
+        "temas": [
+          "Consultas previas al 1er parcial"
+        ],
+        "tags": []
+      },
+      "practica": {
+        "fecha": "07/05",
+        "modalidad": "Presencial",
+        "temas": [
+          "1er Parcial: todo lo visto hasta el momento, incluye Backend"
+        ],
+        "tags": ["1er Parcial", "Obligatoria"]
+      }
+    },
+    {
+      "semana": 10,
+      "teorica": {
+        "fecha": "12/05",
+        "modalidad": "Virtual",
+        "temas": [
+          "SQL: qué es una BDD, qué es SQL",
+          "Estructura de BDD relacionales",
+          "CREATE / DROP TABLE",
+          "SELECT - FROM - WHERE"
+        ],
+        "tags": ["Armado de grupos TP"]
+      },
+      "practica": {
+        "fecha": "14/05",
+        "modalidad": "Virtual",
+        "temas": [
+          "SQL: tipos de datos",
+          "INSERT, UPDATE, DELETE",
+          "AUTO_INCREMENT, Primary Key"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 11,
+      "teorica": {
+        "fecha": "19/05",
+        "modalidad": "Presencial",
+        "temas": [
+          "Ejercitación integral Front + Backend",
+          "Crear API consumiendo datos de una base",
+          "SQL Joins"
+        ],
+        "tags": ["Obligatoria"]
+      },
+      "practica": {
+        "fecha": "21/05",
+        "modalidad": "Virtual",
+        "temas": [
+          "Git: qué es y para qué sirve",
+          "Repositorio y estados",
+          "Comandos: status, add, commit, push, pull, clone",
+          "GitHub: diferencia con Git, SSH"
+        ],
+        "tags": ["Entrega parcial TP"]
+      }
+    },
+    {
+      "semana": 12,
+      "teorica": {
+        "fecha": "26/05",
+        "modalidad": "Virtual",
+        "temas": [
+          "Git: ramas (checkout, branch)",
+          "git restore, staging",
+          "git log y git diff"
+        ],
+        "tags": ["Entrega parcial TP"]
+      },
+      "practica": {
+        "fecha": "28/05",
+        "modalidad": "Virtual",
+        "temas": [
+          "Docker: qué es, para qué se usa",
+          "Diferencia con VM",
+          "Containers e imágenes",
+          "Comandos: run, ps, exec, start, stop, rm, images, pull"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 13,
+      "teorica": {
+        "fecha": "02/06",
+        "modalidad": "Virtual",
+        "temas": [
+          "Consultas TP",
+          "Presentación de ramas a utilizar",
+          "Vistas HTML, avances en API"
+        ],
+        "tags": ["Entrega parcial TP"]
+      },
+      "practica": {
+        "fecha": "04/06",
+        "modalidad": "Virtual",
+        "temas": [
+          "Docker: Dockerfile",
+          "Volúmenes y puertos",
+          "docker build",
+          "Docker Compose: compose.yaml, build, up, stop, down"
+        ],
+        "tags": []
+      }
+    },
+    {
+      "semana": 14,
+      "teorica": {
+        "fecha": "09/06",
+        "modalidad": "Virtual",
+        "temas": [
+          "Consultas",
+          "Integración Front y Back"
+        ],
+        "tags": ["Entrega documentación de endpoints"]
+      },
+      "practica": {
+        "fecha": "11/06",
+        "modalidad": "Presencial",
+        "temas": [
+          "1er Recuperatorio"
+        ],
+        "tags": ["1er Recuperatorio", "Obligatoria"]
+      }
+    },
+    {
+      "semana": 15,
+      "teorica": {
+        "fecha": "16/06",
+        "modalidad": "Virtual",
+        "temas": [
+          "Consultas finales TP"
+        ],
+        "tags": ["Entrega +80% TP"]
+      },
+      "practica": {
+        "fecha": "18/06",
+        "modalidad": "Presencial",
+        "temas": [
+          "1er Entrega TP Integrador y Defensa"
+        ],
+        "tags": ["Entrega TP", "Obligatoria"]
+      }
+    },
+    {
+      "semana": 16,
+      "teorica": {
+        "fecha": "23/06",
+        "modalidad": "Presencial",
+        "temas": [
+          "Defensas presenciales",
+          "Consultas TP"
+        ],
+        "tags": ["Obligatoria"]
+      },
+      "practica": {
+        "fecha": "25/06",
+        "modalidad": "Presencial",
+        "temas": [
+          "2da Entrega TP Integrador y Defensa"
+        ],
+        "tags": ["Entrega TP", "Obligatoria"]
+      }
+    },
+    {
+      "semana": 17,
+      "teorica": {
+        "fecha": "30/06",
+        "modalidad": "Presencial",
+        "temas": [
+          "Cierre de la materia",
+          "Defensas presenciales"
+        ],
+        "tags": ["Obligatoria"]
+      },
+      "practica": {
+        "fecha": "02/07",
+        "modalidad": "Presencial",
+        "temas": [
+          "2do Recuperatorio",
+          "1er Fecha Final"
+        ],
+        "tags": ["2do Recuperatorio", "Final", "Obligatoria"]
+      }
+    }
+  ]
+}
