@@ -1,62 +1,65 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import json
+from pathlib import Path
+
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
 
 app = Flask(__name__)
 
+MOCKS_DIR = Path(__file__).parent / "mocks"
+
+
+def _load_mock(filename):
+    with open(MOCKS_DIR / filename, encoding="utf-8") as f:
+        return json.load(f)
+
+
+cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
+cronograma_por_curso = {int(k): v for k, v in _load_mock("cronograma.json").items()}
+listar_alumnos = _load_mock("alumnos.json")
+listar_materiales = _load_mock("materiales.json")
+evaluaciones = _load_mock("evaluaciones.json")
+
 listar_materias = [
-    {"nombre": "Materia 1"},
-    {"nombre": "Materia 2"},
-    {"nombre": "Materia 3"},
+    {"id": c["id"], "codigo": c["codigo"], "nombre": c["nombre"]}
+    for c in cursos_mock.values()
 ]
 
-listar_alumnos = [
-    {"id": "1001", "nombre": "Bruno", "apellido": "Lanzillota", "email": "blanzilotta@gmail.com", "dni": "1234678", "activo": 1},
-    {"id": "1002", "nombre": "Leonel", "apellido": "Chavez", "email": "bchavez@gmail.com", "dni": "1234677", "activo": 0},
-    {"id": "1003", "nombre": "Nestor", "apellido": "Pala", "email": "npala@gmail.com", "dni": "1234566", "activo": 1},
-]
+CURSO_ACTIVO = cursos_mock[1]
 
-listar_materiales = [
-    {
-        'id': 1,
-        'curso_id': 1,
-        'titulo': 'Instalación de Virtual Machine (Versión nueva)',
-        'archivo_url': '/uploads/vm_nueva.pdf',
-        'subido_por': 1,
-        'created_at': '2024-01-15 10:30:00'
-    },
-    {
-        'id': 2,
-        'curso_id': 1,
-        'titulo': 'Instalación de Virtual Machine (Versión antigua)',
-        'archivo_url': '/uploads/vm_antigua.pdf',
-        'subido_por': 1,
-        'created_at': '2024-01-15 10:35:00'
-    },
-    {
-        'id': 3,
-        'curso_id': 2,
-        'titulo': 'Primeros pasos en Linux',
-        'archivo_url': '/uploads/linux_primeros_pasos.pdf',
-        'subido_por': 1,
-        'created_at': '2024-01-20 14:20:00'
-    },
-    {
-        'id': 4,
-        'curso_id': 2,
-        'titulo': 'Docker',
-        'archivo_url': '/uploads/debugger_vscode.pdf',
-        'subido_por': 2
-    }
-]
 
-evaluaciones = [
-    {"titulo": "Parcialito", "curso_id": 1, "fecha": "01/01", "tipo_evaluacion_id": 1, "descripcion": "Instancia autoevaluatoria de backend", "activo": 1},
-    {"titulo": "1er Parcial", "curso_id": 2, "fecha": "02/01", "tipo_evaluacion_id": 2, "descripcion": "Examen de frontend y flask"},
-    {"titulo": "Defensa Oral", "curso_id": 3, "fecha": "03/01", "tipo_evaluacion_id": 3, "descripcion": "Entrega del proyecto final", "activo": 1},
-]
+@app.context_processor
+def inject_curso_activo():
+    return {"curso_activo": CURSO_ACTIVO}
+
+
+_perfil_estudiante_raw = _load_mock("perfil_estudiante.json")
+perfil_estudiante_mock = {
+    **_perfil_estudiante_raw,
+    "curso": {
+        "codigo": CURSO_ACTIVO["codigo"],
+        "nombre": CURSO_ACTIVO["nombre"],
+        "carrera": CURSO_ACTIVO["carrera"],
+        "modalidad": CURSO_ACTIVO["modalidad"],
+        **_perfil_estudiante_raw["curso"],
+    },
+}
+
+_perfil_profesor_raw = _load_mock("perfil_profesor.json")
+perfil_profesor_mock = {
+    **_perfil_profesor_raw,
+    "catedra": {
+        "codigo": CURSO_ACTIVO["codigo"],
+        "nombre": CURSO_ACTIVO["nombre"],
+        "alumnos": CURSO_ACTIVO["stats"]["alumnos"],
+        "modalidad": CURSO_ACTIVO["modalidad"],
+        "carga_horaria": CURSO_ACTIVO["horas_semanales"],
+        **_perfil_profesor_raw["catedra"],
+    },
+}
 
 @app.route("/")
 def index():
-    return redirect(url_for("materias"))
+    return redirect(url_for("curso", curso_id=CURSO_ACTIVO["id"]))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -121,10 +124,49 @@ def metricas():
 
 @app.route("/perfil")
 def perfil():
+    return redirect(url_for("perfil_estudiante"))
+
+
+@app.route("/perfil/estudiante")
+def perfil_estudiante():
     return render_template(
-        "perfil.html",
-        title="Perfil",
+        "perfil_estudiante.html",
+        title="Perfil Estudiante",
         active_page="perfil",
+        perfil=perfil_estudiante_mock,
+    )
+
+
+@app.route("/perfil/profesor")
+def perfil_profesor():
+    return render_template(
+        "perfil_profesor.html",
+        title="Perfil Docente",
+        active_page="perfil",
+        perfil=perfil_profesor_mock,
+    )
+
+
+@app.route("/curso/<int:curso_id>")
+def curso(curso_id):
+    curso_data = cursos_mock.get(curso_id)
+    if curso_data is None:
+        abort(404)
+    return render_template(
+        "curso.html",
+        title=curso_data["nombre"],
+        active_page="curso",
+        curso=curso_data,
+    )
+
+
+@app.route("/cronograma")
+def cronograma():
+    return render_template(
+        "cronograma.html",
+        title="Cronograma",
+        active_page="cronograma",
+        semanas=cronograma_por_curso.get(CURSO_ACTIVO["id"], []),
     )
 
 

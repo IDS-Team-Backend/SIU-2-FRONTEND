@@ -1,22 +1,27 @@
 {
   "1": {
     "id": 1,
-    "codigo": "TUP-101",
-    "nombre": "Programación I",
-    "descripcion": "Introducción al lenguaje C: tipos de datos, estructuras de control, funciones, vectores, matrices, punteros y manejo de memoria. Materia troncal del primer cuatrimestre.",
+    "codigo": "FIUBA-7540",
+    "nombre": "Introducción al Desarrollo de Software",
+    "descripcion": "Materia introductoria al desarrollo de software con Python. Cubre Linux, Bash, control de versiones con Git, desarrollo web con Flask (HTML, CSS, JS), APIs REST, bases de datos SQL, testing, agilidad (Kanban, CI/CD) y containerización con Docker. Modalidad virtual con clases presenciales obligatorias.",
     "anio": 2026,
     "cuatrimestre": 1,
-    "modalidad": "Presencial",
-    "carrera": "Tecnicatura Universitaria en Programación",
+    "modalidad": "Virtual con presenciales obligatorias",
+    "carrera": "Ingeniería en Informática",
     "horas_semanales": 6,
     "profesores": [
-      {"id": 1, "nombre": "Juan Pérez", "rol": "Titular"},
-      {"id": 2, "nombre": "Ana Gómez", "rol": "JTP"}
+      {"id": 1, "nombre": "Bruno Lanzillotta", "rol": "Profesor a cargo"},
+      {"id": 2, "nombre": "Martín Sosa", "rol": "JTP"},
+      {"id": 3, "nombre": "Franco Capra", "rol": "JTP"},
+      {"id": 4, "nombre": "Carolina Di Matteo", "rol": "Ayudante"},
+      {"id": 5, "nombre": "Leonel Chaves", "rol": "Ayudante"},
+      {"id": 6, "nombre": "Tomás Villegas", "rol": "Ayudante"},
+      {"id": 7, "nombre": "Néstor Palavecino", "rol": "Ayudante"}
     ],
     "stats": {
-      "alumnos": 42,
+      "alumnos": 48,
       "materiales": 8,
-      "evaluaciones": 4
+      "evaluaciones": 5
     }
   }
 }

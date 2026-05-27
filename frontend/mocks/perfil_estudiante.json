@@ -1,0 +1,20 @@
+{
+  "nombre": "Tomás",
+  "apellido": "Vargas",
+  "legajo": "FIUBA-2024-1042",
+  "dni": "44.215.876",
+  "email": "tvargas@fi.uba.ar",
+  "estado_cursada": "Regular",
+  "asistencia": "100%",
+  "promedio_curso": 8.5,
+  "curso": {
+    "comision": "Lanzillotta",
+    "inicio": "10/03/2026"
+  },
+  "evaluaciones": [
+    {"titulo": "Parcialito",                       "fecha": "14/04/2026", "nota": 8,    "estado": "Aprobado"},
+    {"titulo": "1er Parcial",                      "fecha": "07/05/2026", "nota": 9,    "estado": "Aprobado"},
+    {"titulo": "TP Integrador - Entrega parcial",  "fecha": "21/05/2026", "nota": 8,    "estado": "Aprobado"},
+    {"titulo": "TP Integrador - Defensa Oral",     "fecha": "18/06/2026", "nota": null, "estado": "Pendiente"}
+  ]
+}
