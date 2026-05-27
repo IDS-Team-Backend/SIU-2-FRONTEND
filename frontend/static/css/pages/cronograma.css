@@ -1,0 +1,89 @@
+/* ==========================================================================
+   SCHEDULE TABLE (Cronograma)
+   ========================================================================== */
+.schedule-table {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.schedule-table td {
+  vertical-align: top;
+  white-space: normal;
+}
+
+.schedule-table tr:hover td {
+  background: transparent;
+  color: var(--text);
+}
+
+.schedule-table .col-semana {
+  text-align: center;
+  width: 90px;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.schedule-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-cell-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+}
+
+.schedule-temas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.schedule-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.schedule-empty {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   BADGES (chips usadas por las celdas del cronograma)
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge-modalidad {
+  background: #e0f2fe;
+  color: var(--primary-dark);
+}
+
+.badge-tag {
+  background: #dcfce7;
+  color: #166534;
+}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/cronograma.css') }}">
+{% endblock %}
+
+{% macro render_celda(celda) %}
+  {% if celda.fecha or celda.temas or celda.tags %}
+    <div class="schedule-cell">
+      {% if celda.fecha or celda.modalidad %}
+        <div class="schedule-cell-header">
+          {% if celda.fecha %}<strong>{{ celda.fecha }}</strong>{% endif %}
+          {% if celda.modalidad %}
+            <span class="badge badge-modalidad">{{ celda.modalidad }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if celda.temas %}
+        <ul class="schedule-temas">
+          {% for tema in celda.temas %}
+            <li>{{ tema }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if celda.tags %}
+        <div class="schedule-tags">
+          {% for tag in celda.tags %}
+            <span class="badge badge-tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% block content %}
+<section>
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <h1 class="page-hero-title">Cronograma</h1>
+      <p class="page-hero-subtitle">Fechas, temas y modalidades de cada clase del cuatrimestre.</p>
+    </div>
+    <div class="page-hero-image">
+      <span class="material-symbols-rounded">calendar_month</span>
+    </div>
+  </div>
+
+  {% if semanas %}
+    <div class="schedule-table">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-semana">Semana</th>
+            <th>Teórica</th>
+            <th>Práctica</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in semanas %}
+            <tr>
+              <td class="col-semana">{{ s.semana }}</td>
+              <td>{{ render_celda(s.teorica) }}</td>
+              <td>{{ render_celda(s.practica) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="schedule-table">
+      <div class="schedule-empty">No hay cronograma cargado para este curso</div>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -6,9 +6,10 @@
 
   <div class="card-grid">
     {% for materia in materias %}
-      <article class="card">
+      <a class="card card-link" href="{{ url_for('curso', curso_id=materia.id) }}">
+        <span class="card-codigo">{{ materia.codigo }}</span>
         <h2>{{ materia.nombre }}</h2>
-      </article>
+      </a>
     {% endfor %}
   </div>
 </section>
