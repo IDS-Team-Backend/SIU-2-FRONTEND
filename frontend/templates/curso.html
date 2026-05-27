@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <span class="page-hero-eyebrow">{{ curso.codigo }} · {{ curso.carrera }}</span>
+      <h1 class="page-hero-title">{{ curso.nombre }}</h1>
+      <p class="page-hero-subtitle">{{ curso.descripcion }}</p>
+    </div>
+    <div class="page-hero-image">
+      <span class="material-symbols-rounded">school</span>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-card-label">Año / Cuatrimestre</span>
+      <span class="info-card-value">{{ curso.anio }} · {{ curso.cuatrimestre }}°C</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Modalidad</span>
+      <span class="info-card-value">{{ curso.modalidad }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Carga horaria</span>
+      <span class="info-card-value">{{ curso.horas_semanales }} hs/semana</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Alumnos inscriptos</span>
+      <span class="info-card-value">{{ curso.stats.alumnos }}</span>
+    </div>
+  </div>
+
+  <div class="curso-panels">
+    <div class="panel">
+      <h2 class="panel-title">Docentes</h2>
+      <ul class="docentes-list">
+        {% for d in curso.profesores %}
+          <li class="docente-item">
+            <span class="material-symbols-rounded">account_circle</span>
+            <div>
+              <div class="docente-nombre">{{ d.nombre }}</div>
+              <div class="docente-rol">{{ d.rol }}</div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">Accesos rápidos</h2>
+      <div class="section-cards">
+        <a class="section-card" href="{{ url_for('cronograma') }}">
+          <span class="material-symbols-rounded">calendar_month</span>
+          <div>
+            <div class="section-card-title">Cronograma</div>
+            <div class="section-card-desc">Fechas, temas y modalidad de cada clase</div>
+          </div>
+        </a>
+        <a class="section-card" href="{{ url_for('material') }}">
+          <span class="material-symbols-rounded">menu_book</span>
+          <div>
+            <div class="section-card-title">Materiales</div>
+            <div class="section-card-desc">{{ curso.stats.materiales }} recursos disponibles</div>
+          </div>
+        </a>
+        <a class="section-card" href="{{ url_for('alumnos_page') }}">
+          <span class="material-symbols-rounded">group</span>
+          <div>
+            <div class="section-card-title">Alumnos</div>
+            <div class="section-card-desc">{{ curso.stats.alumnos }} inscriptos</div>
+          </div>
+        </a>
+        <a class="section-card" href="{{ url_for('evaluaciones_page') }}">
+          <span class="material-symbols-rounded">assignment_turned_in</span>
+          <div>
+            <div class="section-card-title">Evaluaciones</div>
+            <div class="section-card-desc">{{ curso.stats.evaluaciones }} instancias programadas</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

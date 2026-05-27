@@ -551,3 +551,73 @@ tr:hover td {
   color: #ef4444;
   font-size: 1.2rem;
 }
+
+/* ==========================================================================
+   PAGE HERO (Cronograma y similares)
+   ========================================================================== */
+.page-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 40px 48px;
+  margin-bottom: 32px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #7dd3fc 0%, #60a5fa 100%);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.page-hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #facc15;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.page-hero-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 420px;
+}
+
+.page-hero-image {
+  flex-shrink: 0;
+  width: 200px;
+  height: 140px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-hero-image .material-symbols-rounded {
+  font-size: 5rem !important;
+  color: white;
+}
+
+/* ==========================================================================
+   CARD LINK (para listado de materias)
+   ========================================================================== */
+.card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.card-codigo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+}

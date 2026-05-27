@@ -1,0 +1,22 @@
+{
+  "1": {
+    "id": 1,
+    "codigo": "TUP-101",
+    "nombre": "Programación I",
+    "descripcion": "Introducción al lenguaje C: tipos de datos, estructuras de control, funciones, vectores, matrices, punteros y manejo de memoria. Materia troncal del primer cuatrimestre.",
+    "anio": 2026,
+    "cuatrimestre": 1,
+    "modalidad": "Presencial",
+    "carrera": "Tecnicatura Universitaria en Programación",
+    "horas_semanales": 6,
+    "profesores": [
+      {"id": 1, "nombre": "Juan Pérez", "rol": "Titular"},
+      {"id": 2, "nombre": "Ana Gómez", "rol": "JTP"}
+    ],
+    "stats": {
+      "alumnos": 42,
+      "materiales": 8,
+      "evaluaciones": 4
+    }
+  }
+}
