@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/perfil.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <span class="page-hero-eyebrow">Legajo {{ perfil.legajo }} · {{ perfil.curso.carrera }}</span>
+      <h1 class="page-hero-title">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
+      <p class="page-hero-subtitle">Perfil de estudiante en {{ perfil.curso.codigo }} · {{ perfil.curso.nombre }}</p>
+    </div>
+    <div class="page-hero-image">
+      <span class="material-symbols-rounded">school</span>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-card-label">DNI</span>
+      <span class="info-card-value">{{ perfil.dni }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Legajo</span>
+      <span class="info-card-value">{{ perfil.legajo }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Email</span>
+      <span class="info-card-value">{{ perfil.email }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Estado en el curso</span>
+      <span class="info-card-value">{{ perfil.estado_cursada }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Asistencia</span>
+      <span class="info-card-value">{{ perfil.asistencia }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Promedio</span>
+      <span class="info-card-value">{{ perfil.promedio_curso }}</span>
+    </div>
+  </div>
+
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Curso actual</h2>
+    <ul class="docentes-list">
+      <li class="docente-item">
+        <span class="material-symbols-rounded">menu_book</span>
+        <div>
+          <div class="docente-nombre">{{ perfil.curso.codigo }} · {{ perfil.curso.nombre }}</div>
+          <div class="docente-rol">Comisión {{ perfil.curso.comision }} · {{ perfil.curso.modalidad }} · Inicio {{ perfil.curso.inicio }}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Evaluaciones del curso</h2>
+    <table class="perfil-table">
+      <thead>
+        <tr>
+          <th>Instancia</th>
+          <th>Fecha</th>
+          <th>Nota</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in perfil.evaluaciones %}
+          <tr>
+            <td>{{ e.titulo }}</td>
+            <td>{{ e.fecha }}</td>
+            <td>
+              {% if e.nota is not none %}
+                <span class="estado-badge estado-aprobada">{{ e.nota }}</span>
+              {% else %}
+                <span class="estado-badge estado-pendiente">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if e.estado == 'Aprobado' %}
+                <span class="estado-badge estado-aprobada">{{ e.estado }}</span>
+              {% else %}
+                <span class="estado-badge estado-pendiente">{{ e.estado }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Acciones</h2>
+    <div class="perfil-actions">
+      <button type="button" class="btn-action">
+        <span class="material-symbols-rounded">edit</span>
+        Editar perfil
+      </button>
+      <button type="button" class="btn-action">
+        <span class="material-symbols-rounded">lock</span>
+        Cambiar contraseña
+      </button>
+      <button type="button" class="btn-action">
+        <span class="material-symbols-rounded">download</span>
+        Descargar constancia
+      </button>
+      <button type="button" class="btn-action btn-action--danger">
+        <span class="material-symbols-rounded">logout</span>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</section>
+{% endblock %}
