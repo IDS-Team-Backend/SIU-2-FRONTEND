@@ -2,81 +2,72 @@
 
 {% block content %}
 <section>
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+  <div class="page-header">
     <h1>Alumnos</h1>
-    <a 
-      href="{{ url_for('alumnos_page', accion='vincular') }}"
-      style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none;"
-    >
+    <a href="{{ url_for('alumnos_page', accion='vincular') }}" class="btn btn-primary">
       Vincular Alumno
     </a>
   </div>
 
   <!-- Barra de búsqueda -->
-  <div style="margin-bottom: 24px;">
-    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-      <div style="flex: 1; min-width: 250px;">
-        <input 
-          type="text" 
-          placeholder="🔍 Buscar por nombre, apellido, email o legajo..." 
-          style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px;"
-        >
-      </div>
-      <div>
-        <select style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: white;">
-          <option>Todos los estados</option>
-          <option>Activos</option>
-          <option>Inactivos</option>
-        </select>
-      </div>
-      <div>
-        <button style="padding: 12px 20px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer;">
-          Limpiar
-        </button>
-      </div>
+  <div class="search-bar">
+    <div class="search-bar__input">
+      <input
+        type="text"
+        placeholder="🔍 Buscar por nombre, apellido, email o legajo..."
+        class="form-control"
+      >
+    </div>
+    <div>
+      <select class="form-control">
+        <option>Todos los estados</option>
+        <option>Activos</option>
+        <option>Inactivos</option>
+      </select>
+    </div>
+    <div>
+      <button class="btn btn-outline">Limpiar</button>
     </div>
   </div>
 
   <!-- Tabla de alumnos -->
-  <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <table style="width: 100%; border-collapse: collapse;">
+  <div class="table-wrapper">
+    <table class="table">
       <thead>
-        <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
-          <th style="padding: 16px 12px; text-align: left;">Legajo (ID)</th>
-          <th style="padding: 16px 12px; text-align: left;">Nombre</th>
-          <th style="padding: 16px 12px; text-align: left;">Apellido</th>
-          <th style="padding: 16px 12px; text-align: left;">Email</th>
-          <th style="padding: 16px 12px; text-align: left;">DNI</th>
-          <th style="padding: 16px 12px; text-align: left;">Estado</th>
-          <th style="padding: 16px 12px; text-align: center;">Acciones</th>
-         </tr>
+        <tr>
+          <th>Legajo (ID)</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>DNI</th>
+          <th>Estado</th>
+          <th class="table th--center">Acciones</th>
+        </tr>
       </thead>
       <tbody>
         {% for alumno in alumnos %}
-        <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding: 12px;">{{ alumno.id }}</td>
-          <td style="padding: 12px;">{{ alumno.nombre }}</td>
-          <td style="padding: 12px;">{{ alumno.apellido }}</td>
-          <td style="padding: 12px;">{{ alumno.email }}</td>
-          <td style="padding: 12px;">{{ alumno.dni }}</td>
-          <td style="padding: 12px;">
+        <tr>
+          <td>{{ alumno.id }}</td>
+          <td>{{ alumno.nombre }}</td>
+          <td>{{ alumno.apellido }}</td>
+          <td>{{ alumno.email }}</td>
+          <td>{{ alumno.dni }}</td>
+          <td>
             {% if alumno.activo %}
-              <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;">Activo</span>
+              <span class="badge badge--success">Activo</span>
             {% else %}
-              <span style="background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;">Inactivo</span>
+              <span class="badge badge--danger">Inactivo</span>
             {% endif %}
           </td>
-          <td style="padding: 12px; text-align: center;">
-            <div style="display: flex; gap: 8px; justify-content: center;">
-              <button style="background: none; border: none; color: var(--primary); cursor: pointer;">✏️ Editar</button>
+          <td class="table td--center">
+            <div class="table__actions">
+              <button class="btn-icon btn-icon--primary">✏️ Editar</button>
             </div>
           </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="7" style="text-align: center; padding: 60px; color: #666;">
-            No hay alumnos registrados
-          </td>
+          <td colspan="7" class="table__empty">No hay alumnos registrados</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -86,170 +77,87 @@
 
 <!-- Modal vincular alumno por padrón -->
 {% if request.args.get('accion') == 'vincular' %}
-<div style="position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;">
-
-  <div style="background: white; width: 100%; max-width: 620px; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+<div class="modal-overlay">
+  <div class="modal">
 
     <!-- Header -->
-    <div style="padding: 24px 28px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-      
+    <div class="modal__header">
       <div>
-        <h2 style="margin: 0; font-size: 26px;">
-          Vincular Alumno
-        </h2>
-
-        <p style="margin: 6px 0 0; color: #666; font-size: 14px;">
-          Buscar alumno por padrón y asociarlo al curso
-        </p>
+        <h2 class="modal__title">Vincular Alumno</h2>
+        <p class="modal__subtitle">Buscar alumno por padrón y asociarlo al curso</p>
       </div>
-
-      <a 
-        href="{{ url_for('alumnos_page') }}"
-        style="font-size: 28px; color: #666; text-decoration: none;"
-      >
-        &times;
-      </a>
+      <a href="{{ url_for('alumnos_page') }}" class="modal__close">&times;</a>
     </div>
 
     <!-- Body -->
-    <div style="padding: 28px;">
+    <div class="modal__body">
 
       <!-- Buscador -->
-      <div style="margin-bottom: 28px;">
-        
-        <label 
-          for="padron"
-          style="display: block; margin-bottom: 10px; font-weight: 600;"
-        >
-          Buscar por padrón
-        </label>
-
-        <div style="display: flex; gap: 12px;">
-          
+      <div>
+        <label for="padron" class="form-group label">Buscar por padrón</label>
+        <div class="inline-search">
           <input
             type="text"
             id="padron"
             name="padron"
             placeholder="Ej: 109283"
-            style="flex: 1; padding: 13px 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px;"
+            class="inline-search__input"
           >
-
-          <button
-            type="button"
-            style="padding: 13px 22px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;"
-          >
-            Buscar
-          </button>
+          <button type="button" class="btn btn-primary">Buscar</button>
         </div>
-
       </div>
 
       <!-- Resultado búsqueda -->
-      <div style="border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; background: #fafafa;">
+      <div class="result-card">
 
-        <!-- Header resultado -->
-        <div style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; background: #f5f5f5;">
-          <h3 style="margin: 0; font-size: 16px;">
-            Resultado de búsqueda
-          </h3>
+        <div class="result-card__header">
+          <h3>Resultado de búsqueda</h3>
         </div>
 
-        <!-- Datos alumno -->
-        <div style="padding: 22px 20px;">
+        <div class="result-card__body">
 
-          <!-- Estado vacío -->
-          <!-- 
-          <div style="text-align: center; color: #777; padding: 30px 0;">
+          <!-- Estado vacío (descomentar cuando no hay resultado)
+          <div class="result-card__empty">
             Buscar un alumno para visualizar sus datos
           </div>
           -->
 
           <!-- Alumno encontrado -->
-          <div style="display: flex; flex-direction: column; gap: 18px;">
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
-
-              <div>
-                <span style="display: block; color: #666; font-size: 13px; margin-bottom: 4px;">
-                  Nombre
-                </span>
-
-                <strong style="font-size: 15px;">
-                  Juan
-                </strong>
-              </div>
-
-              <div>
-                <span style="display: block; color: #666; font-size: 13px; margin-bottom: 4px;">
-                  Apellido
-                </span>
-
-                <strong style="font-size: 15px;">
-                  Pérez
-                </strong>
-              </div>
-
-              <div>
-                <span style="display: block; color: #666; font-size: 13px; margin-bottom: 4px;">
-                  Email
-                </span>
-
-                <strong style="font-size: 15px;">
-                  juanperez@mail.com
-                </strong>
-              </div>
-
-              <div>
-                <span style="display: block; color: #666; font-size: 13px; margin-bottom: 4px;">
-                  DNI
-                </span>
-
-                <strong style="font-size: 15px;">
-                  40111222
-                </strong>
-              </div>
-
-              <div>
-                <span style="display: block; color: #666; font-size: 13px; margin-bottom: 4px;">
-                  Padrón
-                </span>
-
-                <strong style="font-size: 15px;">
-                  109283
-                </strong>
-              </div>
-
-              <div>
-                <span style="display: block; color: #666; font-size: 13px; margin-bottom: 4px;">
-                  Estado
-                </span>
-
-                <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;">
-                  Activo
-                </span>
-              </div>
-
+          <div class="result-card__grid">
+            <div>
+              <span class="result-card__field-label">Nombre</span>
+              <strong class="result-card__field-value">Juan</strong>
             </div>
-
-            <!-- Acción -->
-            <div style="display: flex; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #e5e7eb;">
-              
-              <button
-                type="button"
-                style="padding: 12px 22px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;"
-              >
-                Vincular al Curso
-              </button>
-
+            <div>
+              <span class="result-card__field-label">Apellido</span>
+              <strong class="result-card__field-value">Pérez</strong>
             </div>
+            <div>
+              <span class="result-card__field-label">Email</span>
+              <strong class="result-card__field-value">juanperez@mail.com</strong>
+            </div>
+            <div>
+              <span class="result-card__field-label">DNI</span>
+              <strong class="result-card__field-value">40111222</strong>
+            </div>
+            <div>
+              <span class="result-card__field-label">Padrón</span>
+              <strong class="result-card__field-value">109283</strong>
+            </div>
+            <div>
+              <span class="result-card__field-label">Estado</span>
+              <span class="badge badge--success badge--pill">Activo</span>
+            </div>
+          </div>
 
+          <div class="result-card__footer">
+            <button type="button" class="btn btn-primary">Vincular al Curso</button>
           </div>
 
         </div>
       </div>
 
     </div>
-
   </div>
 </div>
 {% endif %}
