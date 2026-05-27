@@ -5,8 +5,11 @@
   </div>
 
   <nav>
-    <a class="{% if active_page == 'materias' %}active{% endif %}" href="{{ url_for('materias') }}">
-      <span class="material-symbols-rounded">menu_book</span>Materias
+    <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('curso', curso_id=curso_activo.id) }}">
+      <span class="material-symbols-rounded">menu_book</span>{{ curso_activo.nombre }}
+    </a>
+    <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('cronograma') }}">
+      <span class="material-symbols-rounded">calendar_month</span>Cronograma
     </a>
     <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos_page') }}">
       <span class="material-symbols-rounded">person</span>Alumnos
@@ -22,12 +25,30 @@
     </a>
   </nav>
 
-  <div class="sidebar-user">
-    <span class="material-symbols-rounded user-avatar">account_circle</span>
-    <div class="user-info">
-      <span class="user-name">Usuario</span>
-      <span class="user-role">Administrador</span>
+  <div class="sidebar-user-wrapper">
+    <button class="sidebar-user" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
+      <span class="material-symbols-rounded user-avatar">account_circle</span>
+      <div class="user-info">
+        <span class="user-name">Usuario</span>
+        <span class="user-role">Administrador</span>
+      </div>
+      <span class="material-symbols-rounded user-arrow">unfold_more</span>
+    </button>
+    <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
+      <a href="{{ url_for('perfil_estudiante') }}" role="menuitem">
+        <span class="material-symbols-rounded">school</span>
+        <div>
+          <span class="menu-item-title">Perfil Estudiante</span>
+          <span class="menu-item-desc">Ver ficha de alumno</span>
+        </div>
+      </a>
+      <a href="{{ url_for('perfil_profesor') }}" role="menuitem">
+        <span class="material-symbols-rounded">co_present</span>
+        <div>
+          <span class="menu-item-title">Perfil Docente</span>
+          <span class="menu-item-desc">Ver ficha de profesor</span>
+        </div>
+      </a>
     </div>
-    <span class="material-symbols-rounded user-arrow">unfold_more</span>
   </div>
 </aside>

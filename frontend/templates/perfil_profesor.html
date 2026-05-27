@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/perfil.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <span class="page-hero-eyebrow">{{ perfil.departamento }} · {{ perfil.rol }}</span>
+      <h1 class="page-hero-title">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
+      <p class="page-hero-subtitle">Perfil docente en {{ perfil.catedra.codigo }} · {{ perfil.catedra.nombre }}</p>
+    </div>
+    <div class="page-hero-image">
+      <span class="material-symbols-rounded">co_present</span>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-card-label">DNI</span>
+      <span class="info-card-value">{{ perfil.dni }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Email</span>
+      <span class="info-card-value">{{ perfil.email }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Rol</span>
+      <span class="info-card-value">{{ perfil.rol }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Antigüedad</span>
+      <span class="info-card-value">{{ perfil.antiguedad }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Departamento</span>
+      <span class="info-card-value">{{ perfil.departamento }}</span>
+    </div>
+  </div>
+
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Cátedra a cargo</h2>
+    <ul class="docentes-list">
+      <li class="docente-item">
+        <span class="material-symbols-rounded">menu_book</span>
+        <div>
+          <div class="docente-nombre">{{ perfil.catedra.codigo }} · {{ perfil.catedra.nombre }}</div>
+          <div class="docente-rol">
+            {{ perfil.catedra.rol }} · {{ perfil.catedra.modalidad }} · {{ perfil.catedra.carga_horaria }} hs/semana · {{ perfil.catedra.alumnos }} alumnos inscriptos
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Acciones</h2>
+    <div class="perfil-actions">
+      <button type="button" class="btn-action">
+        <span class="material-symbols-rounded">edit</span>
+        Editar perfil
+      </button>
+      <button type="button" class="btn-action">
+        <span class="material-symbols-rounded">lock</span>
+        Cambiar contraseña
+      </button>
+      <button type="button" class="btn-action btn-action--danger">
+        <span class="material-symbols-rounded">logout</span>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</section>
+{% endblock %}
