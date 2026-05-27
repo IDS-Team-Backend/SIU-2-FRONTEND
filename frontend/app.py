@@ -9,23 +9,50 @@ listar_materias = [
 ]
 
 listar_alumnos = [
-    {"legajo": "1001", "nombre": "Alumno 1", "estado": "Activo"},
-    {"legajo": "1002", "nombre": "Alumno 2", "estado": "Activo"},
-    {"legajo": "1003", "nombre": "Alumno 3", "estado": "Inactivo"},
+    {"id": "1001", "nombre": "Bruno", "apellido": "Lanzillota", "email": "blanzilotta@gmail.com", "dni": "1234678", "activo": 1},
+    {"id": "1002", "nombre": "Leonel", "apellido": "Chavez", "email": "bchavez@gmail.com", "dni": "1234677", "activo": 0},
+    {"id": "1003", "nombre": "Nestor", "apellido": "Pala", "email": "npala@gmail.com", "dni": "1234566", "activo": 1},
 ]
 
 listar_materiales = [
-    {"titulo": "Material 1"},
-    {"titulo": "Material 2"},
-    {"titulo": "Material 3"},
+    {
+        'id': 1,
+        'curso_id': 1,
+        'titulo': 'Instalación de Virtual Machine (Versión nueva)',
+        'archivo_url': '/uploads/vm_nueva.pdf',
+        'subido_por': 1,
+        'created_at': '2024-01-15 10:30:00'
+    },
+    {
+        'id': 2,
+        'curso_id': 1,
+        'titulo': 'Instalación de Virtual Machine (Versión antigua)',
+        'archivo_url': '/uploads/vm_antigua.pdf',
+        'subido_por': 1,
+        'created_at': '2024-01-15 10:35:00'
+    },
+    {
+        'id': 3,
+        'curso_id': 2,
+        'titulo': 'Primeros pasos en Linux',
+        'archivo_url': '/uploads/linux_primeros_pasos.pdf',
+        'subido_por': 1,
+        'created_at': '2024-01-20 14:20:00'
+    },
+    {
+        'id': 4,
+        'curso_id': 2,
+        'titulo': 'Docker',
+        'archivo_url': '/uploads/debugger_vscode.pdf',
+        'subido_por': 2
+    }
 ]
 
 evaluaciones = [
-    {"nombre": "Evaluación 1", "fecha": "01/01"},
-    {"nombre": "Evaluación 2", "fecha": "02/01"},
-    {"nombre": "Evaluación 3", "fecha": "03/01"},
+    {"titulo": "Parcialito", "curso_id": 1, "fecha": "01/01", "tipo_evaluacion_id": 1, "descripcion": "Instancia autoevaluatoria de backend", "activo": 1},
+    {"titulo": "1er Parcial", "curso_id": 2, "fecha": "02/01", "tipo_evaluacion_id": 2, "descripcion": "Examen de frontend y flask"},
+    {"titulo": "Defensa Oral", "curso_id": 3, "fecha": "03/01", "tipo_evaluacion_id": 3, "descripcion": "Entrega del proyecto final", "activo": 1},
 ]
-
 
 @app.route("/")
 def index():

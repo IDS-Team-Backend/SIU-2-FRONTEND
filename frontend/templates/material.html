@@ -2,12 +2,35 @@
 
 {% block content %}
 <section>
-  <h1>Material</h1>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h1>Materiales</h1>
+    <button style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+      + Subir Material
+    </button>
+  </div>
 
-  <div class="panel">
-    {% for material in materiales %}
-      <div class="list-item">{{ material.titulo }}</div>
-    {% endfor %}
+  <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    {% if materiales %}
+      {% for material in materiales %}
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; {% if not loop.last %}border-bottom: 1px solid #eee;{% endif %}">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 1.2rem;">📄</span>
+          <span style="font-weight: 500;">{{ material.titulo }}</span>
+           <div style="font-size: 12px; color: #666;">
+              Subido: {{ material.created_at if material.created_at else 'Fecha no disponible' }}
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <a href="{{ material.archivo_url }}" target="_blank" style="background: none; border: none; color: var(--primary); cursor: pointer; text-decoration: none;">📥 Descargar</a>
+          <button style="background: none; border: none; color: #ef4444; cursor: pointer;">🗑️</button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="text-align: center; padding: 60px; color: #666;">
+        No hay materiales disponibles
+      </div>
+    {% endif %}
   </div>
 </section>
 {% endblock %}
