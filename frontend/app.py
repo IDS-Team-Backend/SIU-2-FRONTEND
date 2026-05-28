@@ -1,12 +1,17 @@
 import json
+import os
 from pathlib import Path
-
+from routes import register_routes
+from utils.api_client import api_request
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 
 app = Flask(__name__)
+app.secret_key = "pon_aqui_una_clave_secreta_segura"
+
+register_routes(app)
+
 
 MOCKS_DIR = Path(__file__).parent / "mocks"
-
 
 def _load_mock(filename):
     with open(MOCKS_DIR / filename, encoding="utf-8") as f:
@@ -61,17 +66,6 @@ perfil_profesor_mock = {
 def index():
     return redirect(url_for("curso", curso_id=CURSO_ACTIVO["id"]))
 
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        if username == "admin" and password == "1234":
-            return redirect(url_for('materias')) 
-            
-    return render_template('login.html')
 
 @app.route("/materias")
 def materias():
@@ -171,4 +165,4 @@ def cronograma():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5001, debug=True)
