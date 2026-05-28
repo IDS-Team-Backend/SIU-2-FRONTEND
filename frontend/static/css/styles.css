@@ -913,3 +913,126 @@ h1 {
   text-transform: uppercase;
   color: var(--primary);
 }
+
+/* ==========================================================================
+   MÓDULO DE REPORTES & DASHBOARD
+   ========================================================================== */
+
+/* Contenedor de las pestañas (Tabs) */
+.reportes-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 12px;
+}
+
+/* Panel de Filtros */
+.filtros-panel {
+  background: var(--surface);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.filtros-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.form-group-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.form-group-flex label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.btn-filtrar {
+  height: 42px; /* Alineación perfecta con los selectores */
+}
+
+/* Tablas de Reportes */
+.tabla-reporte {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-top: 16px;
+}
+
+.tabla-reporte th {
+  background: #f8fafc;
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--border);
+}
+
+.tabla-reporte td {
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.tabla-reporte tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-vacia {
+  padding: 32px !important;
+  text-align: center;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+/* Tarjeta contenedora del Gráfico */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  max-width: 800px;
+  margin: 0 auto 32px auto;
+}
+
+.chart-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Modificadores de texto de utilidad */
+.text-center { text-align: center !important; }
+.text-bold { font-weight: 600; }
+.text-muted { color: var(--text-soft) !important; font-size: 0.85rem; }
+.text-success { color: var(--text-success) !important; }
+.text-danger { color: var(--text-danger) !important; }
+.bg-destacado { background-color: #f8fafc; font-weight: 600; }
+
+/* Estilo para las listas dentro de las tarjetas de equipos */
+.card-equipo .lista-integrantes {
+  margin-top: 12px;
+  padding-left: 18px;
+  color: var(--text);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
