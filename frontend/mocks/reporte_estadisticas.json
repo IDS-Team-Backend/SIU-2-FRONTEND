@@ -1,0 +1,29 @@
+[
+  {
+    "evaluacion_id": 1,
+    "evaluacion_titulo": "TP1: Entorno de Desarrollo y Git",
+    "tipo_evaluacion": "Individual",
+    "total_notas": 48,
+    "aprobados": 42,
+    "desaprobados": 6,
+    "nota_promedio": 7.45
+  },
+  {
+    "evaluacion_id": 2,
+    "evaluacion_titulo": "Parcial 1: Python y Flask",
+    "tipo_evaluacion": "Individual",
+    "total_notas": 45,
+    "aprobados": 31,
+    "desaprobados": 14,
+    "nota_promedio": 5.8
+  },
+  {
+    "evaluacion_id": 3,
+    "evaluacion_titulo": "TP2: Sistema Integral con Base de Datos",
+    "tipo_evaluacion": "Grupal",
+    "total_notas": 12,
+    "aprobados": 11,
+    "desaprobados": 1,
+    "nota_promedio": 8.1
+  }
+]

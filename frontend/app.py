@@ -62,6 +62,13 @@ perfil_profesor_mock = {
     },
 }
 
+try:
+    reporte_stats_mock = _load_mock("reporte_estadisticas.json")
+    listar_equipos_mock = _load_mock("equipos.json")
+except Exception:
+    reporte_stats_mock = []
+    listar_equipos_mock = []
+
 @app.route("/")
 def index():
     return redirect(url_for("curso", curso_id=CURSO_ACTIVO["id"]))
@@ -107,12 +114,37 @@ def evaluaciones_page():
     )
 
 
-@app.route("/metricas")
-def metricas():
+@app.route("/reportes")
+def reportes_page():
+    # Identificamos qué pestaña mostrar. Por defecto va a 'alumnos'
+    tab_actual = request.args.get("tab", "alumnos")
+    
+    # Capturamos filtros de alumnos
+    carrera_filtro = request.args.get("carrera", "")
+    condicion_filtro = request.args.get("condicion", "")
+    
+    # SIMULACIÓN DE FILTRADO PARA ALUMNO (Hardcodeado sobre tus mocks)
+    alumnos_filtrados = listar_alumnos
+    if carrera_filtro:
+        alumnos_filtrados = [a for a in alumnos_filtrados if a.get("carrera") == carrera_filtro]
+    if condicion_filtro:
+        # Simulamos que en una base de datos real filtraría por notas, acá lo hacemos conceptual
+        if condicion_filtro == "aprobado":
+            alumnos_filtrados = alumnos_filtrados[:30] # una porción mock
+        else:
+            alumnos_filtrados = alumnos_filtrados[30:]
+
     return render_template(
-        "metricas.html",
-        title="Métricas",
-        active_page="metricas",
+        "reportes.html",
+        title="Reportes de Cátedra",
+        active_page="reportes", # Cambiá esto en tu navbar si tenés un link a reportes
+        tab_actual=tab_actual,
+        alumnos=alumnos_filtrados,
+        estadisticas=reporte_stats_mock,
+        equipos=listar_equipos_mock,
+        carrera_filtro=carrera_filtro,
+        condicion_filtro=condicion_filtro,
+        curso_id_hardcodeado=1
     )
 
 
