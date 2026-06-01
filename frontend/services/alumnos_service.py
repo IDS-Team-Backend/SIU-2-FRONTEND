@@ -1,115 +1,150 @@
-from utils.api_client import api_request
 import requests as req_lib
-from utils.api_client import BACKEND_URL, armar_cookies_backend
+from utils.api_client import api_request, BACKEND_URL, armar_cookies_backend
+
+ESTADOS_VALIDOS = ("activo", "suspendido", "baja")
 
 
-def obtener_alumnos_del_curso(CURSO_ID):
-
-    ok_cu, data_cu = api_request("GET", f"/cursos, parametros={CURSO_ID}/alumnos")
-
+def obtener_alumnos_del_curso(curso_id):
+    ok_cu, data_cu = api_request("GET", "/curso_usuarios/",
+                                 params={"curso_id": curso_id})
     if not ok_cu:
-        error_mensaje = data_cu.get("error", "Error desconocido al obtener los alumnos del curso.") if data_cu else "Error desconocido al obtener los alumnos del curso."
-        return False, error_mensaje
- 
+        return False, data_cu.get("error", "Error al obtener inscripciones.")
+
     inscripciones = data_cu.get("curso_usuarios", []) if data_cu else []
     if not inscripciones:
         return True, []
- 
+
     ok_est, data_est = api_request("GET", "/estudiantes/")
     est_por_usuario = {}
     if ok_est and data_est:
         for e in data_est.get("estudiantes", []):
             est_por_usuario[e["usuario_id"]] = e
- 
+
     resultado = []
     for ins in inscripciones:
         est = est_por_usuario.get(ins["usuario_id"], {})
         resultado.append({
             "inscripcion_id": ins["id"],
-            "estado":         ins.get("estado", "activo"),
-            "id":             est.get("id"),
             "usuario_id":     ins["usuario_id"],
-            "nombre":         est.get("nombre", "—"),
-            "apellido":       est.get("apellido", "—"),
-            "email":          est.get("email", "—"),
-            "dni":            est.get("dni", "—"),
-            "padron":         est.get("padron", "—"),
-            "carrera":        est.get("carrera", "—"),
+            "curso_id":       ins["curso_id"],
+            "estado":         ins.get("estado", "activo"),
             "activo":         ins.get("estado") == "activo",
+            "id":             est.get("id"),
+            "padron":         est.get("padron",   "—"),
+            "nombre":         est.get("nombre",   "—"),
+            "apellido":       est.get("apellido", "—"),
+            "email":          est.get("email",    "—"),
+            "dni":            est.get("dni",      "—"),
+            "carrera":        est.get("carrera",  "—"),
+            "anio_ingreso":   est.get("anio_ingreso"),
         })
+
     return True, resultado
 
 
 def buscar_alumno_por_padron(padron):
-    if not str(padron).isdigit():
-        return False, "El padrón debe ser un número válido."
-    
+    padron = str(padron).strip()
+
+    if not padron:
+        return False, "Ingresá un padrón."
+
+    if not padron.isdigit():
+        return False, "El padrón debe contener solo números."
+
     ok, data = api_request("GET", f"/estudiantes/padron/{padron}")
 
     if not ok:
-        status = data.get("status_code") if data else None
-        if status == 404:
-            return False, "No se encontró ningún alumno con ese padrón."
-        else:
-            error_mensaje = data.get("error", "Error desconocido al buscar el alumno por padrón.") if data else "Error desconocido al buscar el alumno por padrón."
-            return False, error_mensaje
-        
+        if data and data.get("status_code") == 404:
+            return False, f"No se encontró ningún alumno con padrón {padron}."
+        return False, data.get("error", "Error al buscar alumno.") if data else "Error de conexión."
+
     return True, data
+
 
 def vincular_alumno_a_curso(usuario_id, curso_id):
-    if not usuario_id or not curso_id:
-        return False, "Usuario ID y Curso ID son requeridos para vincular un alumno al curso."
-    
-    ok, data = api_request("POST", "/cursos_usuarios/", json_body={
+    if not usuario_id:
+        return False, "Faltó el ID del alumno."
+    if not curso_id:
+        return False, "Faltó el ID del curso."
+
+    ok, data = api_request("POST", "/curso_usuarios/", json_body={
         "usuario_id": usuario_id,
-        "curso_id": curso_id,
-        "estado": "activo"
+        "curso_id":   curso_id,
+        "estado":     "activo",
     })
 
     if not ok:
-        error_mensaje = data.get("error", "") if data else ""
-        if "ya_esta_inscripto" in error_mensaje.lower():
-            return False, "El alumno ya está inscrito en este curso."
-        return False, error_mensaje or "Error desconocido al vincular el alumno al curso."
-    
+        error = data.get("error", "") if data else ""
+        if "ya está inscripto" in error:
+            return False, "Este alumno ya está inscripto en el curso."
+        return False, error or "Error al vincular alumno."
+
     return True, data
-    
+
+
 def desvincular_alumno_del_curso(inscripcion_id):
-    ok, data = api_request("DELETE", f"/cursos_usuarios/{inscripcion_id}")
+    ok, data = api_request("DELETE", f"/curso_usuarios/{inscripcion_id}")
+
     if not ok:
-        error_mensaje = data.get("error", "Error al desvincular el alumno del curso.") if data else "Error de conexion"
-        return False, error_mensaje
+        if data and data.get("status_code") == 404:
+            return False, "La inscripción no existe o ya fue eliminada."
+        return False, data.get("error", "Error al desvincular.") if data else "Error de conexión."
+
     return True, None
 
-def cambiar_estado_inscripcion(inscripcion_id, nuevo_estado):
-    #se necista el registro de la inscripcion para cambiar su estado, por eso se hace un get antes del put
-    ok_get, data_get = api_request("GET", "/cursos_usuarios/", params={"usuario_id": None})
 
-    ok, data = api_request("PUT", f"/cursos_usuarios/{inscripcion_id}", json_body={
-        "estado": nuevo_estado
-    })
+def cambiar_estado_inscripcion(inscripcion_id, usuario_id, curso_id, nuevo_estado):
+    if nuevo_estado not in ESTADOS_VALIDOS:
+        return False, f"Estado inválido: '{nuevo_estado}'. Debe ser: {', '.join(ESTADOS_VALIDOS)}."
+
+    if not usuario_id or not curso_id:
+        return False, "Faltan datos obligatorios para actualizar el estado."
+
+    ok, data = api_request("PUT", f"/curso_usuarios/{inscripcion_id}",
+                           json_body={
+                               "usuario_id": usuario_id,
+                               "curso_id":   curso_id,
+                               "estado":     nuevo_estado,
+                           })
+
     if not ok:
-        error_mensaje = data.get("error", "Error al cambiar el estado de la inscripción.") if data else "Error de conexion"
-        return False, error_mensaje
-    return True, data
+        return False, data.get("error", "Error al cambiar estado.") if data else "Error de conexión."
 
-def importar_csv(curso_id, archivo):
-    
+    registro = data.get("curso", data)
+    return True, registro
+
+
+def importar_csv(archivo, curso_id):
     try:
-        respuesta = req_lib.post(
+        resp = req_lib.post(
             f"{BACKEND_URL}/curso_usuarios/importar-lote",
             files={"archivo": (archivo.filename, archivo.stream, "text/csv")},
             data={"curso_id": curso_id},
             cookies=armar_cookies_backend(),
             timeout=30,
         )
-        respuesta.raise_for_status()
-        return True, respuesta.json().get("resultado", {})
-    except req_lib.exceptions.HTTPError as error:
+        resp.raise_for_status()
+
+        data = resp.json()
+        resultado_raw = data.get("resultado", {})
+
+        return True, {
+            "exitosos":   resultado_raw.get("procesados_exito",    0),
+            "duplicados": resultado_raw.get("ignorados_duplicados", 0),
+            "errores":    resultado_raw.get("errores_encontrados",  0),
+            "detalles":   resultado_raw.get("detalles_errores",     []),
+        }
+
+    except req_lib.exceptions.HTTPError as e:
         try:
-            mensaje = error.response.json().get("error", str(error))
+            errores = e.response.json().get("errors", [])
+            msg = errores[0].get("message", str(e)) if errores else str(e)
         except Exception:
-            mensaje = str(error)
-        return False, mensaje
+            msg = str(e)
+        return False, msg
+
+    except req_lib.exceptions.ConnectionError:
+        return False, "No se pudo conectar con el servidor."
+
     except Exception as e:
-        return False, f"No se pudo conectar con el servidor: {e}"
+        return False, f"Error inesperado: {e}"

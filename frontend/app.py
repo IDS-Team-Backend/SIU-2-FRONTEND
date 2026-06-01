@@ -1,9 +1,11 @@
 import json
 import os
 from pathlib import Path
+from services.auth_service import usuario_logueado
 from routes import register_routes
 from utils.api_client import api_request
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
+CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 app = Flask(__name__)
 app.secret_key = "pon_aqui_una_clave_secreta_segura"
@@ -29,22 +31,14 @@ listar_materias = [
     for c in cursos_mock.values()
 ]
 
-CURSO_ACTIVO = cursos_mock[1]
-
-
-@app.context_processor
-def inject_curso_activo():
-    return {"curso_activo": CURSO_ACTIVO}
-
-
 _perfil_estudiante_raw = _load_mock("perfil_estudiante.json")
 perfil_estudiante_mock = {
     **_perfil_estudiante_raw,
     "curso": {
-        "codigo": CURSO_ACTIVO["codigo"],
-        "nombre": CURSO_ACTIVO["nombre"],
-        "carrera": CURSO_ACTIVO["carrera"],
-        "modalidad": CURSO_ACTIVO["modalidad"],
+        "codigo": cursos_mock[CURSO_ACTIVO_ID]["codigo"],
+        "nombre": cursos_mock[CURSO_ACTIVO_ID]["nombre"],
+        "carrera": cursos_mock[CURSO_ACTIVO_ID]["carrera"],
+        "modalidad": cursos_mock[CURSO_ACTIVO_ID]["modalidad"],
         **_perfil_estudiante_raw["curso"],
     },
 }
@@ -53,11 +47,11 @@ _perfil_profesor_raw = _load_mock("perfil_profesor.json")
 perfil_profesor_mock = {
     **_perfil_profesor_raw,
     "catedra": {
-        "codigo": CURSO_ACTIVO["codigo"],
-        "nombre": CURSO_ACTIVO["nombre"],
-        "alumnos": CURSO_ACTIVO["stats"]["alumnos"],
-        "modalidad": CURSO_ACTIVO["modalidad"],
-        "carga_horaria": CURSO_ACTIVO["horas_semanales"],
+        "codigo": cursos_mock[CURSO_ACTIVO_ID]["codigo"],
+        "nombre": cursos_mock[CURSO_ACTIVO_ID]["nombre"],
+        "alumnos": cursos_mock[CURSO_ACTIVO_ID]["stats"]["alumnos"],
+        "modalidad": cursos_mock[CURSO_ACTIVO_ID]["modalidad"],
+        "carga_horaria": cursos_mock[CURSO_ACTIVO_ID]["horas_semanales"],
         **_perfil_profesor_raw["catedra"],
     },
 }
@@ -69,9 +63,30 @@ except Exception:
     reporte_stats_mock = []
     listar_equipos_mock = []
 
+
+@app.context_processor
+def inject_curso_activo():
+    if not usuario_logueado():
+        return {"curso_activo": {"id": CURSO_ACTIVO_ID, "nombre": "Sistema"}}
+    ok, data = api_request("GET", f"/cursos/{CURSO_ACTIVO_ID}")
+    if ok and data:
+        return {"curso_activo": data}
+    return {"curso_activo": {"id": CURSO_ACTIVO_ID, "nombre": "Sistema"}}
+ 
+ 
+@app.context_processor
+def inject_usuario_actual():
+    if not usuario_logueado():
+        return {"usuario_actual": None}
+    ok, data = api_request("GET", "/auth/me/perfiles")
+    if ok and data:
+        return {"usuario_actual": {"perfiles": data.get("perfiles", [])}}
+    return {"usuario_actual": None}
+
+
 @app.route("/")
 def index():
-    return redirect(url_for("curso", curso_id=CURSO_ACTIVO["id"]))
+    return redirect(url_for("curso", curso_id=CURSO_ACTIVO_ID))
 
 
 @app.route("/materias")
@@ -81,16 +96,6 @@ def materias():
         title="Materias",
         active_page="materias",
         materias=listar_materias,
-    )
-
-
-@app.route("/alumnos")
-def alumnos_page():
-    return render_template(
-        "alumnos.html",
-        title="Alumnos",
-        active_page="alumnos",
-        alumnos=listar_alumnos,
     )
 
 
@@ -192,7 +197,7 @@ def cronograma():
         "cronograma.html",
         title="Cronograma",
         active_page="cronograma",
-        semanas=cronograma_por_curso.get(CURSO_ACTIVO["id"], []),
+        semanas=cronograma_por_curso.get(CURSO_ACTIVO_ID, []),
     )
 
 

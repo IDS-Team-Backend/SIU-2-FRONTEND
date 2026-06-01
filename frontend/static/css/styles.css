@@ -1036,3 +1036,87 @@ h1 {
   flex-direction: column;
   gap: 6px;
 }
+
+
+/* ==========================================================================
+   FLASH MESSAGES — estilos para las categorías de Flask
+   El template base.html usa: <div class="flash flash--{category}">
+   ========================================================================== */
+
+.flash-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.flash {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border-width: 1px;
+  border-style: solid;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Ícono izquierdo via ::before — no requiere cambiar el HTML */
+.flash::before {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Botón cerrar */
+.flash button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: .55;
+  color: inherit;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.flash button:hover {
+  opacity: 1;
+}
+
+/* ── Éxito — verde ── */
+.flash--success {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+.flash--success::before { content: '✅'; }
+
+/* ── Error / Peligro — rojo (igual al de login) ── */
+.flash--danger,
+.flash--error {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fee2e2;
+}
+.flash--danger::before,
+.flash--error::before { content: '❌'; }
+
+/* ── Advertencia — amarillo ── */
+.flash--warning {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+.flash--warning::before { content: '⚠️'; }
+
+/* ── Info — azul ── */
+.flash--info {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+.flash--info::before { content: 'ℹ️'; }
