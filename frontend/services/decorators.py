@@ -30,7 +30,8 @@ def requiere_staff(view):
             return redirect(url_for("auth.login"))
 
         perfiles = obtener_perfiles_usuario()
-
+        print(f"DEBUG perfiles: {perfiles}")   # ← agregar esta línea
+        print(f"DEBUG es_staff: {es_staff(perfiles)}")  # ← y esta
         if not es_staff(perfiles):
             flash("No tenés permiso para acceder a esta sección.", "danger")
             return redirect(url_for("auth.post_login"))
