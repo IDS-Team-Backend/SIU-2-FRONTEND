@@ -1,4 +1,7 @@
 from utils.api_client import api_request
+import requests as req_lib
+from utils.api_client import BACKEND_URL, armar_cookies_backend
+
 
 def obtener_alumnos_del_curso(CURSO_ID):
 
@@ -89,3 +92,24 @@ def cambiar_estado_inscripcion(inscripcion_id, nuevo_estado):
         error_mensaje = data.get("error", "Error al cambiar el estado de la inscripción.") if data else "Error de conexion"
         return False, error_mensaje
     return True, data
+
+def importar_csv(curso_id, archivo):
+    
+    try:
+        respuesta = req_lib.post(
+            f"{BACKEND_URL}/curso_usuarios/importar-lote",
+            files={"archivo": (archivo.filename, archivo.stream, "text/csv")},
+            data={"curso_id": curso_id},
+            cookies=armar_cookies_backend(),
+            timeout=30,
+        )
+        respuesta.raise_for_status()
+        return True, respuesta.json().get("resultado", {})
+    except req_lib.exceptions.HTTPError as error:
+        try:
+            mensaje = error.response.json().get("error", str(error))
+        except Exception:
+            mensaje = str(error)
+        return False, mensaje
+    except Exception as e:
+        return False, f"No se pudo conectar con el servidor: {e}"
