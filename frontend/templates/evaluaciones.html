@@ -3,8 +3,8 @@
 {% block content %}
 <section>
   <div class="page-header">
-    <h1>Evaluaciones</h1>
-    <a href="{{ url_for('evaluaciones_page') }}?accion=nueva" class="btn btn-primary">
+    <h1>{{ title }}</h1>
+    <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='nueva') }}" class="btn btn-primary">
       <span>+</span>
       Nueva Evaluación
     </a>
@@ -31,11 +31,11 @@
 
     <div class="modal__header">
       <h2 class="modal__title">Nueva Evaluación</h2>
-      <a href="{{ url_for('evaluaciones_page') }}" class="modal__close">&times;</a>
+      <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close">&times;</a>
     </div>
 
     <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('evaluaciones_page') }}" method="POST">
+      <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion') }}" method="POST">
 
         <div class="form-group">
           <label for="titulo">Título *</label>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="form-actions">
-          <a href="{{ url_for('evaluaciones_page') }}" class="btn btn-outline">Cancelar</a>
+          <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="btn btn-outline">Cancelar</a>
           <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
 
