@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 from services.auth_service import usuario_logueado
+from services.decorators import proteger_rutas
 from routes import register_routes
 from utils.api_client import api_request
 from flask import Flask, render_template, request, redirect, url_for, abort
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.secret_key = "pon_aqui_una_clave_secreta_segura"
 
 register_routes(app)
+proteger_rutas(app)
 
 
 MOCKS_DIR = Path(__file__).parent / "mocks"
