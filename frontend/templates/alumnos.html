@@ -7,15 +7,6 @@
 {% block content %}
 <section>
 
-  {# Filtros activos — se adjuntan al action de cada form para no perder el estado al volver #}
-  {% set filtros = {
-       'page':          page if page and page > 1 else none,
-       'estado_filtro': estado_filtro or none,
-       'sort':          sort_col if sort_col != 'apellido' else none,
-       'dir':           sort_dir if sort_dir != 'asc' else none,
-       'q':             q or none,
-     } %}
-
   {# ── Encabezado ── #}
   <div class="page-header">
     <div>
@@ -27,7 +18,7 @@
     </div>
     <div class="page-header__actions">
       <form id="import-form"
-            action="{{ url_for('alumnos.importar', curso_id=curso_id, **filtros) }}"
+            action="{{ url_con_filtros('alumnos.importar', curso_id=curso_id) }}"
             method="post"
             enctype="multipart/form-data">
         <input type="file" id="csv_file" name="csv_file" accept=".csv"
@@ -39,7 +30,7 @@
           Importar CSV
         </button>
       </form>
-      <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-primary">
+      <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-primary">
         <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
         Vincular alumno
       </a>
@@ -50,9 +41,9 @@
   {# ── Barra de búsqueda y filtros ── #}
   <form method="get" action="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="filter-bar">
 
-    {# Mantener el ordenamiento activo al filtrar #}
-    {% if sort_col != "padron" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
-    {% if sort_dir != "asc"    %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
+    {# Mantener el ordenamiento activo al filtrar (form GET: el query del action se ignora) #}
+    {% if sort_col != "apellido" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
+    {% if sort_dir != "asc"     %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
 
     {# Búsqueda de texto libre #}
     <div class="filter-bar__search">
@@ -91,16 +82,11 @@
 
   {# ── Tabla ── #}
 
-  {# Macro para construir la URL de ordenamiento de cada columna.
-     Si la columna ya está activa, invierte la dirección.
-     Preserva q y estado_filtro en la URL. #}
+  {# URL para ordenar por una columna: invierte la dirección si ya está activa y
+     resetea a la página 1. Los demás filtros los preserva url_con_filtros. #}
   {% macro sort_url(col) -%}
-    {{ url_for('alumnos.listar_alumnos',
-               curso_id=curso_id,
-               q=q or none,
-               estado_filtro=estado_filtro or none,
-               sort=col,
-               dir='desc' if sort_col == col and sort_dir == 'asc' else 'asc') }}
+    {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=1,
+                       sort=col, dir='desc' if sort_col == col and sort_dir == 'asc' else 'asc') }}
   {%- endmacro %}
 
   {# Macro para el ícono de flecha en el header #}
@@ -146,14 +132,14 @@
           <td class="td--center">
             <div class="table__actions">
               {% if alumno.estado == "activo" %}
-                <form action="{{ url_for('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id, **filtros) }}"
+                <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
                       method="post" style="display:inline">
                   <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
                   <input type="hidden" name="estado"        value="abandono">
                   <button type="submit" class="btn-icon btn-icon--danger">Dar de baja</button>
                 </form>
               {% else %}
-                <form action="{{ url_for('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id, **filtros) }}"
+                <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
                       method="post" style="display:inline">
                   <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
                   <input type="hidden" name="estado"        value="activo">
@@ -161,7 +147,7 @@
                 </form>
               {% endif %}
 
-              <form action="{{ url_for('alumnos.desvincular_alumno', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id, **filtros) }}"
+              <form action="{{ url_con_filtros('alumnos.desvincular_alumno', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
                     method="post" style="display:inline">
                 <button type="submit" class="btn-icon btn-icon--danger"
                         onclick="return confirm('¿Desvincular a {{ alumno.nombre }} {{ alumno.apellido }}?\nEsta acción no se puede deshacer.')">
@@ -206,12 +192,7 @@
      Solo cuando NO hay búsqueda de texto: q filtra la página actual (client-side),
      así que mezclarlo con la paginación del servidor sería engañoso. #}
   {%- macro page_url(n) -%}
-    {{ url_for('alumnos.listar_alumnos',
-               curso_id=curso_id,
-               page=n if n > 1 else none,
-               estado_filtro=estado_filtro or none,
-               sort=sort_col if sort_col != 'apellido' else none,
-               dir=sort_dir if sort_dir != 'asc' else none) }}
+    {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n) }}
   {%- endmacro -%}
 
   {% if paginacion and paginacion.total_paginas > 1 and not q %}
@@ -296,7 +277,7 @@
           </div>
         </div>
         <div class="result-card__footer">
-          <form action="{{ url_for('alumnos.vincular_alumno', curso_id=curso_id, **filtros) }}" method="post">
+          <form action="{{ url_con_filtros('alumnos.vincular_alumno', curso_id=curso_id) }}" method="post">
             <input type="hidden" name="estudiante_id" value="{{ alumno_encontrado.id }}">
             <button type="submit" class="btn btn-primary">
               <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>

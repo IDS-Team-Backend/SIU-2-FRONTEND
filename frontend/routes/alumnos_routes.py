@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from services.decorators import login_required, requiere_staff
+from flask import Blueprint, render_template, request, redirect, flash
+from services.decorators import requiere_staff
 from services.alumnos_service import (
     obtener_alumnos_del_curso,
     buscar_alumno_por_padron,
@@ -8,30 +8,22 @@ from services.alumnos_service import (
     cambiar_estado_inscripcion,
     importar_csv,
 )
+from utils.filtros import leer_filtros, url_con_filtros
 
 alumnos_bp = Blueprint("alumnos", __name__)
 
 COLUMNAS_ORDENABLES = {"padron", "nombre", "apellido", "email", "estado"}
 
 
-def redirect_preservando_params(curso_id):
-    """Vuelve a la lista preservando los filtros actuales (viajan en el query string del form)."""
-    filtros = {
-        "page":          request.args.get("page", type=int),
-        "estado_filtro": request.args.get("estado_filtro") or None,
-        "sort":          request.args.get("sort") or None,
-        "dir":           request.args.get("dir") or None,
-        "q":             request.args.get("q") or None,
-    }
-    # url_for omite los kwargs con valor None
-    return redirect(url_for("alumnos.listar_alumnos", curso_id=curso_id, **filtros))
-
-
 @alumnos_bp.route("/curso/<int:curso_id>/alumnos")
 @requiere_staff
 def listar_alumnos(curso_id):
-    page         = request.args.get("page",         1,  type=int)
-    estado_filtro = request.args.get("estado_filtro", "").strip()
+    f = leer_filtros()
+    page          = f["page"]
+    estado_filtro = f["estado_filtro"]
+    q             = f["q"]
+    sort_col      = f["sort"] if f["sort"] in COLUMNAS_ORDENABLES else "apellido"
+    sort_dir      = f["dir"] if f["dir"] in ("asc", "desc") else "asc"
 
     ok, alumnos, paginacion = obtener_alumnos_del_curso(
         curso_id,
@@ -55,7 +47,6 @@ def listar_alumnos(curso_id):
             buscar_error = resultado
 
     # búsqueda de texto sobre la página actual
-    q = request.args.get("q", "").strip()
     if q:
         q_lower = q.lower()
         alumnos = [
@@ -66,14 +57,6 @@ def listar_alumnos(curso_id):
             or q_lower in str(a.get("email",    "")).lower()
             or q_lower in str(a.get("dni",      "")).lower()
         ]
-
-    sort_col = request.args.get("sort", "apellido")
-    sort_dir = request.args.get("dir",  "asc")
-
-    if sort_col not in COLUMNAS_ORDENABLES:
-        sort_col = "apellido"
-    if sort_dir not in ("asc", "desc"):
-        sort_dir = "asc"
 
     alumnos = sorted(
         alumnos,
@@ -88,7 +71,7 @@ def listar_alumnos(curso_id):
         curso_id=curso_id,
         alumnos=alumnos,
         paginacion=paginacion,
-        page=page,
+        url_con_filtros=url_con_filtros,
         mostrar_modal=mostrar_modal,
         padron_buscado=padron_buscado,
         alumno_encontrado=alumno_encontrado,
@@ -107,7 +90,7 @@ def vincular_alumno(curso_id):
     ok, resultado = vincular_alumno_a_curso(estudiante_id, curso_id)
     flash("Alumno vinculado al curso." if ok else resultado,
           "success" if ok else "danger")
-    return redirect_preservando_params(curso_id)
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
 
 
 @alumnos_bp.route("/curso/<int:curso_id>/alumnos/<int:inscripcion_id>/desvincular", methods=["POST"])
@@ -116,7 +99,7 @@ def desvincular_alumno(curso_id, inscripcion_id):
     ok, resultado = desvincular_alumno_del_curso(inscripcion_id)
     flash("Alumno desvinculado del curso." if ok else resultado,
           "success" if ok else "danger")
-    return redirect_preservando_params(curso_id)
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
 
 
 @alumnos_bp.route("/curso/<int:curso_id>/alumnos/<int:inscripcion_id>/estado", methods=["POST"])
@@ -129,7 +112,7 @@ def cambiar_estado(curso_id, inscripcion_id):
     )
     flash(f"Estado actualizado a '{nuevo_estado}'." if ok else resultado,
           "success" if ok else "danger")
-    return redirect_preservando_params(curso_id)
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
 
 
 @alumnos_bp.route("/curso/<int:curso_id>/alumnos/importar", methods=["POST"])
@@ -138,10 +121,10 @@ def importar(curso_id):
     archivo = request.files.get("csv_file")
     if not archivo or not archivo.filename:
         flash("Seleccioná un archivo CSV.", "warning")
-        return redirect_preservando_params(curso_id)
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
     if not archivo.filename.lower().endswith(".csv"):
         flash("El archivo debe tener extensión .csv", "danger")
-        return redirect_preservando_params(curso_id)
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
 
     ok, resultado = importar_csv(archivo, curso_id)
     if ok:
@@ -153,4 +136,4 @@ def importar(curso_id):
         )
     else:
         flash(f"Error en la importación: {resultado}", "danger")
-    return redirect_preservando_params(curso_id)
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
