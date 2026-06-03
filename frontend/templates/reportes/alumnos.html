@@ -1,22 +1,24 @@
-<div class="card" style="margin-bottom: 20px; padding: 20px; background: #f9f9f9; border-radius: 6px; border: 1px solid #e0e0e0;">
+{# Template para reporte de alumnos con filtros expandidos y estilos por clases #}
+
+<div class="filtro-card">
   <form method="GET" action="{{ url_for('reportes.listar_reportes') }}">
     <input type="hidden" name="tab" value="alumnos">
     
     {# Fila 1: Datos Personales / Filtros Básicos #}
-    <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+    <div class="filtro-row filtro-row-m-bottom">
       
-      <div class="form-group" style="flex: 1; min-width: 200px;">
-        <label for="nombre_completo" style="font-weight: bold; font-size: 0.9rem;">Nombre o Apellido</label>
+      <div class="form-group filtro-group w-min-200">
+        <label for="nombre_completo">Nombre o Apellido</label>
         <input type="text" id="nombre_completo" name="nombre_completo" class="form-control" placeholder="Ej: Lucas" value="{{ nombre_filtro }}">
       </div>
 
-      <div class="form-group" style="flex: 1; min-width: 150px;">
-        <label for="padron" style="font-weight: bold; font-size: 0.9rem;">Padrón</label>
+      <div class="form-group filtro-group w-min-150">
+        <label for="padron">Padrón</label>
         <input type="number" id="padron" name="padron" class="form-control" placeholder="Ej: 100003" value="{{ padron_filtro }}">
       </div>
 
-      <div class="form-group" style="flex: 1; min-width: 200px;">
-        <label for="carrera" style="font-weight: bold; font-size: 0.9rem;">Carrera</label>
+      <div class="form-group filtro-group w-min-200">
+        <label for="carrera">Carrera</label>
         <select id="carrera" name="carrera" class="form-control">
           <option value="">Todas...</option>
           <option value="Ingeniería Informática" {% if carrera_filtro == 'Ingeniería Informática' %}selected{% endif %}>Ingeniería Informática</option>
@@ -25,22 +27,22 @@
         </select>
       </div>
 
-      <div class="form-group" style="flex: 1; min-width: 120px;">
-        <label for="anio_ingreso" style="font-weight: bold; font-size: 0.9rem;">Año Ingreso</label>
+      <div class="form-group filtro-group w-min-120">
+        <label for="anio_ingreso">Año Ingreso</label>
         <input type="number" id="anio_ingreso" name="anio_ingreso" class="form-control" placeholder="Ej: 2024" value="{{ anio_ingreso_filtro }}">
       </div>
     </div>
 
     {# Fila 2: Rendimiento y Evaluación Académica #}
-    <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+    <div class="filtro-row filtro-row-align-end">
       
-      <div class="form-group" style="flex: 1; min-width: 180px;">
-        <label for="evaluacion_id" style="font-weight: bold; font-size: 0.9rem;">Evaluación Específica (ID)</label>
+      <div class="form-group filtro-group w-min-180">
+        <label for="evaluacion_id">Evaluación Específica (ID)</label>
         <input type="number" id="evaluacion_id" name="evaluacion_id" class="form-control" placeholder="Ej: 1" value="{{ evaluacion_filtro }}">
       </div>
 
-      <div class="form-group" style="flex: 1; min-width: 180px;">
-        <label for="condicion" style="font-weight: bold; font-size: 0.9rem;">Estado Examen</label>
+      <div class="form-group filtro-group w-min-180">
+        <label for="condicion">Estado Examen</label>
         <select id="condicion" name="condicion" class="form-control">
           <option value="">Todos...</option>
           <option value="aprobado" {% if condicion_filtro == 'aprobado' %}selected{% endif %}>Alumnos Aprobados</option>
@@ -48,42 +50,43 @@
         </select>
       </div>
 
-      <div class="form-group" style="flex: 1; min-width: 150px;">
-        <label for="nota_mayor_a" style="font-weight: bold; font-size: 0.9rem;">Nota Mayor o Igual a</label>
+      <div class="form-group filtro-group w-min-150">
+        <label for="nota_mayor_a">Nota Mayor o Igual a</label>
         <input type="number" step="0.01" id="nota_mayor_a" name="nota_mayor_a" class="form-control" placeholder="Ej: 4.00" value="{{ nota_filtro }}">
       </div>
 
       {# Acciones del formulario #}
-      <div style="display: flex; gap: 10px;">
-        <button type="submit" class="btn btn-primary" style="height: fit-content; padding: 8px 16px;">🔍 Filtrar</button>
-        <a href="{{ url_for('reportes.listar_reportes', tab='alumnos') }}" class="btn btn-outline" style="height: fit-content; padding: 8px 16px; text-decoration: none; text-align: center;">🔄 Limpiar</a>
+      <div class="filtro-acciones">
+        <button type="submit" class="btn btn-primary btn-fit">🔍 Filtrar</button>
+        <a href="{{ url_for('reportes.listar_reportes', tab='alumnos') }}" class="btn btn-outline btn-fit btn-link-reset">🔄 Limpiar</a>
       </div>
     </div>
   </form>
 </div>
 
-<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+{# Tabla de Resultados #}
+<table class="tabla-reporte-alumnos">
   <thead>
-    <tr style="background: #eee; border-bottom: 2px solid #ccc; text-align: left;">
-      <th style="padding: 10px;">Padrón</th>
-      <th style="padding: 10px;">Nombre Completo</th>
-      <th style="padding: 10px;">Email</th>
-      <th style="padding: 10px;">Carrera</th>
-      <th style="padding: 10px;">Año Ingreso</th>
+    <tr>
+      <th>Padrón</th>
+      <th>Nombre Completo</th>
+      <th>Email</th>
+      <th>Carrera</th>
+      <th>Año Ingreso</th>
     </tr>
   </thead>
   <tbody>
     {% for alumno in alumnos %}
-    <tr style="border-bottom: 1px solid #ddd;">
-      <td style="padding: 10px;">{{ alumno.padron }}</td>
-      <td style="padding: 10px;">{{ alumno.apellido }} {{ alumno.nombre }}</td>
-      <td style="padding: 10px;">{{ alumno.email }}</td>
-      <td style="padding: 10px;">{{ alumno.carrera }}</td>
-      <td style="padding: 10px;">{{ alumno.anio_ingreso }}</td>
+    <tr>
+      <td>{{ alumno.padron }}</td>
+      <td>{{ alumno.apellido }} {{ alumno.nombre }}</td>
+      <td>{{ alumno.email }}</td>
+      <td>{{ alumno.carrera }}</td>
+      <td>{{ alumno.anio_ingreso }}</td>
     </tr>
     {% else %}
     <tr>
-      <td colspan="5" style="padding: 20px; text-align: center;">No se encontraron alumnos con los filtros seleccionados.</td>
+      <td colspan="5" class="tabla-reporte-vacía">No se encontraron alumnos con los filtros seleccionados.</td>
     </tr>
     {% endfor %}
   </tbody>

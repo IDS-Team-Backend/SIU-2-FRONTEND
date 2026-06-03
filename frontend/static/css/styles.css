@@ -1200,3 +1200,99 @@ h1 {
 .modal-actions-spacing {
   margin-top: 16px;
 }
+
+
+
+
+
+
+/* ==========================================================================
+   Sección de Reportes - Filtros y Tablas
+   ========================================================================== */
+
+/* Contenedor principal del formulario de filtros */
+.filtro-card {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Filas del formulario */
+.filtro-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filtro-row-m-bottom {
+    margin-bottom: 15px;
+}
+
+.filtro-row-align-end {
+    align-items: flex-end;
+}
+
+/* Grupos de control (Label + Input/Select) */
+.filtro-group {
+    flex: 1;
+}
+
+.filtro-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+/* Tamaños mínimos personalizados para que no se deformen en pantallas chicas */
+.w-min-200 { min-width: 200px; }
+.w-min-180 { min-width: 180px; }
+.w-min-150 { min-width: 150px; }
+.w-min-120 { min-width: 120px; }
+
+/* Contenedor de los botones de acción */
+.filtro-acciones {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-fit {
+    height: fit-content;
+    padding: 8px 16px;
+}
+
+.btn-link-reset {
+    text-decoration: none;
+    text-align: center;
+}
+
+/* ==========================================================================
+   Tabla de Alumnos
+   ========================================================================== */
+.tabla-reporte-alumnos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-reporte-alumnos thead tr {
+    background-color: #eee;
+    border-bottom: 2px solid #ccc;
+    text-align: left;
+}
+
+.tabla-reporte-alumnos th, 
+.tabla-reporte-alumnos td {
+    padding: 10px;
+}
+
+.tabla-reporte-alumnos tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla-reporte-vacía {
+    padding: 20px;
+    text-align: center;
+}
