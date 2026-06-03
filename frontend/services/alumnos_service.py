@@ -5,34 +5,36 @@ ESTADOS_VALIDOS = ("activo", "suspendido", "baja")
 
 
 def obtener_alumnos_del_curso(curso_id):
-    ok_cu, data_cu = api_request("GET", "/curso_usuarios/",
+    ok_cu, data_cu = api_request("GET", "/estudiante_curso/",
                                  params={"curso_id": curso_id})
     if not ok_cu:
         return False, data_cu.get("error", "Error al obtener inscripciones.")
 
-    inscripciones = data_cu.get("curso_usuarios", []) if data_cu else []
+    inscripciones = data_cu.get("estudiante_cursos", []) if data_cu else []
     if not inscripciones:
         return True, []
 
+    # segunda llamada para obtener campos extra (email, dni, carrera, anio_ingreso)
     ok_est, data_est = api_request("GET", "/estudiantes/")
-    est_por_usuario = {}
+    est_por_id = {}
     if ok_est and data_est:
         for e in data_est.get("estudiantes", []):
-            est_por_usuario[e["usuario_id"]] = e
+            est_por_id[e["id"]] = e
 
     resultado = []
     for ins in inscripciones:
-        est = est_por_usuario.get(ins["usuario_id"], {})
+        est = est_por_id.get(ins.get("estudiante_id"), {})
         resultado.append({
             "inscripcion_id": ins["id"],
-            "usuario_id":     ins["usuario_id"],
+            "estudiante_id":  ins.get("estudiante_id"),
+            "usuario_id":     est.get("usuario_id"),
             "curso_id":       ins["curso_id"],
             "estado":         ins.get("estado", "activo"),
             "activo":         ins.get("estado") == "activo",
-            "id":             est.get("id"),
-            "padron":         est.get("padron",   "—"),
-            "nombre":         est.get("nombre",   "—"),
-            "apellido":       est.get("apellido", "—"),
+            "id":             ins.get("estudiante_id"),
+            "padron":         ins.get("padron",   est.get("padron",   "—")),
+            "nombre":         ins.get("nombre",   est.get("nombre",   "—")),
+            "apellido":       ins.get("apellido", est.get("apellido", "—")),
             "email":          est.get("email",    "—"),
             "dni":            est.get("dni",      "—"),
             "carrera":        est.get("carrera",  "—"),
@@ -61,16 +63,16 @@ def buscar_alumno_por_padron(padron):
     return True, data
 
 
-def vincular_alumno_a_curso(usuario_id, curso_id):
-    if not usuario_id:
+def vincular_alumno_a_curso(estudiante_id, curso_id):
+    if not estudiante_id:
         return False, "Faltó el ID del alumno."
     if not curso_id:
         return False, "Faltó el ID del curso."
 
-    ok, data = api_request("POST", "/curso_usuarios/", json_body={
-        "usuario_id": usuario_id,
-        "curso_id":   curso_id,
-        "estado":     "activo",
+    ok, data = api_request("POST", "/estudiante_curso/", json_body={
+        "estudiante_id": estudiante_id,
+        "curso_id":      curso_id,
+        "estado":        "activo",
     })
 
     if not ok:
@@ -83,7 +85,7 @@ def vincular_alumno_a_curso(usuario_id, curso_id):
 
 
 def desvincular_alumno_del_curso(inscripcion_id):
-    ok, data = api_request("DELETE", f"/curso_usuarios/{inscripcion_id}")
+    ok, data = api_request("DELETE", f"/estudiante_curso/{inscripcion_id}")
 
     if not ok:
         if data and data.get("status_code") == 404:
@@ -93,31 +95,31 @@ def desvincular_alumno_del_curso(inscripcion_id):
     return True, None
 
 
-def cambiar_estado_inscripcion(inscripcion_id, usuario_id, curso_id, nuevo_estado):
+def cambiar_estado_inscripcion(inscripcion_id, estudiante_id, curso_id, nuevo_estado):
     if nuevo_estado not in ESTADOS_VALIDOS:
         return False, f"Estado inválido: '{nuevo_estado}'. Debe ser: {', '.join(ESTADOS_VALIDOS)}."
 
-    if not usuario_id or not curso_id:
+    if not estudiante_id or not curso_id:
         return False, "Faltan datos obligatorios para actualizar el estado."
 
-    ok, data = api_request("PUT", f"/curso_usuarios/{inscripcion_id}",
+    ok, data = api_request("PUT", f"/estudiante_curso/{inscripcion_id}",
                            json_body={
-                               "usuario_id": usuario_id,
-                               "curso_id":   curso_id,
-                               "estado":     nuevo_estado,
+                               "estudiante_id": estudiante_id,
+                               "curso_id":      curso_id,
+                               "estado":        nuevo_estado,
                            })
 
     if not ok:
         return False, data.get("error", "Error al cambiar estado.") if data else "Error de conexión."
 
-    registro = data.get("curso", data)
+    registro = data.get("estudiante_curso", data)
     return True, registro
 
 
 def importar_csv(archivo, curso_id):
     try:
         resp = req_lib.post(
-            f"{BACKEND_URL}/curso_usuarios/importar-lote",
+            f"{BACKEND_URL}/estudiante_curso/importar-lote",
             files={"archivo": (archivo.filename, archivo.stream, "text/csv")},
             data={"curso_id": curso_id},
             cookies=armar_cookies_backend(),

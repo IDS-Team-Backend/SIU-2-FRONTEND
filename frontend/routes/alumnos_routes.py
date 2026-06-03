@@ -91,8 +91,8 @@ def listar_alumnos():
 @alumnos_bp.route("/alumnos/vincular", methods=["POST"])
 @requiere_staff
 def vincular_alumno():
-    usuario_id = request.form.get("usuario_id", type=int)
-    ok, resultado = vincular_alumno_a_curso(usuario_id, CURSO_ACTIVO_ID)
+    estudiante_id = request.form.get("estudiante_id", type=int)
+    ok, resultado = vincular_alumno_a_curso(estudiante_id, CURSO_ACTIVO_ID)
     flash("Alumno vinculado al curso." if ok else resultado,
           "success" if ok else "danger")
     return redirect(url_for("alumnos.listar_alumnos"))
@@ -110,11 +110,11 @@ def desvincular_alumno(inscripcion_id):
 @alumnos_bp.route("/alumnos/<int:inscripcion_id>/estado", methods=["POST"])
 @requiere_staff
 def cambiar_estado(inscripcion_id):
-    nuevo_estado = request.form.get("estado", "").strip()
-    usuario_id   = request.form.get("usuario_id", type=int)
-    curso_id     = request.form.get("curso_id",   type=int)
+    nuevo_estado  = request.form.get("estado", "").strip()
+    estudiante_id = request.form.get("estudiante_id", type=int)
+    curso_id      = request.form.get("curso_id",      type=int)
     ok, resultado = cambiar_estado_inscripcion(
-        inscripcion_id, usuario_id, curso_id, nuevo_estado
+        inscripcion_id, estudiante_id, curso_id, nuevo_estado
     )
     flash(f"Estado actualizado a '{nuevo_estado}'." if ok else resultado,
           "success" if ok else "danger")

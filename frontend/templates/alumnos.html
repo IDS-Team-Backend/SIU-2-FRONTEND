@@ -128,14 +128,14 @@
               {% if alumno.estado == "activo" %}
                 <form action="{{ url_for('alumnos.cambiar_estado', inscripcion_id=alumno.inscripcion_id) }}"
                       method="post" style="display:inline">
-                  <input type="hidden" name="usuario_id" value="{{ alumno.usuario_id }}">
+                  <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
                   <input type="hidden" name="curso_id"   value="{{ curso_activo.id }}">
 
                 </form>
               {% else %}
                 <form action="{{ url_for('alumnos.cambiar_estado', inscripcion_id=alumno.inscripcion_id) }}"
                       method="post" style="display:inline">
-                  <input type="hidden" name="usuario_id" value="{{ alumno.usuario_id }}">
+                  <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
                   <input type="hidden" name="curso_id"   value="{{ curso_activo.id }}">
                   <input type="hidden" name="estado"     value="activo">
                   <button type="submit" class="btn-icon">Reactivar</button>
@@ -242,7 +242,7 @@
         </div>
         <div class="result-card__footer">
           <form action="{{ url_for('alumnos.vincular_alumno') }}" method="post">
-            <input type="hidden" name="usuario_id" value="{{ alumno_encontrado.usuario_id }}">
+            <input type="hidden" name="estudiante_id" value="{{ alumno_encontrado.id }}">
             <button type="submit" class="btn btn-primary">
               <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
               Vincular al Curso
