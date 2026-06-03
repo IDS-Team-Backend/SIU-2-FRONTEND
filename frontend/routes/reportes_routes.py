@@ -91,8 +91,15 @@ def listar_reportes():
         tab_actual=tab_actual,
         alumnos=alumnos,     
         estadisticas=estadisticas, 
-        equipos=equipos,           
+        equipos=equipos,          
+
         carrera_filtro=carrera_filtro,
         condicion_filtro=condicion_filtro,
+        anio_ingreso_filtro=anio_ingreso,
+        nombre_filtro=nombre_completo,
+        padron_filtro=padron,
+        evaluacion_filtro=evaluacion_id,
+        nota_filtro=nota_mayor_a,
+
         curso_id=CURSO_ACTIVO_ID,
     )
