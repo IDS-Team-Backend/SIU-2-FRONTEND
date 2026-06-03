@@ -8,7 +8,7 @@
     <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('curso', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">menu_book</span>{{ curso_activo.nombre }}
     </a>
-    <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('cronograma') }}">
+    <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('cronograma', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">calendar_month</span>Cronograma
     </a>
     <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos') }}">

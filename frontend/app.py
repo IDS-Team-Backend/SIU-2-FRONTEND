@@ -191,13 +191,15 @@ def curso(curso_id):
     )
 
 
-@app.route("/cronograma")
-def cronograma():
+@app.route("/curso/<int:curso_id>/cronograma")
+def cronograma(curso_id):
+    ok, data = api_request("GET", "/clases/cronograma", params={"curso_id": curso_id})
+    semanas = data.get("semanas", []) if ok and data else []
     return render_template(
         "cronograma.html",
         title="Cronograma",
         active_page="cronograma",
-        semanas=cronograma_por_curso.get(CURSO_ACTIVO_ID, []),
+        semanas=semanas,
     )
 
 

@@ -9,9 +9,34 @@
   overflow: hidden;
 }
 
+.schedule-table table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.schedule-table th {
+  background: var(--bg);
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
 .schedule-table td {
   vertical-align: top;
-  white-space: normal;
+  padding: 14px 16px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .schedule-table tr:hover td {
@@ -21,9 +46,10 @@
 
 .schedule-table .col-semana {
   text-align: center;
-  width: 90px;
+  width: 80px;
   color: var(--text-soft);
   font-weight: 600;
+  border-right: 1px solid var(--border);
 }
 
 .schedule-cell {
