@@ -4,7 +4,7 @@ from pathlib import Path
 from services.auth_service import usuario_logueado
 from routes import register_routes
 from utils.api_client import api_request
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, abort
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 app = Flask(__name__)
@@ -21,7 +21,6 @@ def _load_mock(filename):
 
 
 cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
-cronograma_por_curso = {int(k): v for k, v in _load_mock("cronograma.json").items()}
 listar_alumnos = _load_mock("alumnos.json")
 listar_materiales = _load_mock("materiales.json")
 evaluaciones = _load_mock("evaluaciones.json")
