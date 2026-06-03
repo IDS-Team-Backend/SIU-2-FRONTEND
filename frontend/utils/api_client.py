@@ -63,7 +63,7 @@ def extraer_mensaje_error(response, data):
     return f"Error del backend ({response.status_code})"
 
 
-def api_request(method, path, params=None, json_body=None, auth=True):
+def api_request(method, path, params=None, json_body=None, auth=True, is_binary=False):
     url = f"{BACKEND_URL}{path}"
 
     try:
@@ -95,5 +95,8 @@ def api_request(method, path, params=None, json_body=None, auth=True):
         "error": mensaje,
         "status_code": response.status_code,
         }
+
+    if is_binary:
+            return True, response.content  # Retorna los bytes puros del archivo
 
     return True, data
