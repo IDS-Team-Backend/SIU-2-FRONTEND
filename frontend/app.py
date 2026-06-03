@@ -24,7 +24,6 @@ cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
 cronograma_por_curso = {int(k): v for k, v in _load_mock("cronograma.json").items()}
 listar_alumnos = _load_mock("alumnos.json")
 listar_materiales = _load_mock("materiales.json")
-evaluaciones = _load_mock("evaluaciones.json")
 
 listar_materias = [
     {"id": c["id"], "codigo": c["codigo"], "nombre": c["nombre"]}
@@ -109,14 +108,7 @@ def material():
     )
 
 
-@app.route("/evaluaciones")
-def evaluaciones_page():
-    return render_template(
-        "evaluaciones.html",
-        title="Evaluaciones",
-        active_page="evaluaciones",
-        evaluaciones=evaluaciones,
-    )
+
 
 
 @app.route("/reportes")

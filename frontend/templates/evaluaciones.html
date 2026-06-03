@@ -3,8 +3,8 @@
 {% block content %}
 <section>
   <div class="page-header">
-    <h1>Evaluaciones</h1>
-    <a href="{{ url_for('evaluaciones_page') }}?accion=nueva" class="btn btn-primary">
+    <h1>{{ title }}</h1>
+    <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='nueva') }}" class="btn btn-primary">
       <span>+</span>
       Nueva Evaluación
     </a>
@@ -13,35 +13,58 @@
   <div class="card-grid">
     {% for evaluacion in evaluaciones %}
       <article class="card">
-        <h2>{{ evaluacion.titulo }}</h2>
-        <p><strong>Tipo:</strong> {{ evaluacion.tipo_evaluacion_id }}</p>
-        <p><strong>Fecha:</strong> {{ evaluacion.fecha }}</p>
-        {% if evaluacion.descripcion %}
-          <p><strong>Descripción:</strong> {{ evaluacion.descripcion }}</p>
-        {% endif %}
-        <p><strong>Estado:</strong> {{ 'Activo' if evaluacion.activo else 'Inactivo' }}</p>
+        <div class="card-content">
+          
+          <div class="card-info">
+            <h2>{{ evaluacion.titulo }}</h2>
+            <p><strong>Tipo ID:</strong> {{ evaluacion.tipo_evaluacion_id }}</p>
+            <p><strong>Fecha:</strong> {{ evaluacion.fecha }}</p>
+            {% if evaluacion.descripcion %}
+              <p><strong>Descripción:</strong> {{ evaluacion.descripcion }}</p>
+            {% endif %}
+            <p><strong>Estado:</strong> {{ 'Activo' if evaluacion.activo else 'Inactivo' }}</p>
+          </div>
+
+          <div class="card-actions">
+            
+            <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='editar', id=evaluacion.id) }}" 
+               title="Editar" 
+               class="btn-action btn-action--edit">
+              ✎
+            </a>
+
+            <form action="{{ url_for('evaluaciones.eliminar', evaluacion_id=evaluacion.id) }}" 
+                  method="POST" 
+                  class="form-inline-block" 
+                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');">
+              <button type="submit" title="Eliminar" class="btn-action btn-action--delete">
+                ✕
+              </button>
+            </form>
+
+          </div>
+        </div>
       </article>
     {% endfor %}
   </div>
 </section>
 
+{# ======================================================== #}
+{# MODAL: NUEVA EVALUACIÓN                                  #}
+{# ======================================================== #}
 {% if request.args.get('accion') == 'nueva' %}
 <div class="modal-overlay">
   <div class="modal modal--sm">
-
     <div class="modal__header">
       <h2 class="modal__title">Nueva Evaluación</h2>
-      <a href="{{ url_for('evaluaciones_page') }}" class="modal__close">&times;</a>
+      <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">&times;</a>
     </div>
-
     <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('evaluaciones_page') }}" method="POST">
-
+      <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion') }}" method="POST">
         <div class="form-group">
           <label for="titulo">Título *</label>
           <input type="text" id="titulo" name="titulo" required class="form-control">
         </div>
-
         <div class="form-group">
           <label for="tipo_evaluacion_id">Tipo *</label>
           <select id="tipo_evaluacion_id" name="tipo_evaluacion_id" required class="form-control">
@@ -51,26 +74,88 @@
             {% endfor %}
           </select>
         </div>
-
         <div class="form-group">
           <label for="fecha">Fecha *</label>
           <input type="date" id="fecha" name="fecha" required class="form-control" value="{{ hoy }}">
         </div>
-
         <div class="form-group">
           <label for="descripcion">Descripción</label>
           <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
         </div>
-
         <div class="form-actions">
-          <a href="{{ url_for('evaluaciones_page') }}" class="btn btn-outline">Cancelar</a>
+          <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="btn btn-outline">Cancelar</a>
           <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
-
       </form>
     </div>
   </div>
 </div>
+{% endif %}
+
+{# ======================================================== #}
+{# MODAL: EDITAR EVALUACIÓN (PRECARGADO O VACÍO)            #}
+{# ======================================================== #}
+{% if request.args.get('accion') == 'editar' %}
+  {% set eval_id = request.args.get('id')|int %}
+  {% set eval_a_editar = none %}
+  
+  {% for e in evaluaciones %}
+    {% if e.id == eval_id %}
+      {% set eval_a_editar = e %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="modal-overlay">
+    <div class="modal modal--sm">
+      <div class="modal__header">
+        <h2 class="modal__title">Editar Evaluación</h2>
+        <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">&times;</a>
+      </div>
+      <div class="modal__body modal__body--padded">
+        <form action="{{ url_for('evaluaciones.actualizar', evaluacion_id=eval_id) }}" method="POST">
+          
+          <div class="form-group">
+            <label for="titulo_edit">Título *</label>
+            <input type="text" id="titulo_edit" name="titulo" required class="form-control" value="{{ eval_a_editar.titulo if eval_a_editar else '' }}">
+          </div>
+
+          <div class="form-group">
+            <label for="tipo_evaluacion_id_edit">Tipo *</label>
+            <select id="tipo_evaluacion_id_edit" name="tipo_evaluacion_id" required class="form-control">
+              <option value="">Seleccionar...</option>
+              {% for tipo in tipos_evaluacion %}
+                <option value="{{ tipo.id }}" {% if eval_a_editar and tipo.id == eval_a_editar.tipo_evaluacion_id %}selected{% endif %}>
+                  {{ tipo.nombre }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="fecha_edit">Fecha *</label>
+            <input type="date" id="fecha_edit" name="fecha" required class="form-control" value="{{ eval_a_editar.fecha if eval_a_editar else '' }}">
+          </div>
+
+          <div class="form-group">
+            <label for="descripcion_edit">Descripción</label>
+            <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control">{{ eval_a_editar.descripcion if eval_a_editar else '' }}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-group-checkbox">
+              <input type="checkbox" name="activo" {% if eval_a_editar and eval_a_editar.activo %}checked{% endif %}>
+              <strong>Evaluación Activa</strong>
+            </label>
+          </div>
+
+          <div class="form-actions modal-actions-spacing">
+            <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="btn btn-outline">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 {% endif %}
 
 {% endblock %}
