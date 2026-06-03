@@ -8,19 +8,19 @@
     <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('curso', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">menu_book</span>{{ curso_activo.nombre }}
     </a>
-    <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('cronograma') }}">
+    <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('cronograma', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">calendar_month</span>Cronograma
     </a>
-    <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos') }}">
+    <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">person</span>Alumnos
     </a>
     <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('material') }}">
       <span class="material-symbols-rounded">description</span>Material
     </a>
-    <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones_page') }}">
+      <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones') }}">
       <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
     </a>
-    <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes_page') }}">
+    <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes') }}">
       <span class="material-symbols-rounded">bar_chart</span>Reportes
     </a>
   </nav>
@@ -51,4 +51,9 @@
       </a>
     </div>
   </div>
+
+  <a href="{{ url_for('auth.logout') }}" class="sidebar-logout">
+    <span class="material-symbols-rounded">logout</span>
+    Cerrar sesión
+  </a>
 </aside>

@@ -2,15 +2,17 @@ import json
 import os
 from pathlib import Path
 from services.auth_service import usuario_logueado
+from services.decorators import proteger_rutas
 from routes import register_routes
 from utils.api_client import api_request
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, abort
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 app = Flask(__name__)
 app.secret_key = "pon_aqui_una_clave_secreta_segura"
 
 register_routes(app)
+proteger_rutas(app)
 
 
 MOCKS_DIR = Path(__file__).parent / "mocks"
@@ -21,10 +23,8 @@ def _load_mock(filename):
 
 
 cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
-cronograma_por_curso = {int(k): v for k, v in _load_mock("cronograma.json").items()}
 listar_alumnos = _load_mock("alumnos.json")
 listar_materiales = _load_mock("materiales.json")
-evaluaciones = _load_mock("evaluaciones.json")
 
 listar_materias = [
     {"id": c["id"], "codigo": c["codigo"], "nombre": c["nombre"]}
@@ -55,13 +55,6 @@ perfil_profesor_mock = {
         **_perfil_profesor_raw["catedra"],
     },
 }
-
-try:
-    reporte_stats_mock = _load_mock("reporte_estadisticas.json")
-    listar_equipos_mock = _load_mock("equipos.json")
-except Exception:
-    reporte_stats_mock = []
-    listar_equipos_mock = []
 
 
 @app.context_processor
@@ -109,50 +102,6 @@ def material():
     )
 
 
-@app.route("/evaluaciones")
-def evaluaciones_page():
-    return render_template(
-        "evaluaciones.html",
-        title="Evaluaciones",
-        active_page="evaluaciones",
-        evaluaciones=evaluaciones,
-    )
-
-
-@app.route("/reportes")
-def reportes_page():
-    # Identificamos qué pestaña mostrar. Por defecto va a 'alumnos'
-    tab_actual = request.args.get("tab", "alumnos")
-    
-    # Capturamos filtros de alumnos
-    carrera_filtro = request.args.get("carrera", "")
-    condicion_filtro = request.args.get("condicion", "")
-    
-    # SIMULACIÓN DE FILTRADO PARA ALUMNO (Hardcodeado sobre tus mocks)
-    alumnos_filtrados = listar_alumnos
-    if carrera_filtro:
-        alumnos_filtrados = [a for a in alumnos_filtrados if a.get("carrera") == carrera_filtro]
-    if condicion_filtro:
-        # Simulamos que en una base de datos real filtraría por notas, acá lo hacemos conceptual
-        if condicion_filtro == "aprobado":
-            alumnos_filtrados = alumnos_filtrados[:30] # una porción mock
-        else:
-            alumnos_filtrados = alumnos_filtrados[30:]
-
-    return render_template(
-        "reportes.html",
-        title="Reportes de Cátedra",
-        active_page="reportes", # Cambiá esto en tu navbar si tenés un link a reportes
-        tab_actual=tab_actual,
-        alumnos=alumnos_filtrados,
-        estadisticas=reporte_stats_mock,
-        equipos=listar_equipos_mock,
-        carrera_filtro=carrera_filtro,
-        condicion_filtro=condicion_filtro,
-        curso_id_hardcodeado=1
-    )
-
-
 @app.route("/perfil")
 def perfil():
     return redirect(url_for("perfil_estudiante"))
@@ -191,13 +140,15 @@ def curso(curso_id):
     )
 
 
-@app.route("/cronograma")
-def cronograma():
+@app.route("/curso/<int:curso_id>/cronograma")
+def cronograma(curso_id):
+    ok, data = api_request("GET", f"/cursos/{curso_id}/cronograma")
+    semanas = data.get("semanas", []) if ok and data else []
     return render_template(
         "cronograma.html",
         title="Cronograma",
         active_page="cronograma",
-        semanas=cronograma_por_curso.get(CURSO_ACTIVO_ID, []),
+        semanas=semanas,
     )
 
 

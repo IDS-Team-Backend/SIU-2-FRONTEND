@@ -238,6 +238,17 @@ a {
   color: var(--text-soft);
 }
 
+/* Botón de logout — siempre visible al pie del sidebar */
+.sidebar-logout {
+  margin-top: 12px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-logout:hover {
+  background: rgba(239, 68, 68, 0.92);
+  color: white;
+}
+
 
 /* ==========================================================================
    MAIN CONTENT & TOPBAR
@@ -1120,3 +1131,179 @@ h1 {
   border-color: #bfdbfe;
 }
 .flash--info::before { content: 'ℹ️'; }
+
+
+
+/* Contenedor de la tarjeta con alineación interna */
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Contenedor de acciones (Editar / Eliminar) */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+/* Botón base para acciones con íconos */
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Variantes de color para los botones */
+.btn-action--edit {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.btn-action--edit:hover {
+  background-color: #bbdefb;
+}
+
+.btn-action--delete {
+  background-color: #ffebee;
+  color: #b71c1c;
+}
+
+.btn-action--delete:hover {
+  background-color: #ffcdd2;
+}
+
+/* Elementos adicionales del formulario dentro del modal */
+.form-inline-block {
+  margin: 0;
+  display: inline;
+}
+
+.form-group-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.modal-close-btn {
+  text-decoration: none;
+  color: inherit;
+  font-size: 24px;
+}
+
+.modal-actions-spacing {
+  margin-top: 16px;
+}
+
+
+
+
+
+
+/* ==========================================================================
+   Sección de Reportes - Filtros y Tablas
+   ========================================================================== */
+
+/* Contenedor principal del formulario de filtros */
+.filtro-card {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Filas del formulario */
+.filtro-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filtro-row-m-bottom {
+    margin-bottom: 15px;
+}
+
+.filtro-row-align-end {
+    align-items: flex-end;
+}
+
+/* Grupos de control (Label + Input/Select) */
+.filtro-group {
+    flex: 1;
+}
+
+.filtro-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+/* Tamaños mínimos personalizados para que no se deformen en pantallas chicas */
+.w-min-200 { min-width: 200px; }
+.w-min-180 { min-width: 180px; }
+.w-min-150 { min-width: 150px; }
+.w-min-120 { min-width: 120px; }
+
+/* Contenedor de los botones de acción */
+.filtro-acciones {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-fit {
+    height: fit-content;
+    padding: 8px 16px;
+}
+
+.btn-link-reset {
+    text-decoration: none;
+    text-align: center;
+}
+
+/* ==========================================================================
+   Tabla de Alumnos
+   ========================================================================== */
+.tabla-reporte-alumnos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-reporte-alumnos thead tr {
+    background-color: #eee;
+    border-bottom: 2px solid #ccc;
+    text-align: left;
+}
+
+.tabla-reporte-alumnos th, 
+.tabla-reporte-alumnos td {
+    padding: 10px;
+}
+
+.tabla-reporte-alumnos tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla-reporte-vacía {
+    padding: 20px;
+    text-align: center;
+}
