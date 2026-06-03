@@ -1,47 +1,49 @@
 import requests as req_lib
 from utils.api_client import api_request, BACKEND_URL, armar_cookies_backend
 
-ESTADOS_VALIDOS = ("activo", "suspendido", "baja")
+ESTADOS_VALIDOS = ("activo", "abandono")
 
 
-def obtener_alumnos_del_curso(curso_id):
-    ok_cu, data_cu = api_request("GET", "/estudiante_curso/",
-                                 params={"curso_id": curso_id})
+def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
+    """Retorna (ok, alumnos, paginacion) donde paginacion es un dict con page/total_paginas/total."""
+    params = {"curso_id": curso_id, "page": page, "page_size": page_size}
+    if estado:
+        params["estado"] = estado
+
+    ok_cu, data_cu = api_request("GET", "/estudiante_curso/", params=params)
     if not ok_cu:
-        return False, data_cu.get("error", "Error al obtener inscripciones.")
+        return False, data_cu.get("error", "Error al obtener inscripciones."), {}
+
+    paginacion = {
+        "page":          data_cu.get("page",          1) if data_cu else 1,
+        "page_size":     data_cu.get("page_size",     page_size) if data_cu else page_size,
+        "total":         data_cu.get("total",         0) if data_cu else 0,
+        "total_paginas": data_cu.get("total_paginas", 1) if data_cu else 1,
+    }
 
     inscripciones = data_cu.get("estudiante_cursos", []) if data_cu else []
-    if not inscripciones:
-        return True, []
 
-    # segunda llamada para obtener campos extra (email, dni, carrera, anio_ingreso)
-    ok_est, data_est = api_request("GET", "/estudiantes/")
-    est_por_id = {}
-    if ok_est and data_est:
-        for e in data_est.get("estudiantes", []):
-            est_por_id[e["id"]] = e
-
-    resultado = []
-    for ins in inscripciones:
-        est = est_por_id.get(ins.get("estudiante_id"), {})
-        resultado.append({
+    # el JOIN del backend ya trae todos los campos; no hace falta una segunda llamada
+    resultado = [
+        {
             "inscripcion_id": ins["id"],
             "estudiante_id":  ins.get("estudiante_id"),
-            "usuario_id":     est.get("usuario_id"),
-            "curso_id":       ins["curso_id"],
+            "curso_id":       ins.get("curso_id"),
             "estado":         ins.get("estado", "activo"),
             "activo":         ins.get("estado") == "activo",
             "id":             ins.get("estudiante_id"),
-            "padron":         ins.get("padron",   est.get("padron",   "—")),
-            "nombre":         ins.get("nombre",   est.get("nombre",   "—")),
-            "apellido":       ins.get("apellido", est.get("apellido", "—")),
-            "email":          est.get("email",    "—"),
-            "dni":            est.get("dni",      "—"),
-            "carrera":        est.get("carrera",  "—"),
-            "anio_ingreso":   est.get("anio_ingreso"),
-        })
+            "padron":         ins.get("padron",       "—"),
+            "nombre":         ins.get("nombre",       "—"),
+            "apellido":       ins.get("apellido",     "—"),
+            "email":          ins.get("email",        "—"),
+            "dni":            ins.get("dni",          "—"),
+            "carrera":        ins.get("carrera",      "—"),
+            "anio_ingreso":   ins.get("anio_ingreso"),
+        }
+        for ins in inscripciones
+    ]
 
-    return True, resultado
+    return True, resultado, paginacion
 
 
 def buscar_alumno_por_padron(padron):
@@ -112,8 +114,7 @@ def cambiar_estado_inscripcion(inscripcion_id, estudiante_id, curso_id, nuevo_es
     if not ok:
         return False, data.get("error", "Error al cambiar estado.") if data else "Error de conexión."
 
-    registro = data.get("estudiante_curso", data)
-    return True, registro
+    return True, None
 
 
 def importar_csv(archivo, curso_id):
