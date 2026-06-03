@@ -23,7 +23,7 @@ def obtener_alumnos_reporte(curso_id, carrera=None, anio_ingreso=None, nombre_co
     if export:
         return True, data
     
-    alumnos = data.get("alumnos", []) if data else []
+    alumnos = data.get("resultados", []) if data else []
     return True, alumnos
 
 
@@ -43,7 +43,7 @@ def obtener_estadisticas_reporte(curso_id, export=None):
     if export:
         return True, data
     
-    estadisticas = data.get("estadisticas", []) if data else []
+    estadisticas = data.get("resultados", []) if data else []
     return True, estadisticas
 
 
@@ -63,5 +63,5 @@ def obtener_equipos_reporte(curso_id, export=None):
     if export:
         return True, data
     
-    equipos = data.get("equipos", []) if data else []
+    equipos = data.get("resultados", []) if data else []
     return True, equipos

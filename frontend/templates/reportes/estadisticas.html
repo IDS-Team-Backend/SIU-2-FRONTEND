@@ -35,5 +35,5 @@
   <canvas id="chartMetricas" style="max-height: 300px;"></canvas>
   
   {# Contenedor oculto con datos JSON para Chart.js #}
-  <div id="datos-stats-raw" data-json='{{ estadisticas | tojson }}'></div>
+  <div id="datos-stats-raw" data-json='{{ estadisticas | tojson | safe }}'></div>
 </div>

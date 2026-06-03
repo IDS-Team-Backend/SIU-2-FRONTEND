@@ -9,9 +9,16 @@
       </p>
       <strong>Integrantes asignados:</strong>
       <ul style="margin-top: 5px; padding-left: 20px;">
-        {% for integrante in equipo.integrantes.split(' | ') %}
-          <li>{{ integrante }}</li>
-        {% endfor %}
+        {% if equipo.integrantes is string %}
+          {% for integrante in equipo.integrantes.split(' | ') %}
+            <li>{{ integrante }}</li>
+          {% endfor %}
+        {% else %}
+          {% for integrante in equipo.integrantes %}
+            {# Si es una lista de diccionarios usa integrante.nombre, si es lista de strings usa integrante #}
+            <li>{{ integrante.nombre if integrante is mapping else integrante }}</li>
+          {% endfor %}
+        {% endif %}
       </ul>
     </article>
   {% else %}

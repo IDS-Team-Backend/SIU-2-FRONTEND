@@ -24,8 +24,6 @@ cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
 cronograma_por_curso = {int(k): v for k, v in _load_mock("cronograma.json").items()}
 listar_alumnos = _load_mock("alumnos.json")
 listar_materiales = _load_mock("materiales.json")
-listar_equipos_mock = _load_mock("equipos.json")
-reporte_stats_mock = _load_mock("reporte_estadisticas.json")
 
 listar_materias = [
     {"id": c["id"], "codigo": c["codigo"], "nombre": c["nombre"]}
@@ -150,37 +148,9 @@ def cronograma():
         semanas=cronograma_por_curso.get(CURSO_ACTIVO_ID, []),
     )
 
-
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
-@app.route("/reportes")
-def reportes_page():
-    tab_actual = request.args.get("tab", "alumnos")
 
-    carrera_filtro = request.args.get("carrera", "")
-    condicion_filtro = request.args.get("condicion", "")
-    
-    alumnos_filtrados = listar_alumnos
-    if carrera_filtro:
-        alumnos_filtrados = [a for a in alumnos_filtrados if a.get("carrera") == carrera_filtro]
-    if condicion_filtro:
-        if condicion_filtro == "aprobado":
-            alumnos_filtrados = alumnos_filtrados[:30]
-        else:
-            alumnos_filtrados = alumnos_filtrados[30:]
-
-    return render_template(
-        "reportes.html",
-        title="Reportes de Cátedra",
-        active_page="reportes",
-        tab_actual=tab_actual,
-        alumnos=alumnos_filtrados,
-        estadisticas=reporte_stats_mock,
-        equipos=listar_equipos_mock,
-        carrera_filtro=carrera_filtro,
-        condicion_filtro=condicion_filtro,
-        curso_id_hardcodeado=1
-    )
 
 
 @app.route("/perfil")

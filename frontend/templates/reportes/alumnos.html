@@ -8,8 +8,9 @@
       <label for="carrera">Carrera</label>
       <select id="carrera" name="carrera" class="form-control">
         <option value="">Todas...</option>
-        <option value="Ingeniería en Informática" {% if carrera_filtro == 'Ingeniería en Informática' %}selected{% endif %}>Ingeniería en Informática</option>
+        <option value="Ingeniería Informática" {% if carrera_filtro == 'Ingeniería Informática' %}selected{% endif %}>Ingeniería Informática</option>
         <option value="Licenciatura en Sistemas" {% if carrera_filtro == 'Licenciatura en Sistemas' %}selected{% endif %}>Licenciatura en Sistemas</option>
+        <option value="Ingeniería Química" {% if carrera_filtro == 'Ingeniería Química' %}selected{% endif %}>Ingeniería Química</option>
       </select>
     </div>
 
