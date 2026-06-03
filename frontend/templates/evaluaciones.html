@@ -49,24 +49,21 @@
   </div>
 </section>
 
-{# ======================================================== #}
-{# MODAL: NUEVA EVALUACIÓN                                  #}
-{# ======================================================== #}
 {% if request.args.get('accion') == 'nueva' %}
 <div class="modal-overlay">
   <div class="modal modal--sm">
     <div class="modal__header">
       <h2 class="modal__title">Nueva Evaluación</h2>
-      <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">&times;</a>
+      <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">x</a>
     </div>
     <div class="modal__body modal__body--padded">
       <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion') }}" method="POST">
         <div class="form-group">
-          <label for="titulo">Título *</label>
+          <label for="titulo">Título</label>
           <input type="text" id="titulo" name="titulo" required class="form-control">
         </div>
         <div class="form-group">
-          <label for="tipo_evaluacion_id">Tipo *</label>
+          <label for="tipo_evaluacion_id">Tipo</label>
           <select id="tipo_evaluacion_id" name="tipo_evaluacion_id" required class="form-control">
             <option value="">Seleccionar...</option>
             {% for tipo in tipos_evaluacion %}
@@ -75,7 +72,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="fecha">Fecha *</label>
+          <label for="fecha">Fecha</label>
           <input type="date" id="fecha" name="fecha" required class="form-control" value="{{ hoy }}">
         </div>
         <div class="form-group">
@@ -92,31 +89,21 @@
 </div>
 {% endif %}
 
-{# ======================================================== #}
-{# MODAL: EDITAR EVALUACIÓN (PRECARGADO O VACÍO)            #}
-{# ======================================================== #}
 {% if request.args.get('accion') == 'editar' %}
   {% set eval_id = request.args.get('id')|int %}
-  {% set eval_a_editar = none %}
-  
-  {% for e in evaluaciones %}
-    {% if e.id == eval_id %}
-      {% set eval_a_editar = e %}
-    {% endif %}
-  {% endfor %}
 
   <div class="modal-overlay">
     <div class="modal modal--sm">
       <div class="modal__header">
         <h2 class="modal__title">Editar Evaluación</h2>
-        <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">&times;</a>
+        <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">x</a>
       </div>
       <div class="modal__body modal__body--padded">
         <form action="{{ url_for('evaluaciones.actualizar', evaluacion_id=eval_id) }}" method="POST">
           
           <div class="form-group">
             <label for="titulo_edit">Título *</label>
-            <input type="text" id="titulo_edit" name="titulo" required class="form-control" value="{{ eval_a_editar.titulo if eval_a_editar else '' }}">
+            <input type="text" id="titulo_edit" name="titulo" required class="form-control">
           </div>
 
           <div class="form-group">
@@ -124,7 +111,7 @@
             <select id="tipo_evaluacion_id_edit" name="tipo_evaluacion_id" required class="form-control">
               <option value="">Seleccionar...</option>
               {% for tipo in tipos_evaluacion %}
-                <option value="{{ tipo.id }}" {% if eval_a_editar and tipo.id == eval_a_editar.tipo_evaluacion_id %}selected{% endif %}>
+                <option value="{{ tipo.id }}">
                   {{ tipo.nombre }}
                 </option>
               {% endfor %}
@@ -133,17 +120,17 @@
 
           <div class="form-group">
             <label for="fecha_edit">Fecha *</label>
-            <input type="date" id="fecha_edit" name="fecha" required class="form-control" value="{{ eval_a_editar.fecha if eval_a_editar else '' }}">
+            <input type="date" id="fecha_edit" name="fecha" required class="form-control">
           </div>
 
           <div class="form-group">
             <label for="descripcion_edit">Descripción</label>
-            <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control">{{ eval_a_editar.descripcion if eval_a_editar else '' }}</textarea>
+            <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control"></textarea>
           </div>
 
           <div class="form-group">
             <label class="form-group-checkbox">
-              <input type="checkbox" name="activo" {% if eval_a_editar and eval_a_editar.activo %}checked{% endif %}>
+              <input type="checkbox" name="activo">
               <strong>Evaluación Activa</strong>
             </label>
           </div>
