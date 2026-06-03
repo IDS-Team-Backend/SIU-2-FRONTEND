@@ -13,11 +13,13 @@
           {% for integrante in equipo.integrantes.split(' | ') %}
             <li>{{ integrante }}</li>
           {% endfor %}
-        {% else %}
+        {% elif equipo.integrantes %}
           {% for integrante in equipo.integrantes %}
             {# Si es una lista de diccionarios usa integrante.nombre, si es lista de strings usa integrante #}
             <li>{{ integrante.nombre if integrante is mapping else integrante }}</li>
           {% endfor %}
+        {% else %}
+          <li>Sin integrantes</li>
         {% endif %}
       </ul>
     </article>

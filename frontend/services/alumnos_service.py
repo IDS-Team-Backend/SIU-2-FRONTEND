@@ -1,45 +1,49 @@
 import requests as req_lib
 from utils.api_client import api_request, BACKEND_URL, armar_cookies_backend
 
-ESTADOS_VALIDOS = ("activo", "suspendido", "baja")
+ESTADOS_VALIDOS = ("activo", "abandono")
 
 
-def obtener_alumnos_del_curso(curso_id):
-    ok_cu, data_cu = api_request("GET", "/curso_usuarios/",
-                                 params={"curso_id": curso_id})
+def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
+    """Retorna (ok, alumnos, paginacion) donde paginacion es un dict con page/total_paginas/total."""
+    params = {"curso_id": curso_id, "page": page, "page_size": page_size}
+    if estado:
+        params["estado"] = estado
+
+    ok_cu, data_cu = api_request("GET", "/estudiante_curso/", params=params)
     if not ok_cu:
-        return False, data_cu.get("error", "Error al obtener inscripciones.")
+        return False, data_cu.get("error", "Error al obtener inscripciones."), {}
 
-    inscripciones = data_cu.get("curso_usuarios", []) if data_cu else []
-    if not inscripciones:
-        return True, []
+    paginacion = {
+        "page":          data_cu.get("page",          1) if data_cu else 1,
+        "page_size":     data_cu.get("page_size",     page_size) if data_cu else page_size,
+        "total":         data_cu.get("total",         0) if data_cu else 0,
+        "total_paginas": data_cu.get("total_paginas", 1) if data_cu else 1,
+    }
 
-    ok_est, data_est = api_request("GET", "/estudiantes/")
-    est_por_usuario = {}
-    if ok_est and data_est:
-        for e in data_est.get("estudiantes", []):
-            est_por_usuario[e["usuario_id"]] = e
+    inscripciones = data_cu.get("estudiante_cursos", []) if data_cu else []
 
-    resultado = []
-    for ins in inscripciones:
-        est = est_por_usuario.get(ins["usuario_id"], {})
-        resultado.append({
+    # el JOIN del backend ya trae todos los campos; no hace falta una segunda llamada
+    resultado = [
+        {
             "inscripcion_id": ins["id"],
-            "usuario_id":     ins["usuario_id"],
-            "curso_id":       ins["curso_id"],
+            "estudiante_id":  ins.get("estudiante_id"),
+            "curso_id":       ins.get("curso_id"),
             "estado":         ins.get("estado", "activo"),
             "activo":         ins.get("estado") == "activo",
-            "id":             est.get("id"),
-            "padron":         est.get("padron",   "—"),
-            "nombre":         est.get("nombre",   "—"),
-            "apellido":       est.get("apellido", "—"),
-            "email":          est.get("email",    "—"),
-            "dni":            est.get("dni",      "—"),
-            "carrera":        est.get("carrera",  "—"),
-            "anio_ingreso":   est.get("anio_ingreso"),
-        })
+            "id":             ins.get("estudiante_id"),
+            "padron":         ins.get("padron",       "—"),
+            "nombre":         ins.get("nombre",       "—"),
+            "apellido":       ins.get("apellido",     "—"),
+            "email":          ins.get("email",        "—"),
+            "dni":            ins.get("dni",          "—"),
+            "carrera":        ins.get("carrera",      "—"),
+            "anio_ingreso":   ins.get("anio_ingreso"),
+        }
+        for ins in inscripciones
+    ]
 
-    return True, resultado
+    return True, resultado, paginacion
 
 
 def buscar_alumno_por_padron(padron):
@@ -61,16 +65,16 @@ def buscar_alumno_por_padron(padron):
     return True, data
 
 
-def vincular_alumno_a_curso(usuario_id, curso_id):
-    if not usuario_id:
+def vincular_alumno_a_curso(estudiante_id, curso_id):
+    if not estudiante_id:
         return False, "Faltó el ID del alumno."
     if not curso_id:
         return False, "Faltó el ID del curso."
 
-    ok, data = api_request("POST", "/curso_usuarios/", json_body={
-        "usuario_id": usuario_id,
-        "curso_id":   curso_id,
-        "estado":     "activo",
+    ok, data = api_request("POST", "/estudiante_curso/", json_body={
+        "estudiante_id": estudiante_id,
+        "curso_id":      curso_id,
+        "estado":        "activo",
     })
 
     if not ok:
@@ -83,7 +87,7 @@ def vincular_alumno_a_curso(usuario_id, curso_id):
 
 
 def desvincular_alumno_del_curso(inscripcion_id):
-    ok, data = api_request("DELETE", f"/curso_usuarios/{inscripcion_id}")
+    ok, data = api_request("DELETE", f"/estudiante_curso/{inscripcion_id}")
 
     if not ok:
         if data and data.get("status_code") == 404:
@@ -93,31 +97,30 @@ def desvincular_alumno_del_curso(inscripcion_id):
     return True, None
 
 
-def cambiar_estado_inscripcion(inscripcion_id, usuario_id, curso_id, nuevo_estado):
+def cambiar_estado_inscripcion(inscripcion_id, estudiante_id, curso_id, nuevo_estado):
     if nuevo_estado not in ESTADOS_VALIDOS:
         return False, f"Estado inválido: '{nuevo_estado}'. Debe ser: {', '.join(ESTADOS_VALIDOS)}."
 
-    if not usuario_id or not curso_id:
+    if not estudiante_id or not curso_id:
         return False, "Faltan datos obligatorios para actualizar el estado."
 
-    ok, data = api_request("PUT", f"/curso_usuarios/{inscripcion_id}",
+    ok, data = api_request("PUT", f"/estudiante_curso/{inscripcion_id}",
                            json_body={
-                               "usuario_id": usuario_id,
-                               "curso_id":   curso_id,
-                               "estado":     nuevo_estado,
+                               "estudiante_id": estudiante_id,
+                               "curso_id":      curso_id,
+                               "estado":        nuevo_estado,
                            })
 
     if not ok:
         return False, data.get("error", "Error al cambiar estado.") if data else "Error de conexión."
 
-    registro = data.get("curso", data)
-    return True, registro
+    return True, None
 
 
 def importar_csv(archivo, curso_id):
     try:
         resp = req_lib.post(
-            f"{BACKEND_URL}/curso_usuarios/importar-lote",
+            f"{BACKEND_URL}/estudiante_curso/importar-lote",
             files={"archivo": (archivo.filename, archivo.stream, "text/csv")},
             data={"curso_id": curso_id},
             cookies=armar_cookies_backend(),

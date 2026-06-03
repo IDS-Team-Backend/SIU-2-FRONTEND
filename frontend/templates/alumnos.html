@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+{% endblock %}
+
 {% block content %}
 <section>
 
@@ -13,27 +17,33 @@
       </p>
     </div>
     <div class="page-header__actions">
-      <form action="{{ url_for('alumnos.importar') }}"
+      <form id="import-form"
+            action="{{ url_con_filtros('alumnos.importar', curso_id=curso_id) }}"
             method="post"
-            enctype="multipart/form-data"
-            class="form-group-flex">
-        <input type="file" name="csv_file" accept=".csv" class="form-control">
-        <button type="submit" class="btn btn-outline">Importar CSV</button>
+            enctype="multipart/form-data">
+        <input type="file" id="csv_file" name="csv_file" accept=".csv"
+               style="display:none"
+               onchange="this.form.submit()">
+        <button type="button" class="btn btn-outline"
+                onclick="document.getElementById('csv_file').click()">
+          <span class="material-symbols-rounded" style="font-size:18px">upload</span>
+          Importar CSV
+        </button>
       </form>
-      <a href="{{ url_for('alumnos.listar_alumnos', modal='vincular') }}" class="btn btn-primary">
-        <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">person_add</span>
-        Vincular Alumno
+      <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-primary">
+        <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
+        Vincular alumno
       </a>
     </div>
   </div>
 
 
   {# ── Barra de búsqueda y filtros ── #}
-  <form method="get" action="{{ url_for('alumnos.listar_alumnos') }}" class="filter-bar">
+  <form method="get" action="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="filter-bar">
 
-    {# Mantener el ordenamiento activo al filtrar #}
-    {% if sort_col != "padron" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
-    {% if sort_dir != "asc"    %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
+    {# Mantener el ordenamiento activo al filtrar (form GET: el query del action se ignora) #}
+    {% if sort_col != "apellido" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
+    {% if sort_dir != "asc"     %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
 
     {# Búsqueda de texto libre #}
     <div class="filter-bar__search">
@@ -61,7 +71,7 @@
 
     {# Limpiar filtros — solo visible si hay alguno activo #}
     {% if q or estado_filtro %}
-      <a href="{{ url_for('alumnos.listar_alumnos') }}" class="btn btn-ghost">
+      <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-ghost">
         <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">filter_list_off</span>
         Limpiar
       </a>
@@ -72,15 +82,11 @@
 
   {# ── Tabla ── #}
 
-  {# Macro para construir la URL de ordenamiento de cada columna.
-     Si la columna ya está activa, invierte la dirección.
-     Preserva q y estado_filtro en la URL. #}
+  {# URL para ordenar por una columna: invierte la dirección si ya está activa y
+     resetea a la página 1. Los demás filtros los preserva url_con_filtros. #}
   {% macro sort_url(col) -%}
-    {{ url_for('alumnos.listar_alumnos',
-               q=q,
-               estado_filtro=estado_filtro,
-               sort=col,
-               dir='desc' if sort_col == col and sort_dir == 'asc' else 'asc') }}
+    {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=1,
+                       sort=col, dir='desc' if sort_col == col and sort_dir == 'asc' else 'asc') }}
   {%- endmacro %}
 
   {# Macro para el ícono de flecha en el header #}
@@ -126,23 +132,22 @@
           <td class="td--center">
             <div class="table__actions">
               {% if alumno.estado == "activo" %}
-                <form action="{{ url_for('alumnos.cambiar_estado', inscripcion_id=alumno.inscripcion_id) }}"
+                <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
                       method="post" style="display:inline">
-                  <input type="hidden" name="usuario_id" value="{{ alumno.usuario_id }}">
-                  <input type="hidden" name="curso_id"   value="{{ curso_activo.id }}">
-
+                  <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
+                  <input type="hidden" name="estado"        value="abandono">
+                  <button type="submit" class="btn-icon btn-icon--danger">Dar de baja</button>
                 </form>
               {% else %}
-                <form action="{{ url_for('alumnos.cambiar_estado', inscripcion_id=alumno.inscripcion_id) }}"
+                <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
                       method="post" style="display:inline">
-                  <input type="hidden" name="usuario_id" value="{{ alumno.usuario_id }}">
-                  <input type="hidden" name="curso_id"   value="{{ curso_activo.id }}">
-                  <input type="hidden" name="estado"     value="activo">
+                  <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
+                  <input type="hidden" name="estado"        value="activo">
                   <button type="submit" class="btn-icon">Reactivar</button>
                 </form>
               {% endif %}
 
-              <form action="{{ url_for('alumnos.desvincular_alumno', inscripcion_id=alumno.inscripcion_id) }}"
+              <form action="{{ url_con_filtros('alumnos.desvincular_alumno', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
                     method="post" style="display:inline">
                 <button type="submit" class="btn-icon btn-icon--danger"
                         onclick="return confirm('¿Desvincular a {{ alumno.nombre }} {{ alumno.apellido }}?\nEsta acción no se puede deshacer.')">
@@ -164,13 +169,13 @@
               <p class="text-muted" style="margin:0 0 1rem">
                 {% if q or estado_filtro %}
                   No se encontraron alumnos con esos criterios.
-                  <a href="{{ url_for('alumnos.listar_alumnos') }}">Ver todos</a>
+                  <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}">Ver todos</a>
                 {% else %}
                   Todavía no hay alumnos inscriptos en este curso.
                 {% endif %}
               </p>
               {% if not q and not estado_filtro %}
-                <a href="{{ url_for('alumnos.listar_alumnos', modal='vincular') }}" class="btn btn-primary">
+                <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-primary">
                   Vincular primer alumno
                 </a>
               {% endif %}
@@ -182,6 +187,37 @@
       </tbody>
     </table>
   </div>
+
+  {# ── Paginación ──
+     Solo cuando NO hay búsqueda de texto: q filtra la página actual (client-side),
+     así que mezclarlo con la paginación del servidor sería engañoso. #}
+  {%- macro page_url(n) -%}
+    {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n) }}
+  {%- endmacro -%}
+
+  {% if paginacion and paginacion.total_paginas > 1 and not q %}
+  <div class="pagination">
+    {% set p = paginacion.page %}
+    {% set total = paginacion.total_paginas %}
+
+    <a class="pagination__btn {% if p <= 1 %}pagination__btn--disabled{% endif %}"
+       href="{{ page_url(p-1) if p > 1 else '#' }}">
+      <span class="material-symbols-rounded" style="font-size:18px">chevron_left</span>
+    </a>
+
+    {% for n in range(1, total + 1) %}
+      <a class="pagination__btn {% if n == p %}pagination__btn--active{% endif %}"
+         href="{{ page_url(n) }}">{{ n }}</a>
+    {% endfor %}
+
+    <a class="pagination__btn {% if p >= total %}pagination__btn--disabled{% endif %}"
+       href="{{ page_url(p+1) if p < total else '#' }}">
+      <span class="material-symbols-rounded" style="font-size:18px">chevron_right</span>
+    </a>
+
+    <span class="pagination__info">{{ p }} de {{ total }} ({{ paginacion.total }} alumnos)</span>
+  </div>
+  {% endif %}
 
 </section>
 
@@ -195,11 +231,11 @@
         <h2 class="modal__title">Vincular Alumno</h2>
         <p class="modal__subtitle">Buscá por padrón y asocialo al curso activo</p>
       </div>
-      <a href="{{ url_for('alumnos.listar_alumnos') }}" class="modal__close">×</a>
+      <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="modal__close">×</a>
     </div>
 
     <div class="modal__body modal__body--padded">
-      <form method="get" action="{{ url_for('alumnos.listar_alumnos') }}">
+      <form method="get" action="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}">
         <input type="hidden" name="modal" value="vincular">
         <div class="form-group">
           <label for="padron" class="form-group__label">Padrón del alumno</label>
@@ -241,14 +277,14 @@
           </div>
         </div>
         <div class="result-card__footer">
-          <form action="{{ url_for('alumnos.vincular_alumno') }}" method="post">
-            <input type="hidden" name="usuario_id" value="{{ alumno_encontrado.usuario_id }}">
+          <form action="{{ url_con_filtros('alumnos.vincular_alumno', curso_id=curso_id) }}" method="post">
+            <input type="hidden" name="estudiante_id" value="{{ alumno_encontrado.id }}">
             <button type="submit" class="btn btn-primary">
               <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
               Vincular al Curso
             </button>
           </form>
-          <a href="{{ url_for('alumnos.listar_alumnos', modal='vincular') }}" class="btn btn-outline">
+          <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-outline">
             Buscar otro
           </a>
         </div>

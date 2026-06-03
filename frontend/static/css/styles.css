@@ -238,6 +238,17 @@ a {
   color: var(--text-soft);
 }
 
+/* Botón de logout — siempre visible al pie del sidebar */
+.sidebar-logout {
+  margin-top: 12px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-logout:hover {
+  background: rgba(239, 68, 68, 0.92);
+  color: white;
+}
+
 
 /* ==========================================================================
    MAIN CONTENT & TOPBAR

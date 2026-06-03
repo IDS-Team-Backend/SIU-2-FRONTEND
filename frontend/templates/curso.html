@@ -55,7 +55,7 @@
     <div class="panel">
       <h2 class="panel-title">Accesos rápidos</h2>
       <div class="section-cards">
-        <a class="section-card" href="{{ url_for('cronograma') }}">
+        <a class="section-card" href="{{ url_for('cronograma', curso_id=curso.id) }}">
           <span class="material-symbols-rounded">calendar_month</span>
           <div>
             <div class="section-card-title">Cronograma</div>
@@ -69,7 +69,7 @@
             <div class="section-card-desc">{{ curso.stats.materiales }} recursos disponibles</div>
           </div>
         </a>
-        <a class="section-card" href="{{ url_for('alumnos.listar_alumnos') }}">
+        <a class="section-card" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso.id) }}">
           <span class="material-symbols-rounded">group</span>
           <div>
             <div class="section-card-title">Alumnos</div>
