@@ -19,7 +19,7 @@
         {% if evaluacion.descripcion %}
           <p><strong>Descripción:</strong> {{ evaluacion.descripcion }}</p>
         {% endif %}
-        <p><strong>Estado:</strong> {{ 'Activo' if evaluacion.activo else 'Inactivo' }}</p>
+        <strong><strong>Estado:</strong> {{ 'Activo' if evaluacion.activo else 'Inactivo' }}</strong>
       </article>
     {% endfor %}
   </div>
@@ -31,7 +31,6 @@
 
     <div class="modal__header">
       <h2 class="modal__title">Nueva Evaluación</h2>
-      <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close">&times;</a>
     </div>
 
     <div class="modal__body modal__body--padded">
