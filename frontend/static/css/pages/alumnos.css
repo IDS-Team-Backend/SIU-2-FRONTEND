@@ -151,6 +151,58 @@
 }
 
 /* ==========================================================================
+   PAGINACIÓN
+   ========================================================================== */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.pagination__btn:hover:not(.pagination__btn--disabled):not(.pagination__btn--active) {
+  background: #f1f5f9;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.pagination__btn--active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.pagination__btn--disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.pagination__info {
+  margin-left: 8px;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+/* ==========================================================================
    TABLE ACTION BUTTONS — más claros en la tabla
    ========================================================================== */
 .table__actions .btn-icon {
