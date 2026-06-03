@@ -140,58 +140,6 @@ def curso(curso_id):
     )
 
 
-@app.route("/cronograma")
-def cronograma():
-    return render_template(
-        "cronograma.html",
-        title="Cronograma",
-        active_page="cronograma",
-        semanas=cronograma_por_curso.get(CURSO_ACTIVO_ID, []),
-    )
-
-if __name__ == "__main__":
-    app.run(port=5001, debug=True)
-
-
-
-@app.route("/perfil")
-def perfil():
-    return redirect(url_for("perfil_estudiante"))
-
-
-@app.route("/perfil/estudiante")
-def perfil_estudiante():
-    return render_template(
-        "perfil_estudiante.html",
-        title="Perfil Estudiante",
-        active_page="perfil",
-        perfil=perfil_estudiante_mock,
-    )
-
-
-@app.route("/perfil/profesor")
-def perfil_profesor():
-    return render_template(
-        "perfil_profesor.html",
-        title="Perfil Docente",
-        active_page="perfil",
-        perfil=perfil_profesor_mock,
-    )
-
-
-@app.route("/curso/<int:curso_id>")
-def curso(curso_id):
-    curso_data = cursos_mock.get(curso_id)
-    if curso_data is None:
-        abort(404)
-    return render_template(
-        "curso.html",
-        title=curso_data["nombre"],
-        active_page="curso",
-        curso=curso_data,
-    )
-
-
 @app.route("/curso/<int:curso_id>/cronograma")
 def cronograma(curso_id):
     ok, data = api_request("GET", f"/cursos/{curso_id}/cronograma")
