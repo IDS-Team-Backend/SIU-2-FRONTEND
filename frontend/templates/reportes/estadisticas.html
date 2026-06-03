@@ -1,0 +1,39 @@
+{# Template para reporte de estadísticas #}
+
+<table class="tabla-reporte">
+  <thead>
+    <tr>
+      <th>Evaluación</th>
+      <th>Tipo</th>
+      <th class="text-center">Total Notas</th>
+      <th class="text-center text-success">Aprobados</th>
+      <th class="text-center text-danger">Desaprobados</th>
+      <th class="text-center">Promedio</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for stat in estadisticas %}
+    <tr>
+      <td><strong>{{ stat.evaluacion_titulo }}</strong></td>
+      <td>{{ stat.tipo_evaluacion }}</td>
+      <td class="text-center">{{ stat.total_notas }}</td>
+      <td class="text-center text-success text-bold">{{ stat.aprobados }}</td>
+      <td class="text-center text-danger text-bold">{{ stat.desaprobados }}</td>
+      <td class="text-center bg-destacado">{{ stat.nota_promedio }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" style="padding: 20px; text-align: center;">No hay estadísticas disponibles.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# Contenedor para el gráfico de Chart.js #}
+<div style="margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 4px;">
+  <h3>Visualización: Aprobados vs Desaprobados</h3>
+  <canvas id="chartMetricas" style="max-height: 300px;"></canvas>
+  
+  {# Contenedor oculto con datos JSON para Chart.js #}
+  <div id="datos-stats-raw" data-json='{{ estadisticas | tojson }}'></div>
+</div>
