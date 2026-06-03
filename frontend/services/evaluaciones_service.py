@@ -2,7 +2,7 @@ from utils.api_client import api_request
 
 
 def obtener_evaluaciones_del_curso(curso_id):
-    ok, data = api_request("GET", "/evaluaciones/", params={"curso_id": curso_id})
+    ok, data = api_request("GET", "/evaluaciones/", params={"curso_id": curso_id, "activo": True})
 
     if not ok:
         error_msg = data.get("error", "Error al obtener evaluaciones.") if data else "Error de conexión."
