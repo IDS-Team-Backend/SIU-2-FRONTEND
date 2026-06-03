@@ -4,8 +4,17 @@
 <section>
   <div class="page-header">
     <h1>Materiales</h1>
-    <button class="btn btn-primary">+ Subir Material</button>
+    <button class="btn btn-primary" onclick="document.getElementById('modal-subir').style.display='flex'">
+      + Subir Material
+    </button>
   </div>
+
+  {# Mensajes flash #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
 
   <div class="material-list">
     {% if materiales %}
@@ -24,7 +33,10 @@
           <a href="{{ material.archivo_url }}" target="_blank" class="btn-icon btn-icon--primary">
             📥 Descargar
           </a>
-          <button class="btn-icon btn-icon--danger">🗑️</button>
+          <form method="POST" action="/material/{{ material.id }}/eliminar"
+                onsubmit="return confirm('¿Eliminar este material?')">
+            <button type="submit" class="btn-icon btn-icon--danger">🗑️</button>
+          </form>
         </div>
       </div>
       {% endfor %}
@@ -33,4 +45,37 @@
     {% endif %}
   </div>
 </section>
+
+{# Modal: Subir Material #}
+<div id="modal-subir" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4);
+     align-items:center; justify-content:center; z-index:1000;">
+  <div style="background:white; border-radius:8px; padding:2rem; width:100%; max-width:480px;">
+    <h2 style="margin-bottom:1.5rem;">Subir Material</h2>
+
+    <form method="POST" action="/material/crear">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; margin-bottom:.4rem; font-weight:600;">Título</label>
+        <input type="text" name="titulo" required maxlength="255"
+               placeholder="Ej: Apunte Unidad 1"
+               style="width:100%; padding:.6rem; border:1px solid #ccc; border-radius:6px;">
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <label style="display:block; margin-bottom:.4rem; font-weight:600;">URL del archivo</label>
+        <input type="url" name="archivo_url" required maxlength="255"
+               placeholder="https://drive.google.com/..."
+               style="width:100%; padding:.6rem; border:1px solid #ccc; border-radius:6px;">
+        <small style="color:#666;">Pegá el link de Google Drive, Dropbox u otro servicio.</small>
+      </div>
+
+      <div style="display:flex; gap:1rem; justify-content:flex-end;">
+        <button type="button" class="btn"
+                onclick="document.getElementById('modal-subir').style.display='none'">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">Subir</button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
