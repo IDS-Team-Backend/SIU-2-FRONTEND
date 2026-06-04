@@ -19,8 +19,6 @@ from services.alumnos_service import (
     buscar_alumno_por_padron,
 )
 
-from utils.filtros import url_con_filtros
-
 equipos_bp = Blueprint("equipos", __name__)
 
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))

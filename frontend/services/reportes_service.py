@@ -3,8 +3,7 @@ from utils.api_client import api_request
 def obtener_alumnos_reporte(curso_id, carrera=None, anio_ingreso=None, nombre_completo=None, padron=None, evaluacion_id=None, condicion=None, nota_mayor_a=None, export=None):
     if not curso_id:
         return False, "Falta el ID del curso."
-    
-    params = {"curso_id": curso_id}
+    params = {"curso_id": int(curso_id)} 
     if carrera: params["carrera"] = carrera
     if anio_ingreso: params["anio_ingreso"] = anio_ingreso
     if nombre_completo: params["nombre_completo"] = nombre_completo
@@ -14,6 +13,7 @@ def obtener_alumnos_reporte(curso_id, carrera=None, anio_ingreso=None, nombre_co
     if nota_mayor_a: params["nota_mayor_a"] = nota_mayor_a
     if export: params["export"] = export
 
+    # Mantenemos la ruta original del backend
     ok, data = api_request("GET", "/reportes/alumnos", params=params, is_binary=export)
     
     if not ok:
@@ -31,7 +31,7 @@ def obtener_estadisticas_reporte(curso_id, export=None):
     if not curso_id:
         return False, "Falta el ID del curso."
     
-    params = {"curso_id": curso_id}
+    params = {"curso_id": int(curso_id)}
     if export: params["export"] = export
 
     ok, data = api_request("GET", "/reportes/estadisticas", params=params, is_binary=export)
@@ -51,7 +51,7 @@ def obtener_equipos_reporte(curso_id, export=None):
     if not curso_id:
         return False, "Falta el ID del curso."
     
-    params = {"curso_id": curso_id}
+    params = {"curso_id": int(curso_id)}
     if export: params["export"] = export
 
     ok, data = api_request("GET", "/reportes/equipos", params=params, is_binary=export)

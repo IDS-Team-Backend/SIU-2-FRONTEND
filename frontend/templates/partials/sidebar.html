@@ -17,10 +17,10 @@
     <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('material') }}">
       <span class="material-symbols-rounded">description</span>Material
     </a>
-      <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones') }}">
+      <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
     </a>
-    <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes') }}">
+    <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">bar_chart</span>Reportes
     </a>
     <a class="{% if active_page == 'equipos' %}active{% endif %}" href="{{ url_for('equipos.listar_equipos', curso_id=curso_activo.id) }}">
