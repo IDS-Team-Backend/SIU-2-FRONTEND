@@ -136,9 +136,7 @@ def administrar_integrantes(equipo_id):
 @requiere_staff
 def buscar_integrante(equipo_id):
     padron = request.form.get("padron", "").strip()
-
     ok, alumno = buscar_alumno_por_padron(padron)
-    print(alumno)
     if not ok:
         flash(alumno, "danger")
 
@@ -176,12 +174,10 @@ def buscar_integrante(equipo_id):
 )
 @requiere_staff
 def eliminar_integrante_equipo(equipo_id, alumno_id):
-
     ok, resultado = eliminar_integrante(
         equipo_id,
         alumno_id
     )
-
     if ok:
         flash(
             "Integrante eliminado correctamente.",

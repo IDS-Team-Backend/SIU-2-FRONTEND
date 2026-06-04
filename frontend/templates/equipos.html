@@ -25,9 +25,8 @@
             
             <a
                 href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo.id) }}"
-                class="btn btn-outline"
-            >
-                Integrantes
+                class="btn-action btn-action--edit">
+                👨‍🎓
             </a>
 
             <a href="{{ url_for('equipos.listar_equipos', accion='editar', id=equipo.id) }}" 
@@ -66,8 +65,26 @@
           <input type="text" id="nombre" name="nombre" required class="form-control">
         </div>
         <div class="form-group">
-          <label for="evaluacion_id">Evaluación</label>
-          <input type="text" id="evaluacion_id" name="evaluacion_id" required class="form-control">
+              <label for="evaluacion_id">
+                  Evaluación
+              </label>
+
+              <select
+                  id="evaluacion_id"
+                  name="evaluacion_id"
+                  required
+                  class="form-control"
+              >
+                  <option value="">
+                      Seleccione una evaluación
+                  </option>
+
+                  {% for evaluacion in evaluaciones %}
+                      <option value="{{ evaluacion.id }}">
+                          {{ evaluacion.titulo }}
+                      </option>
+                  {% endfor %}
+              </select>
         </div>
 
         <div class="form-actions">
