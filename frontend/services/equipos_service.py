@@ -1,8 +1,10 @@
 from utils.api_client import api_request
 
 
-def obtener_equipos(evaluacion_id=None):
-    params = {}
+def obtener_equipos(curso_id, evaluacion_id=None):
+    params = {
+        "curso_id": curso_id
+    }
 
     if evaluacion_id:
         params["evaluacion_id"] = evaluacion_id
@@ -36,9 +38,10 @@ def crear_equipo(curso_id, evaluacion_id, nombre):
         return False, "Falta el ID del curso."
 
     parametros = {
+        "curso_id": int(curso_id),
         "evaluacion_id": int(evaluacion_id),
         "nombre": nombre.strip(),
-        "curso_id": int(curso_id),
+        
     }
 
     ok, data = api_request(
@@ -73,9 +76,9 @@ def actualizar_equipo(curso_id, equipo_id, evaluacion_id, nombre, activo):
 
 
     parametros = {
+        "curso_id": int(curso_id),
         "nombre": nombre.strip(),
         "activo": bool(activo),
-        "curso_id": int(curso_id),
         "evaluacion_id": int(evaluacion_id),
 
     }
@@ -105,7 +108,7 @@ def eliminar_equipo(equipo_id):
 
     if not ok:
         if data and data.get("status_code") == 404:
-            return False, "El equipo no existe."
+            return False, "El equipo no esta activo."
 
         error_msg = (
             data.get("error", "Error al eliminar equipo.")
