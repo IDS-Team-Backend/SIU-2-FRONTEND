@@ -35,14 +35,14 @@
       <span class="material-symbols-rounded user-arrow">unfold_more</span>
     </button>
     <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
-      <a href="{{ url_for('perfil_estudiante') }}" role="menuitem">
+      <a href="{{ url_for('perfil.estudiante') }}" role="menuitem">
         <span class="material-symbols-rounded">school</span>
         <div>
           <span class="menu-item-title">Perfil Estudiante</span>
           <span class="menu-item-desc">Ver ficha de alumno</span>
         </div>
       </a>
-      <a href="{{ url_for('perfil_profesor') }}" role="menuitem">
+      <a href="{{ url_for('perfil.perfil_profesor') }}" role="menuitem">
         <span class="material-symbols-rounded">co_present</span>
         <div>
           <span class="menu-item-title">Perfil Docente</span>
@@ -51,9 +51,20 @@
       </a>
     </div>
   </div>
-
-  <a href="{{ url_for('auth.logout') }}" class="sidebar-logout">
-    <span class="material-symbols-rounded">logout</span>
-    Cerrar sesión
-  </a>
+  <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
+      <a href="{{ url_for('perfil.estudiante') }}" role="menuitem">
+        <span class="material-symbols-rounded">school</span>
+        <div>
+          <span class="menu-item-title">Perfil Estudiante</span>
+          <span class="menu-item-desc">Ver ficha de alumno</span>
+        </div>
+      </a>
+      <a href="{{ url_for('perfil.perfil_profesor') }}" role="menuitem">
+        <span class="material-symbols-rounded">co_present</span>
+        <div>
+          <span class="menu-item-title">Perfil Docente</span>
+          <span class="menu-item-desc">Ver ficha de profesor</span>
+        </div>
+      </a>
+    </div>
 </aside>

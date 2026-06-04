@@ -102,30 +102,6 @@ def material():
     )
 
 
-@app.route("/perfil")
-def perfil():
-    return redirect(url_for("perfil_estudiante"))
-
-
-@app.route("/perfil/estudiante")
-def perfil_estudiante():
-    return render_template(
-        "perfil_estudiante.html",
-        title="Perfil Estudiante",
-        active_page="perfil",
-        perfil=perfil_estudiante_mock,
-    )
-
-
-@app.route("/perfil/profesor")
-def perfil_profesor():
-    return render_template(
-        "perfil_profesor.html",
-        title="Perfil Docente",
-        active_page="perfil",
-        perfil=perfil_profesor_mock,
-    )
-
 
 @app.route("/curso/<int:curso_id>")
 def curso(curso_id):
