@@ -10,7 +10,7 @@
         <span>📥</span> Exportar PDF
       </button>
     {% else %}
-      <a href="{{ url_for('reportes.listar_reportes', tab=tab_actual, export='pdf') }}" class="btn btn-primary">
+      <a href="{{ url_for('reportes.listar_reportes', tab=tab_actual, curso_id=curso_id, export='pdf') }}" class="btn btn-primary">
         <span>📥</span> Exportar PDF
       </a>
     {% endif %}
@@ -18,13 +18,13 @@
 
   {# Navegación de Tabs #}
   <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
-    <a href="{{ url_for('reportes.listar_reportes') }}?tab=alumnos" class="btn {% if tab_actual == 'alumnos' %}btn-primary{% else %}btn-outline{% endif %}">
+    <a href="{{ url_for('reportes.listar_reportes', curso_id=curso_id) }}?tab=alumnos" class="btn {% if tab_actual == 'alumnos' %}btn-primary{% else %}btn-outline{% endif %}">
       📋 Alumnos
     </a>
-    <a href="{{ url_for('reportes.listar_reportes') }}?tab=estadisticas" class="btn {% if tab_actual == 'estadisticas' %}btn-primary{% else %}btn-outline{% endif %}">
+    <a href="{{ url_for('reportes.listar_reportes', curso_id=curso_id) }}?tab=estadisticas" class="btn {% if tab_actual == 'estadisticas' %}btn-primary{% else %}btn-outline{% endif %}">
       📊 Estadísticas de Aprobación
     </a>
-    <a href="{{ url_for('reportes.listar_reportes') }}?tab=equipos" class="btn {% if tab_actual == 'equipos' %}btn-primary{% else %}btn-outline{% endif %}">
+    <a href="{{ url_for('reportes.listar_reportes', curso_id=curso_id) }}?tab=equipos" class="btn {% if tab_actual == 'equipos' %}btn-primary{% else %}btn-outline{% endif %}">
       👥 Listado de Equipos
     </a>
   </div>

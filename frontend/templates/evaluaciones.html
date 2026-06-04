@@ -4,7 +4,7 @@
 <section>
   <div class="page-header">
     <h1>{{ title }}</h1>
-    <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='nueva') }}" class="btn btn-primary">
+    <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='nueva', curso_id=curso_id) }}" class="btn btn-primary">
       <span>+</span>
       Nueva Evaluación
     </a>
@@ -28,13 +28,13 @@
 
           <div class="card-actions">
             
-            <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='editar', id=evaluacion.id) }}" 
+            <a href="{{ url_for('evaluaciones.listar_evaluaciones', accion='editar', id=evaluacion.id, curso_id=curso_id) }}" 
                title="Editar" 
                class="btn-action btn-action--edit">
               ✎
             </a>
 
-            <form action="{{ url_for('evaluaciones.eliminar', evaluacion_id=evaluacion.id) }}" 
+            <form action="{{ url_for('evaluaciones.eliminar', evaluacion_id=evaluacion.id, curso_id=curso_id) }}" 
                   method="POST" 
                   class="form-inline-block" 
                   onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');">
@@ -55,10 +55,10 @@
   <div class="modal modal--sm">
     <div class="modal__header">
       <h2 class="modal__title">Nueva Evaluación</h2>
-      <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">x</a>
+      <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id) }}" class="modal__close modal-close-btn">x</a>
     </div>
     <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion') }}" method="POST">
+      <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion', curso_id=curso_id) }}" method="POST">
         <div class="form-group">
           <label for="titulo">Título</label>
           <input type="text" id="titulo" name="titulo" required class="form-control">
@@ -81,7 +81,7 @@
           <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
         </div>
         <div class="form-actions">
-          <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="btn btn-outline">Cancelar</a>
+          <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
           <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
       </form>
@@ -97,10 +97,10 @@
     <div class="modal modal--sm">
       <div class="modal__header">
         <h2 class="modal__title">Editar Evaluación</h2>
-        <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="modal__close modal-close-btn">x</a>
+        <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id) }}" class="modal__close modal-close-btn">x</a>
       </div>
       <div class="modal__body modal__body--padded">
-        <form action="{{ url_for('evaluaciones.actualizar', evaluacion_id=eval_id) }}" method="POST">
+        <form action="{{ url_for('evaluaciones.actualizar', evaluacion_id=eval_id, curso_id=curso_id) }}" method="POST">
           
           <div class="form-group">
             <label for="titulo_edit">Título *</label>
@@ -137,7 +137,7 @@
           </div>
 
           <div class="form-actions modal-actions-spacing">
-            <a href="{{ url_for('evaluaciones.listar_evaluaciones') }}" class="btn btn-outline">Cancelar</a>
+            <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           </div>
         </form>
