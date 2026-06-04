@@ -589,9 +589,6 @@ h1 {
   border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-  .sidebar-user-wrapper {
-    display: none; /* Ocultamos el widget de usuario en mobile */
-  }
 .material-item {
   display: flex;
   justify-content: space-between;
