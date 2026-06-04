@@ -23,8 +23,11 @@
     <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes') }}">
       <span class="material-symbols-rounded">bar_chart</span>Reportes
     </a>
+    <a class="{% if active_page == 'equipos' %}active{% endif %}" href="{{ url_for('equipos.listar_equipos') }}">
+      <span class="material-symbols-rounded">person</span>Equipos
+    </a>
   </nav>
-
+  
   <div class="sidebar-user-wrapper">
     <button class="sidebar-user" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
       <span class="material-symbols-rounded user-avatar">account_circle</span>
@@ -51,20 +54,5 @@
       </a>
     </div>
   </div>
-  <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
-      <a href="{{ url_for('perfil.estudiante') }}" role="menuitem">
-        <span class="material-symbols-rounded">school</span>
-        <div>
-          <span class="menu-item-title">Perfil Estudiante</span>
-          <span class="menu-item-desc">Ver ficha de alumno</span>
-        </div>
-      </a>
-      <a href="{{ url_for('perfil.perfil_profesor') }}" role="menuitem">
-        <span class="material-symbols-rounded">co_present</span>
-        <div>
-          <span class="menu-item-title">Perfil Docente</span>
-          <span class="menu-item-desc">Ver ficha de profesor</span>
-        </div>
-      </a>
-    </div>
+
 </aside>

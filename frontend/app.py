@@ -31,30 +31,6 @@ listar_materias = [
     for c in cursos_mock.values()
 ]
 
-_perfil_estudiante_raw = _load_mock("perfil_estudiante.json")
-perfil_estudiante_mock = {
-    **_perfil_estudiante_raw,
-    "curso": {
-        "codigo": cursos_mock[CURSO_ACTIVO_ID]["codigo"],
-        "nombre": cursos_mock[CURSO_ACTIVO_ID]["nombre"],
-        "carrera": cursos_mock[CURSO_ACTIVO_ID]["carrera"],
-        "modalidad": cursos_mock[CURSO_ACTIVO_ID]["modalidad"],
-        **_perfil_estudiante_raw["curso"],
-    },
-}
-
-_perfil_profesor_raw = _load_mock("perfil_profesor.json")
-perfil_profesor_mock = {
-    **_perfil_profesor_raw,
-    "catedra": {
-        "codigo": cursos_mock[CURSO_ACTIVO_ID]["codigo"],
-        "nombre": cursos_mock[CURSO_ACTIVO_ID]["nombre"],
-        "alumnos": cursos_mock[CURSO_ACTIVO_ID]["stats"]["alumnos"],
-        "modalidad": cursos_mock[CURSO_ACTIVO_ID]["modalidad"],
-        "carga_horaria": cursos_mock[CURSO_ACTIVO_ID]["horas_semanales"],
-        **_perfil_profesor_raw["catedra"],
-    },
-}
 
 
 @app.context_processor
@@ -100,9 +76,6 @@ def material():
         active_page="material",
         materiales=listar_materiales,
     )
-
-
-
 @app.route("/curso/<int:curso_id>")
 def curso(curso_id):
     curso_data = cursos_mock.get(curso_id)
