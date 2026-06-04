@@ -3,6 +3,7 @@ from routes.alumnos_routes import alumnos_bp
 from routes.evaluaciones_routes import evaluaciones_bp
 from routes.reportes_routes import reportes_bp
 from routes.perfil_routes import perfil_bp
+from routes.equipos_routes import equipos_bp 
 
 
 def register_routes(app):
@@ -11,3 +12,4 @@ def register_routes(app):
     app.register_blueprint(evaluaciones_bp)
     app.register_blueprint(reportes_bp)
     app.register_blueprint(perfil_bp)
+    app.register_blueprint(equipos_bp) 
