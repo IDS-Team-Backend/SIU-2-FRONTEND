@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <div class="page-header">
+        <h1>Integrantes del Equipo</h1>
+        <a href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo_id, accion='nueva') }}" class="btn btn-primary">
+            <span>+</span>
+            Nuevo Integrante
+        </a>
+        <a
+            href="{{ url_for('equipos.listar_equipos') }}"
+            class="btn btn-outline"
+        >
+            Volver
+        </a>
+    </div>
+    <div class="card-grid">
+    {% for integrante in integrantes %}
+    <article class="card">
+        <div class="card-content">
+            <div class="card-info">
+                <h3>{{ integrante.nombre }} {{ integrante.apellido }}</h3>
+                <p>{{ integrante.email }}</p>
+            </div>
+            <div class="card-actions">
+                <form
+                    action="{{ url_for('equipos.eliminar_integrante_equipo', equipo_id=equipo_id, alumno_id=integrante.alumno_id) }}"
+                    method="POST" 
+                    class="form-inline-block" 
+                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar este integrante?');">
+                    <button type="submit" title="Eliminar" class="btn-action btn-action--delete">
+                        ✕
+                    </button>
+                </form>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+</section>
+
+{% if request.args.get('accion') == 'nueva' %}
+<div class="modal-overlay">
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <h2 class="modal__title">Nuevo Integrante</h2>
+      <a href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo_id) }}" class="modal__close modal-close-btn">x</a>
+    </div>
+    <div class="modal__body modal__body--padded">
+      <form action="{{ url_for('equipos.buscar_integrante', equipo_id=equipo_id) }}" method="POST">
+        <div class="form-group">
+            <label>Padrón</label>
+            <input
+                type="number"
+                name="padron"
+                required
+                class="form-control"
+            >
+        </div>
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            Buscar
+        </button>
+    </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

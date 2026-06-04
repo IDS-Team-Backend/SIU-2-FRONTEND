@@ -47,8 +47,9 @@ def listar_reportes():
             elif tab_actual == "equipos":
                 ok, res = obtener_equipos_reporte(CURSO_ACTIVO_ID, export=export_format)
 
-            if ok and isinstance(res, bytes):
-                response = make_response(res)
+            if ok and (isinstance(res, bytes) or isinstance(res, bytearray)):
+                # Nos aseguramos de pasarlo a bytes puros por si las moscas
+                response = make_response(bytes(res)) 
                 response.headers['Content-Type'] = 'application/pdf'
                 response.headers['Content-Disposition'] = f'attachment; filename=reporte_{tab_actual}.pdf'
                 return response
