@@ -17,11 +17,19 @@
           
           <div class="card-info">
             <h2>{{ equipo.nombre }}</h2>
+            <p><strong>Evaluación ID:</strong> {{ equipo.evaluacion_id }}</p>
             <p><strong>Estado:</strong> {{ 'Activo' if equipo.activo else 'Inactivo' }}</p>
           </div>
 
           <div class="card-actions">
             
+            <a
+                href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo.id) }}"
+                class="btn btn-outline"
+            >
+                Integrantes
+            </a>
+
             <a href="{{ url_for('equipos.listar_equipos', accion='editar', id=equipo.id) }}" 
                title="Editar" 
                class="btn-action btn-action--edit">
@@ -88,9 +96,27 @@
             <label for="nombre">Nombre</label>
             <input type="text" id="nombre" name="nombre" required class="form-control">
           </div>
-           <div class="form-group">
-            <label for="evaluacion_id">Evaluación</label>
-            <input type="text" id="evaluacion_id" name="evaluacion_id" required class="form-control">
+          <div class="form-group">
+              <label for="evaluacion_id">
+                  Evaluación
+              </label>
+
+              <select
+                  id="evaluacion_id"
+                  name="evaluacion_id"
+                  required
+                  class="form-control"
+              >
+                  <option value="">
+                      Seleccione una evaluación
+                  </option>
+
+                  {% for evaluacion in evaluaciones %}
+                      <option value="{{ evaluacion.id }}">
+                          {{ evaluacion.titulo }}
+                      </option>
+                  {% endfor %}
+              </select>
           </div>
           <div class="form-group">
             <label class="form-group-checkbox">

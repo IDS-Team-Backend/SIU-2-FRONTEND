@@ -12,6 +12,12 @@ from services.equipos_service import (
 from services.evaluaciones_service import (
     obtener_evaluaciones_del_curso,
 )
+from services.equipo_integrantes_service import (
+    obtener_integrantes, agregar_integrante, eliminar_integrante
+)
+from services.alumnos_service import (
+    buscar_alumno_por_padron,
+)
 
 equipos_bp = Blueprint("equipos", __name__)
 
@@ -103,4 +109,90 @@ def eliminar(equipo_id):
 
     return redirect(
         url_for("equipos.listar_equipos")
+    )
+
+@equipos_bp.route("/equipos/<int:equipo_id>/integrantes", methods=["GET"])
+@requiere_staff
+def administrar_integrantes(equipo_id):
+    ok, integrantes = obtener_integrantes(equipo_id)
+
+    if not ok:
+        flash(integrantes, "danger")
+        integrantes = []
+
+    return render_template(
+        "equipo_integrantes.html",
+        title="Integrantes del Equipo",
+        active_page="equipos",
+        equipo_id=equipo_id,
+        integrantes=integrantes,
+    )
+
+
+@equipos_bp.route(
+    "/equipos/<int:equipo_id>/buscar-integrante",
+    methods=["POST"]
+)
+@requiere_staff
+def buscar_integrante(equipo_id):
+    padron = request.form.get("padron", "").strip()
+
+    ok, alumno = buscar_alumno_por_padron(padron)
+    print(alumno)
+    if not ok:
+        flash(alumno, "danger")
+
+        return redirect(
+            url_for(
+                "equipos.administrar_integrantes",
+                equipo_id=equipo_id
+            )
+        )
+
+    ok, resultado = agregar_integrante(
+        equipo_id,
+        alumno["id"]
+    )
+
+    if ok:
+        flash(
+            f"{alumno['nombre']} {alumno['apellido']} agregado correctamente.",
+            "success"
+        )
+    else:
+        flash(resultado, "danger")
+
+    return redirect(
+        url_for(
+            "equipos.administrar_integrantes",
+            equipo_id=equipo_id
+        )
+    )
+
+
+@equipos_bp.route(
+    "/equipos/<int:equipo_id>/integrantes/<int:alumno_id>/eliminar",
+    methods=["POST"]
+)
+@requiere_staff
+def eliminar_integrante_equipo(equipo_id, alumno_id):
+
+    ok, resultado = eliminar_integrante(
+        equipo_id,
+        alumno_id
+    )
+
+    if ok:
+        flash(
+            "Integrante eliminado correctamente.",
+            "success"
+        )
+    else:
+        flash(resultado, "danger")
+
+    return redirect(
+        url_for(
+            "equipos.administrar_integrantes",
+            equipo_id=equipo_id
+        )
     )
