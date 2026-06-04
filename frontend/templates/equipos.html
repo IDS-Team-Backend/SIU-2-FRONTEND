@@ -4,7 +4,7 @@
 <section>
   <div class="page-header">
     <h1>{{ title }}</h1>
-    <a href="{{ url_for('equipos.listar_equipos', accion='nueva') }}" class="btn btn-primary">
+    <a href="{{ url_for('equipos.listar_equipos', accion='nueva', curso_id=curso_id) }}" class="btn btn-primary">
       <span>+</span>
       Nuevo Equipo
     </a>
@@ -24,18 +24,18 @@
           <div class="card-actions">
             
             <a
-                href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo.id) }}"
+                href="{{ url_for('equipos.administrar_integrantes', curso_id=curso_id, equipo_id=equipo.id) }}"
                 class="btn-action btn-action--edit">
                 👨‍🎓
             </a>
 
-            <a href="{{ url_for('equipos.listar_equipos', accion='editar', id=equipo.id) }}" 
+            <a href="{{ url_for('equipos.listar_equipos', accion='editar', curso_id=curso_id, id=equipo.id) }}" 
                title="Editar" 
                class="btn-action btn-action--edit">
               ✎
             </a>
 
-            <form action="{{ url_for('equipos.eliminar', equipo_id=equipo.id) }}" 
+            <form action="{{ url_for('equipos.eliminar', curso_id=curso_id, equipo_id=equipo.id) }}" 
                   method="POST" 
                   class="form-inline-block" 
                   onsubmit="return confirm('¿Estás seguro de que deseas eliminar este equipo?');">
@@ -56,10 +56,10 @@
   <div class="modal modal--sm">
     <div class="modal__header">
       <h2 class="modal__title">Nuevo Equipo</h2>
-      <a href="{{ url_for('equipos.listar_equipos') }}" class="modal__close modal-close-btn">x</a>
+      <a href="{{ url_for('equipos.listar_equipos', curso_id=curso_id) }}" class="modal__close modal-close-btn">x</a>
     </div>
     <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('equipos.crear_nuevo_equipo', evaluacion_id=1) }}" method="POST">
+      <form action="{{ url_for('equipos.crear_nuevo_equipo', curso_id=curso_id, evaluacion_id=1) }}" method="POST">
         <div class="form-group">
           <label for="nombre">Nombre</label>
           <input type="text" id="nombre" name="nombre" required class="form-control">
@@ -88,7 +88,7 @@
         </div>
 
         <div class="form-actions">
-          <a href="{{ url_for('equipos.listar_equipos') }}" class="btn btn-outline">Cancelar</a>
+          <a href="{{ url_for('equipos.listar_equipos', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
           <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
       </form>
@@ -104,10 +104,10 @@
     <div class="modal modal--sm">
       <div class="modal__header">
         <h2 class="modal__title">Editar Equipo</h2>
-        <a href="{{ url_for('equipos.listar_equipos') }}" class="modal__close modal-close-btn">x</a>
+        <a href="{{ url_for('equipos.listar_equipos', curso_id=curso_id) }}" class="modal__close modal-close-btn">x</a>
       </div>
       <div class="modal__body modal__body--padded">
-        <form action="{{ url_for('equipos.actualizar', equipo_id=equipo_id) }}" method="POST">
+        <form action="{{ url_for('equipos.actualizar', curso_id=curso_id, equipo_id=equipo_id) }}" method="POST">
           
           <div class="form-group">
             <label for="nombre">Nombre</label>
@@ -143,7 +143,7 @@
           </div>
 
           <div class="form-actions modal-actions-spacing">
-            <a href="{{ url_for('equipos.listar_equipos') }}" class="btn btn-outline">Cancelar</a>
+            <a href="{{ url_for('equipos.listar_equipos', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           </div>
         </form>

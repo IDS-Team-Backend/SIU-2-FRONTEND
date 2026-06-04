@@ -4,12 +4,12 @@
 <section>
     <div class="page-header">
         <h1>Integrantes del Equipo</h1>
-        <a href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo_id, accion='nueva') }}" class="btn btn-primary">
+        <a href="{{ url_for('equipos.administrar_integrantes', curso_id=curso_id, equipo_id=equipo_id, accion='nueva') }}" class="btn btn-primary">
             <span>+</span>
             Nuevo Integrante
         </a>
         <a
-            href="{{ url_for('equipos.listar_equipos') }}"
+            href="{{ url_for('equipos.listar_equipos', curso_id=curso_id) }}"
             class="btn btn-outline"
         >
             Volver
@@ -25,7 +25,7 @@
             </div>
             <div class="card-actions">
                 <form
-                    action="{{ url_for('equipos.eliminar_integrante_equipo', equipo_id=equipo_id, alumno_id=integrante.alumno_id) }}"
+                    action="{{ url_for('equipos.eliminar_integrante_equipo', curso_id=curso_id, equipo_id=equipo_id, alumno_id=integrante.alumno_id) }}"
                     method="POST" 
                     class="form-inline-block" 
                     onsubmit="return confirm('¿Estás seguro de que deseas eliminar este integrante?');">
@@ -45,10 +45,10 @@
   <div class="modal modal--sm">
     <div class="modal__header">
       <h2 class="modal__title">Nuevo Integrante</h2>
-      <a href="{{ url_for('equipos.administrar_integrantes', equipo_id=equipo_id) }}" class="modal__close modal-close-btn">x</a>
+      <a href="{{ url_for('equipos.administrar_integrantes', curso_id=curso_id, equipo_id=equipo_id) }}" class="modal__close modal-close-btn">x</a>
     </div>
     <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('equipos.buscar_integrante', equipo_id=equipo_id) }}" method="POST">
+      <form action="{{ url_for('equipos.buscar_integrante', curso_id=curso_id, equipo_id=equipo_id) }}" method="POST">
         <div class="form-group">
             <label>Padrón</label>
             <input
