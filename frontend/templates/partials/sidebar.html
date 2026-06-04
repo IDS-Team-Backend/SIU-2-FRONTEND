@@ -23,6 +23,9 @@
     <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes') }}">
       <span class="material-symbols-rounded">bar_chart</span>Reportes
     </a>
+    <a class="{% if active_page == 'equipos' %}active{% endif %}" href="{{ url_for('equipos.listar_equipos') }}">
+      <span class="material-symbols-rounded">person</span>Equipos
+    </a>
   </nav>
 
   <div class="sidebar-user-wrapper">
