@@ -9,7 +9,6 @@ from services.reportes_service import (
 )
 
 reportes_bp = Blueprint("reportes", __name__)
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 @reportes_bp.route("/curso/<int:curso_id>/reportes", methods=["GET"])
 @requiere_staff
