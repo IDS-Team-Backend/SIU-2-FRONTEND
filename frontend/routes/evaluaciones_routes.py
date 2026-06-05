@@ -12,18 +12,11 @@ from services.evaluaciones_service import (
     eliminar_evaluacion,
 )
 
+from services.tipos_evaluaciones_service import (
+    obtener_tipos_evaluacion,
+)
+
 evaluaciones_bp = Blueprint("evaluaciones", __name__)
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
-
-MOCKS_DIR = Path(__file__).parent.parent / "mocks"
-
-def _load_tipos_evaluacion():
-    try:
-        with open(MOCKS_DIR / "tipos_evaluacion.json", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return []
-
 
 @evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones", methods=["GET"])
 @requiere_staff
@@ -34,7 +27,12 @@ def listar_evaluaciones(curso_id):
         flash(evaluaciones, "danger")
         evaluaciones = []
 
-    tipos_evaluacion = _load_tipos_evaluacion()
+    ok_tipos, tipos_evaluacion = obtener_tipos_evaluacion(curso_id)
+
+    if not ok_tipos:
+        flash(tipos_evaluacion, "danger")
+        tipos_evaluacion = []
+        
     hoy = date.today().isoformat()
 
     return render_template(

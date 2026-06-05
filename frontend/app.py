@@ -6,6 +6,8 @@ from services.decorators import proteger_rutas
 from routes import register_routes
 from utils.api_client import api_request
 from flask import Flask, render_template, request, redirect, url_for, abort
+from datetime import datetime
+
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 app = Flask(__name__)
@@ -101,5 +103,15 @@ def cronograma(curso_id):
     )
 
 
+
+@app.template_filter('formatear_fecha')
+def formatear_fecha(fecha_str):
+    if not fecha_str:
+        return ''
+    try:
+        fecha_obj = datetime.strptime(fecha_str, '%a, %d %b %Y %H:%M:%S %Z')
+        return fecha_obj.strftime('%d/%m/%Y')
+    except:
+        return fecha_str  
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
