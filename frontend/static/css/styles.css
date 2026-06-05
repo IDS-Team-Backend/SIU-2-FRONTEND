@@ -1304,3 +1304,14 @@ h1 {
     padding: 20px;
     text-align: center;
 }
+
+
+
+
+
+
+.contenedor-evaluaciones-tipos {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

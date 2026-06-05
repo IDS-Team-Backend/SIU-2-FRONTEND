@@ -17,9 +17,9 @@
           
           <div class="card-info">
             <h2>{{ evaluacion.titulo }}</h2>
-            <p><strong>ID:</strong> {{ evaluacion.id }}</p>
-            <p><strong>Tipo ID:</strong> {{ evaluacion.tipo_evaluacion_id }}</p>
-            <p><strong>Fecha:</strong> {{ evaluacion.fecha }}</p>
+            <p><strong>Evaluacion ID:</strong> {{ evaluacion.id }}</p>
+            <p><strong>Tipo Evaluacion ID:</strong> {{ evaluacion.tipo_evaluacion_id }}</p>
+            <p><strong>Fecha:</strong> {{ evaluacion.fecha|formatear_fecha }}</p>
             {% if evaluacion.descripcion %}
               <p><strong>Descripción:</strong> {{ evaluacion.descripcion }}</p>
             {% endif %}
@@ -65,12 +65,26 @@
         </div>
         <div class="form-group">
           <label for="tipo_evaluacion_id">Tipo</label>
-          <select id="tipo_evaluacion_id" name="tipo_evaluacion_id" required class="form-control">
-            <option value="">Seleccionar...</option>
-            {% for tipo in tipos_evaluacion %}
-              <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
-            {% endfor %}
-          </select>
+          <div class="contenedor-evaluaciones-tipos">
+            <select id="tipo_evaluacion_id"
+                    name="tipo_evaluacion_id"
+                    required
+                    class="form-control">
+              <option value="">Seleccionar...</option>
+              {% for tipo in tipos_evaluacion %}
+                <option value="{{ tipo.id }}">
+                  {{ tipo.nombre }}
+                </option>
+              {% endfor %}
+            </select>
+            <a
+              href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
+                              curso_id=curso_id) }}"
+              class="btn-action btn-action--edit"
+              title="Administrar tipos de evaluación">
+              ✎
+            </a>
+          </div>
         </div>
         <div class="form-group">
           <label for="fecha">Fecha</label>
@@ -109,14 +123,27 @@
 
           <div class="form-group">
             <label for="tipo_evaluacion_id_edit">Tipo *</label>
-            <select id="tipo_evaluacion_id_edit" name="tipo_evaluacion_id" required class="form-control">
-              <option value="">Seleccionar...</option>
-              {% for tipo in tipos_evaluacion %}
-                <option value="{{ tipo.id }}">
-                  {{ tipo.nombre }}
-                </option>
-              {% endfor %}
-            </select>
+            <div class="contenedor-evaluaciones-tipos">
+              <select
+                  id="tipo_evaluacion_id_edit"
+                  name="tipo_evaluacion_id"
+                  required
+                  class="form-control">
+                <option value="">Seleccionar...</option>
+                {% for tipo in tipos_evaluacion %}
+                  <option value="{{ tipo.id }}">
+                    {{ tipo.nombre }}
+                  </option>
+                {% endfor %}
+              </select>
+              <a
+                href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
+                                curso_id=curso_id) }}"
+                class="btn-action btn-action--edit"
+                title="Administrar tipos de evaluación">
+                ✎
+              </a>
+            </div>
           </div>
 
           <div class="form-group">
