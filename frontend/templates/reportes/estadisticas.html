@@ -1,39 +1,26 @@
 {# Template para reporte de estadísticas #}
-
-<table class="tabla-reporte">
-  <thead>
-    <tr>
-      <th>Evaluación</th>
-      <th>Tipo</th>
-      <th class="text-center">Total Notas</th>
-      <th class="text-center text-success">Aprobados</th>
-      <th class="text-center text-danger">Desaprobados</th>
-      <th class="text-center">Promedio</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for stat in estadisticas %}
-    <tr>
-      <td><strong>{{ stat.evaluacion_titulo }}</strong></td>
-      <td>{{ stat.tipo_evaluacion }}</td>
-      <td class="text-center">{{ stat.total_notas }}</td>
-      <td class="text-center text-success text-bold">{{ stat.aprobados }}</td>
-      <td class="text-center text-danger text-bold">{{ stat.desaprobados }}</td>
-      <td class="text-center bg-destacado">{{ stat.nota_promedio }}</td>
-    </tr>
-    {% else %}
-    <tr>
-      <td colspan="6" style="padding: 20px; text-align: center;">No hay estadísticas disponibles.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-{# Contenedor para el gráfico de Chart.js #}
-<div style="margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 4px;">
-  <h3>Visualización: Aprobados vs Desaprobados</h3>
-  <canvas id="chartMetricas" style="max-height: 300px;"></canvas>
-  
-  {# Contenedor oculto con datos JSON para Chart.js #}
-  <div id="datos-stats-raw" data-json='{{ estadisticas | tojson | safe }}'></div>
+<div class="stats-grid">
+    <div class="chart-card chart-full">
+        <h3>Asistencia por clase</h3>
+        <canvas id="asistenciaChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Distribución de notas</h3>
+        <canvas id="notasChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Estado de cursada</h3>
+        <canvas id="estadoChart"></canvas>
+    </div>
+    <div class="chart-card chart-full">
+        <h3>Evolución del rendimiento del curso</h3>
+        <canvas id="rendimientoChart"></canvas>
+    </div>
+    <div class="chart-card chart-full">
+        <h3>Promedio por tipo de evaluación</h3>
+        <canvas id="tipoChart"></canvas>
+    </div>
 </div>
+
+<div id="data-container-stats" data-json='{{ (estadisticas | default({})) | tojson | safe }}'></div>
+
