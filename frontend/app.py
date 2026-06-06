@@ -26,7 +26,7 @@ def _load_mock(filename):
 
 cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
 listar_alumnos = _load_mock("alumnos.json")
-listar_materiales = _load_mock("materiales.json")
+
 
 listar_materias = [
     {"id": c["id"], "codigo": c["codigo"], "nombre": c["nombre"]}
@@ -70,14 +70,7 @@ def materias():
     )
 
 
-@app.route("/material")
-def material():
-    return render_template(
-        "material.html",
-        title="Material",
-        active_page="material",
-        materiales=listar_materiales,
-    )
+
 @app.route("/curso/<int:curso_id>")
 def curso(curso_id):
     curso_data = cursos_mock.get(curso_id)

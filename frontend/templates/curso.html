@@ -62,7 +62,7 @@
             <div class="section-card-desc">Fechas, temas y modalidad de cada clase</div>
           </div>
         </a>
-        <a class="section-card" href="{{ url_for('material') }}">
+        <a class="section-card" href="{{ url_for('materiales.listar_materiales', curso_id=curso_activo.id) }}">
           <span class="material-symbols-rounded">menu_book</span>
           <div>
             <div class="section-card-title">Materiales</div>

@@ -14,7 +14,7 @@
     <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">person</span>Alumnos
     </a>
-    <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('material') }}">
+    <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('materiales.listar_materiales', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">description</span>Material
     </a>
       <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_activo.id) }}">

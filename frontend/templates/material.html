@@ -33,7 +33,7 @@
           <a href="{{ material.archivo_url }}" target="_blank" class="btn-icon btn-icon--primary">
             📥 Descargar
           </a>
-          <form method="POST" action="/material/{{ material.id }}/eliminar"
+          <form method="POST" action="/curso/{{ curso_id }}/material/{{ material.id }}/eliminar"
                 onsubmit="return confirm('¿Eliminar este material?')">
             <button type="submit" class="btn-icon btn-icon--danger">🗑️</button>
           </form>
@@ -52,7 +52,7 @@
   <div style="background:white; border-radius:8px; padding:2rem; width:100%; max-width:480px;">
     <h2 style="margin-bottom:1.5rem;">Subir Material</h2>
 
-    <form method="POST" action="/material/crear">
+    <form method="POST" action="/curso/{{ curso_id }}/material/crear">
       <div style="margin-bottom:1rem;">
         <label style="display:block; margin-bottom:.4rem; font-weight:600;">Título</label>
         <input type="text" name="titulo" required maxlength="255"

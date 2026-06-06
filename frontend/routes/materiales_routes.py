@@ -8,13 +8,12 @@ from services.materiales_service import (
 )
 
 materiales_bp = Blueprint("materiales", __name__)
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 
-@materiales_bp.route("/material")
+@materiales_bp.route("/curso/<int:curso_id>/material") 
 @login_required
-def listar_materiales():
-    ok, materiales = obtener_materiales_del_curso(CURSO_ACTIVO_ID)
+def listar_materiales(curso_id):
+    ok, materiales = obtener_materiales_del_curso(curso_id)
     if not ok:
         flash(materiales, "danger")
         materiales = []
@@ -27,23 +26,23 @@ def listar_materiales():
     )
 
 
-@materiales_bp.route("/material/crear", methods=["POST"])
+@materiales_bp.route("/curso/<int:curso_id>/material/crear", methods=["POST"])
 @requiere_staff
-def subir_material():
+def subir_material(curso_id):
     titulo      = request.form.get("titulo", "").strip()
     archivo_url = request.form.get("archivo_url", "").strip()
     subido_por  = request.form.get("subido_por", type=int)
 
-    ok, resultado = crear_material(CURSO_ACTIVO_ID, titulo, archivo_url, subido_por)
+    ok, resultado = crear_material(curso_id, titulo, archivo_url, subido_por)
     flash("Material subido correctamente." if ok else resultado,
           "success" if ok else "danger")
-    return redirect(url_for("materiales.listar_materiales"))
+    return redirect(url_for("materiales.listar_materiales", curso_id=curso_id))
 
 
-@materiales_bp.route("/material/<int:material_id>/eliminar", methods=["POST"])
+@materiales_bp.route("/curso/<int:curso_id>/material/<int:material_id>/eliminar", methods=["POST"])
 @requiere_staff
-def borrar_material(material_id):
+def borrar_material(curso_id, material_id):
     ok, resultado = eliminar_material(material_id)
     flash("Material eliminado." if ok else resultado,
           "success" if ok else "danger")
-    return redirect(url_for("materiales.listar_materiales"))
+    return redirect(url_for("materiales.listar_materiales", curso_id=curso_id))
