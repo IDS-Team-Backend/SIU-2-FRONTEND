@@ -1,0 +1,72 @@
+{# Macros compartidas por las tablas de equipos y de alumnos:
+   - entrega_celda / nota_celda: celdas de la tabla (nota con devolución 💬).
+   - menu_resultado: ítems entrega/nota del menú ⋮ con la máquina de estados:
+       sin entrega        -> Registrar entrega · (Cargar nota deshabilitado)
+       con entrega s/nota  -> Cargar nota · Quitar entrega
+       con entrega + nota  -> Editar nota · Quitar nota   (entrega bloqueada)
+     `kind` ∈ 'equipo' | 'alumno' (define rutas e id de los "crear"). #}
+
+{% macro entrega_celda(entrega) %}
+  {% if entrega %}
+    <span class="entrega-badge entrega-badge--{{ entrega.estado }}">{{ entrega.estado|capitalize }}</span>
+    <div class="entrega-fecha">
+      {{ entrega.fecha_entrega|formatear_fecha_hora }}
+      {% if entrega.archivo_url %}
+        · <a href="{{ entrega.archivo_url }}" target="_blank" rel="noopener" class="entrega-archivo">archivo</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <span class="text-muted">Sin entrega</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro nota_celda(nota) %}
+  {% if nota %}
+    {% set nval = nota.nota|float %}
+    <span class="nota-pill {{ 'nota--alto' if nval >= 7 else ('nota--medio' if nval >= 4 else 'nota--bajo') }}">{{ nota.nota }}</span>
+    {% if nota.observaciones %}
+      <span class="nota-devolucion" title="{{ nota.observaciones }}">💬</span>
+    {% endif %}
+  {% else %}
+    <span class="text-muted">Sin corregir</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro menu_resultado(kind, curso_id, evaluacion_id, subject_id, subject_nombre, entrega, nota, page=none, page_size=none) %}
+  {% if not entrega %}
+    {% if kind == 'equipo' %}
+      <a class="row-menu__item" role="menuitem"
+         href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion_id, accion='entrega', equipo_id=subject_id, page=page, page_size=page_size) }}">Registrar entrega</a>
+    {% else %}
+      <a class="row-menu__item" role="menuitem"
+         href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion_id, accion='entrega_alumno', alumno_id=subject_id, page=page, page_size=page_size) }}">Registrar entrega</a>
+    {% endif %}
+    <span class="row-menu__item row-menu__item--disabled" title="Registrá la entrega antes de cargar la nota">Cargar nota</span>
+
+  {% elif not nota %}
+    {% if kind == 'equipo' %}
+      <a class="row-menu__item" role="menuitem"
+         href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion_id, accion='cargar_nota', equipo_id=subject_id, page=page, page_size=page_size) }}">Cargar nota</a>
+    {% else %}
+      <a class="row-menu__item" role="menuitem"
+         href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion_id, accion='cargar_nota_alumno', alumno_id=subject_id, page=page, page_size=page_size) }}">Cargar nota</a>
+    {% endif %}
+    <form action="{{ url_for('evaluaciones.borrar_entrega', curso_id=curso_id, evaluacion_id=evaluacion_id, entrega_id=entrega.id) }}"
+          method="POST" onsubmit="return confirm('¿Quitar la entrega de {{ subject_nombre }}?');">
+      <input type="hidden" name="{{ 'equipo_id' if kind == 'equipo' else 'alumno_id' }}" value="{{ subject_id }}">
+      <input type="hidden" name="page" value="{{ page or '' }}">
+      <input type="hidden" name="page_size" value="{{ page_size or '' }}">
+      <button type="submit" class="row-menu__item row-menu__item--danger">Quitar entrega</button>
+    </form>
+
+  {% else %}
+    <a class="row-menu__item" role="menuitem"
+       href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion_id, accion='editar_nota', nota_id=nota.id, page=page, page_size=page_size) }}">Editar nota</a>
+    <form action="{{ url_for('evaluaciones.borrar_nota', curso_id=curso_id, evaluacion_id=evaluacion_id, nota_id=nota.id) }}"
+          method="POST" onsubmit="return confirm('¿Quitar la nota de {{ subject_nombre }}? Volverá a estar sin corregir.');">
+      <input type="hidden" name="page" value="{{ page or '' }}">
+      <input type="hidden" name="page_size" value="{{ page_size or '' }}">
+      <button type="submit" class="row-menu__item row-menu__item--danger">Quitar nota</button>
+    </form>
+  {% endif %}
+{% endmacro %}
