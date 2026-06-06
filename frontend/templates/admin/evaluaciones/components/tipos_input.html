@@ -1,0 +1,21 @@
+{# Input de tipo de evaluación: lista seleccionable (radios) con nombre editable
+   inline + alta de nuevo tipo. Va DENTRO del form de la evaluación (los radios
+   envían tipo_evaluacion_id). Edición/alta son inline vía JS reusando el ABM.
+   Requiere en contexto: tipos_evaluacion, curso_id, seleccion. #}
+<div class="form-group">
+  <label class="form-group__label">Tipo *</label>
+  <div class="tipo-input" data-tipo-input
+       data-create-url="{{ url_for('tipo_evaluaciones.crear_nueva_evaluacion', curso_id=curso_id) }}"
+       data-rows-url="{{ url_for('tipo_evaluaciones.filas_tipos', curso_id=curso_id) }}">
+    <div class="tipo-input__list" data-tipo-list>
+      {% include "admin/evaluaciones/components/tipos_input_rows.html" %}
+    </div>
+    <div class="tipo-input__add">
+      <input type="text" class="tipo-input__nombre" data-new-nombre placeholder="Nuevo tipo…">
+      <label class="tipo-input__grupal">
+        <input type="checkbox" data-new-grupal> grupal
+      </label>
+      <button type="button" class="btn btn-outline" data-add>+ Agregar</button>
+    </div>
+  </div>
+</div>
