@@ -43,7 +43,7 @@ def listar_evaluaciones(curso_id):
         )
 
     return render_template(
-        "evaluaciones.html",
+        "admin/evaluaciones/index.html",
         title="Evaluaciones",
         curso_id=curso_id,
         active_page="evaluaciones",

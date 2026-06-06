@@ -1,10 +1,9 @@
-{% extends "base.html" %}
+{% extends "public/base.html" %}
 
 {% block content %}
 <section>
   <div class="page-header">
     <h1>Materiales</h1>
-    <button class="btn btn-primary">+ Subir Material</button>
   </div>
 
   <div class="material-list">
@@ -24,7 +23,6 @@
           <a href="{{ material.archivo_url }}" target="_blank" class="btn-icon btn-icon--primary">
             📥 Descargar
           </a>
-          <button class="btn-icon btn-icon--danger">🗑️</button>
         </div>
       </div>
       {% endfor %}

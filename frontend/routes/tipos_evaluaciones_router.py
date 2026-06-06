@@ -29,7 +29,7 @@ def listar_tipo_evaluaciones(curso_id):
         )
 
     return render_template(
-        "tipo_evaluaciones.html",
+        "admin/tipo_evaluaciones/index.html",
         title="Tipos de Evaluaciones",
         curso_id=curso_id,
         active_page="tipo_evaluaciones",

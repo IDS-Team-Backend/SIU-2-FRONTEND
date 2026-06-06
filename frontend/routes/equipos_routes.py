@@ -49,7 +49,7 @@ def listar_equipos(curso_id):
         )
 
     return render_template(
-        "equipos.html",
+        "admin/equipos/index.html",
         title="Equipos",
         curso_id=curso_id,
         active_page="equipos",
@@ -136,7 +136,7 @@ def administrar_integrantes(curso_id, equipo_id):
         integrantes = []
 
     return render_template(
-        "equipo_integrantes.html",
+        "admin/equipos/integrantes.html",
         title="Integrantes del Equipo",
         active_page="equipos",
         curso_id=curso_id,

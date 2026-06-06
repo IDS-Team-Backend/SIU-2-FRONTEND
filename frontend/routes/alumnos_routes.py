@@ -65,7 +65,7 @@ def listar_alumnos(curso_id):
     )
 
     return render_template(
-        "alumnos.html",
+        "admin/alumnos/index.html",
         title="Alumnos",
         active_page="alumnos",
         curso_id=curso_id,

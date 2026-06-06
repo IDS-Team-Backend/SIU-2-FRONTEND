@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block content %}
 <section>
@@ -31,11 +31,11 @@
 
   {# Contenido Dinámico según Tab Activo #}
   {% if tab_actual == 'alumnos' %}
-    {% include 'reportes/alumnos.html' %}
+    {% include 'admin/reportes/components/alumnos.html' %}
   {% elif tab_actual == 'estadisticas' %}
-    {% include 'reportes/estadisticas.html' %}
+    {% include 'admin/reportes/components/estadisticas.html' %}
   {% elif tab_actual == 'equipos' %}
-    {% include 'reportes/equipos.html' %}
+    {% include 'admin/reportes/components/equipos.html' %}
   {% endif %}
 
 </section>

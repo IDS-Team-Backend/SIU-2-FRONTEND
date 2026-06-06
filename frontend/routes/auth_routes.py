@@ -28,7 +28,7 @@ def login():
                 flash(error, "danger")
 
             return render_template(
-                "login.html",
+                "auth/login.html",
                 dni=request.form.get("dni") or request.form.get("username", "")
             )
 
@@ -36,7 +36,7 @@ def login():
 
         if not ok:
             return render_template(
-            "login.html",
+            "auth/login.html",
             error=resultado,
                 dni=request.form.get("dni") or request.form.get("username", "")
             )
@@ -49,7 +49,7 @@ def login():
         flash("Sesión iniciada correctamente.", "success")
         return response
 
-    return render_template("login.html")
+    return render_template("auth/login.html")
 
 
 
