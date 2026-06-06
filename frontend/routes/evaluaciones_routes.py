@@ -12,34 +12,33 @@ from services.evaluaciones_service import (
     eliminar_evaluacion,
 )
 
+from services.tipos_evaluaciones_service import (
+    obtener_tipos_evaluacion,
+)
+
 evaluaciones_bp = Blueprint("evaluaciones", __name__)
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
-MOCKS_DIR = Path(__file__).parent.parent / "mocks"
-
-def _load_tipos_evaluacion():
-    try:
-        with open(MOCKS_DIR / "tipos_evaluacion.json", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return []
-
-
-@evaluaciones_bp.route("/evaluaciones", methods=["GET"])
+@evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones", methods=["GET"])
 @requiere_staff
-def listar_evaluaciones():
-    ok, evaluaciones = obtener_evaluaciones_del_curso(CURSO_ACTIVO_ID)
+def listar_evaluaciones(curso_id):
+    ok, evaluaciones = obtener_evaluaciones_del_curso(curso_id)
 
     if not ok:
         flash(evaluaciones, "danger")
         evaluaciones = []
 
-    tipos_evaluacion = _load_tipos_evaluacion()
+    ok_tipos, tipos_evaluacion = obtener_tipos_evaluacion(curso_id)
+
+    if not ok_tipos:
+        flash(tipos_evaluacion, "danger")
+        tipos_evaluacion = []
+        
     hoy = date.today().isoformat()
 
     return render_template(
         "evaluaciones.html",
         title="Evaluaciones",
+        curso_id=curso_id,
         active_page="evaluaciones",
         evaluaciones=evaluaciones,
         tipos_evaluacion=tipos_evaluacion,
@@ -47,9 +46,9 @@ def listar_evaluaciones():
     )
 
 
-@evaluaciones_bp.route("/evaluaciones", methods=["POST"])
+@evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones", methods=["POST"])
 @requiere_staff
-def crear_nueva_evaluacion():
+def crear_nueva_evaluacion(curso_id):
     titulo = request.form.get("titulo", "").strip()
     tipo_evaluacion_id = request.form.get("tipo_evaluacion_id")
     fecha = request.form.get("fecha", "").strip()
@@ -60,7 +59,7 @@ def crear_nueva_evaluacion():
         tipo_evaluacion_id,
         fecha,
         descripcion,
-        CURSO_ACTIVO_ID
+        curso_id
     )
 
     if ok:
@@ -68,12 +67,12 @@ def crear_nueva_evaluacion():
     else:
         flash(resultado, "danger")
 
-    return redirect(url_for("evaluaciones.listar_evaluaciones"))
+    return redirect(url_for("evaluaciones.listar_evaluaciones", curso_id=curso_id))
 
 
-@evaluaciones_bp.route("/evaluaciones/<int:evaluacion_id>/actualizar", methods=["POST"])
+@evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones/<int:evaluacion_id>/actualizar", methods=["POST"])
 @requiere_staff
-def actualizar(evaluacion_id):
+def actualizar(curso_id, evaluacion_id):
     titulo = request.form.get("titulo", "").strip()
     tipo_evaluacion_id = request.form.get("tipo_evaluacion_id")
     fecha = request.form.get("fecha", "").strip()
@@ -86,7 +85,7 @@ def actualizar(evaluacion_id):
         tipo_evaluacion_id,
         fecha,
         descripcion,
-        CURSO_ACTIVO_ID,
+        curso_id,
         activo
     )
 
@@ -95,12 +94,12 @@ def actualizar(evaluacion_id):
     else:
         flash(resultado, "danger")
 
-    return redirect(url_for("evaluaciones.listar_evaluaciones"))
+    return redirect(url_for("evaluaciones.listar_evaluaciones", curso_id=curso_id))
 
 
-@evaluaciones_bp.route("/evaluaciones/<int:evaluacion_id>/eliminar", methods=["POST"])
+@evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones/<int:evaluacion_id>/eliminar", methods=["POST"])
 @requiere_staff
-def eliminar(evaluacion_id):
+def eliminar(curso_id, evaluacion_id):
     ok, resultado = eliminar_evaluacion(evaluacion_id)
 
     if ok:
@@ -108,4 +107,4 @@ def eliminar(evaluacion_id):
     else:
         flash(resultado, "danger")
 
-    return redirect(url_for("evaluaciones.listar_evaluaciones"))
+    return redirect(url_for("evaluaciones.listar_evaluaciones", curso_id=curso_id))

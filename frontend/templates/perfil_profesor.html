@@ -59,18 +59,16 @@
   <div class="panel perfil-panel">
     <h2 class="panel-title">Acciones</h2>
     <div class="perfil-actions">
-      <button type="button" class="btn-action">
-        <span class="material-symbols-rounded">edit</span>
-        Editar perfil
-      </button>
-      <button type="button" class="btn-action">
+      <button type="button" class="perfil-btn-action">
         <span class="material-symbols-rounded">lock</span>
         Cambiar contraseña
       </button>
-      <button type="button" class="btn-action btn-action--danger">
+
+      <a href="{{ url_for('auth.logout') }}"
+         class="perfil-btn-action perfil-btn-action--danger">
         <span class="material-symbols-rounded">logout</span>
         Cerrar sesión
-      </button>
+      </a>
     </div>
   </div>
 </section>

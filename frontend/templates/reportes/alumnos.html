@@ -1,7 +1,7 @@
 {# Template para reporte de alumnos con filtros expandidos y estilos por clases #}
 
 <div class="filtro-card">
-  <form method="GET" action="{{ url_for('reportes.listar_reportes') }}">
+  <form method="GET" action="{{ url_for('reportes.listar_reportes', curso_id=curso_id) }}" id="form-filtros-alumnos">
     <input type="hidden" name="tab" value="alumnos">
     
     {# Fila 1: Datos Personales / Filtros Básicos #}
@@ -59,7 +59,7 @@
       {# Acciones del formulario #}
       <div class="filtro-acciones">
         <button type="submit" class="btn btn-primary btn-fit">🔍 Filtrar</button>
-        <a href="{{ url_for('reportes.listar_reportes', tab='alumnos') }}" class="btn btn-outline btn-fit btn-link-reset">🔄 Limpiar</a>
+        <a href="{{ url_for('reportes.listar_reportes', tab='alumnos', curso_id=curso_id) }}" class="btn btn-outline btn-fit btn-link-reset">🔄 Limpiar</a>
       </div>
     </div>
   </form>

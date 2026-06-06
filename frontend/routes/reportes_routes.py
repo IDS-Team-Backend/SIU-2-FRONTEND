@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, request, flash, make_response
+from flask import Blueprint, render_template, request, flash, make_response, redirect, url_for
 
 from services.decorators import requiere_staff
 from services.reportes_service import (
@@ -9,19 +9,15 @@ from services.reportes_service import (
 )
 
 reportes_bp = Blueprint("reportes", __name__)
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
-@reportes_bp.route("/reportes", methods=["GET"])
+@reportes_bp.route("/curso/<int:curso_id>/reportes", methods=["GET"])
 @requiere_staff
-def listar_reportes():
+def listar_reportes(curso_id):
     tab_actual = request.args.get("tab", "alumnos").lower()
     tabs_validos = ["alumnos", "estadisticas", "equipos"]
     if tab_actual not in tabs_validos:
         tab_actual = "alumnos"
 
-    alumnos, estadisticas, equipos = [], [], []
-    error_msg = None
-    
     carrera_filtro = request.args.get("carrera", "")
     condicion_filtro = request.args.get("condicion", "")
     anio_ingreso = request.args.get("anio_ingreso", "")
@@ -32,51 +28,55 @@ def listar_reportes():
     
     export = request.args.get("export", "").lower() == "pdf"
     
-    try:
-        if export:
-            export_format = "pdf"
+    if export:
+        try:
             if tab_actual == "alumnos":
                 ok, res = obtener_alumnos_reporte(
-                    CURSO_ACTIVO_ID, carrera=carrera_filtro, condicion=condicion_filtro,
+                    curso_id, carrera=carrera_filtro, condicion=condicion_filtro,
                     anio_ingreso=anio_ingreso, nombre_completo=nombre_completo,
                     padron=padron, evaluacion_id=evaluacion_id, nota_mayor_a=nota_mayor_a,
-                    export=export_format
+                    export="pdf"
                 )
             elif tab_actual == "estadisticas":
-                ok, res = obtener_estadisticas_reporte(CURSO_ACTIVO_ID, export=export_format)
+                ok, res = obtener_estadisticas_reporte(curso_id, export="pdf")
             elif tab_actual == "equipos":
-                ok, res = obtener_equipos_reporte(CURSO_ACTIVO_ID, export=export_format)
+                ok, res = obtener_equipos_reporte(curso_id, export="pdf")
 
-            if ok and isinstance(res, bytes):
-                response = make_response(res)
+            if ok and isinstance(res, (bytes, bytearray)):
+                response = make_response(res) 
                 response.headers['Content-Type'] = 'application/pdf'
                 response.headers['Content-Disposition'] = f'attachment; filename=reporte_{tab_actual}.pdf'
                 return response
             else:
-                error_msg = f"La API no pudo generar el archivo PDF para {tab_actual}."
+                error_msg = res.get("error") if isinstance(res, dict) else "Error al generar el PDF."
+                flash(error_msg, "danger")
+                
+        except Exception as e:
+            flash(f"Error crítico al exportar PDF: {str(e)}", "danger")
+        
 
-        else:
-            ok_alumnos, alumnos_data = obtener_alumnos_reporte(
-                CURSO_ACTIVO_ID, carrera=carrera_filtro, condicion=condicion_filtro,
-                anio_ingreso=anio_ingreso, nombre_completo=nombre_completo,
-                padron=padron, evaluacion_id=evaluacion_id, nota_mayor_a=nota_mayor_a,
-                export=False
-            )
-            if ok_alumnos:
-                alumnos = alumnos_data
-            else:
-                error_msg = "No se pudieron cargar los alumnos del backend."
-            ok_stats, estadisticas_data = obtener_estadisticas_reporte(CURSO_ACTIVO_ID, export=False)
-            if ok_stats:
-                estadisticas = estadisticas_data
-            else:
-                error_msg = error_msg or "No se pudieron cargar las estadísticas del backend."
+        return redirect(url_for("reportes.listar_reportes", curso_id=curso_id, tab=tab_actual))
 
-            ok_equipos, equipos_data = obtener_equipos_reporte(CURSO_ACTIVO_ID, export=False)
-            if ok_equipos:
-                equipos = equipos_data
-            else:
-                error_msg = error_msg or "No se pudieron cargar los equipos del backend."
+    alumnos, estadisticas, equipos = [], [], []
+    error_msg = None
+    
+    try:
+        ok_alumnos, alumnos_data = obtener_alumnos_reporte(
+            curso_id, carrera=carrera_filtro, condicion=condicion_filtro,
+            anio_ingreso=anio_ingreso, nombre_completo=nombre_completo,
+            padron=padron, evaluacion_id=evaluacion_id, nota_mayor_a=nota_mayor_a,
+            export=False
+        )
+        alumnos = alumnos_data if ok_alumnos else []
+        if not ok_alumnos: error_msg = "No se pudieron cargar los alumnos."
+
+        ok_stats, estadisticas_data = obtener_estadisticas_reporte(curso_id, export=False)
+        estadisticas = estadisticas_data if ok_stats else []
+        if not ok_stats: error_msg = error_msg or "No se pudieron cargar las estadísticas."
+
+        ok_equipos, equipos_data = obtener_equipos_reporte(curso_id, export=False)
+        equipos = equipos_data if ok_equipos else []
+        if not ok_equipos: error_msg = error_msg or "No se pudieron cargar los equipos."
     
     except Exception as e:
         error_msg = f"Error crítico de conexión con el backend: {str(e)}"
@@ -92,7 +92,6 @@ def listar_reportes():
         alumnos=alumnos,     
         estadisticas=estadisticas, 
         equipos=equipos,          
-
         carrera_filtro=carrera_filtro,
         condicion_filtro=condicion_filtro,
         anio_ingreso_filtro=anio_ingreso,
@@ -100,6 +99,5 @@ def listar_reportes():
         padron_filtro=padron,
         evaluacion_filtro=evaluacion_id,
         nota_filtro=nota_mayor_a,
-
-        curso_id=CURSO_ACTIVO_ID,
+        curso_id=curso_id
     )

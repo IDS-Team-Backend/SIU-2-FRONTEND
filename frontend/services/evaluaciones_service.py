@@ -2,7 +2,6 @@ from utils.api_client import api_request
 
 
 def obtener_evaluaciones_del_curso(curso_id):
-    #"activo": True S
     ok, data = api_request("GET", "/evaluaciones/", params={"curso_id": curso_id})
 
     if not ok:

@@ -17,14 +17,17 @@
     <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('material') }}">
       <span class="material-symbols-rounded">description</span>Material
     </a>
-      <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones') }}">
+      <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
     </a>
-    <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes') }}">
+    <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes', curso_id=curso_activo.id) }}">
       <span class="material-symbols-rounded">bar_chart</span>Reportes
     </a>
+    <a class="{% if active_page == 'equipos' %}active{% endif %}" href="{{ url_for('equipos.listar_equipos', curso_id=curso_activo.id) }}">
+      <span class="material-symbols-rounded">person</span>Equipos
+    </a>
   </nav>
-
+  
   <div class="sidebar-user-wrapper">
     <button class="sidebar-user" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
       <span class="material-symbols-rounded user-avatar">account_circle</span>
@@ -35,14 +38,14 @@
       <span class="material-symbols-rounded user-arrow">unfold_more</span>
     </button>
     <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
-      <a href="{{ url_for('perfil_estudiante') }}" role="menuitem">
+      <a href="{{ url_for('perfil.estudiante') }}" role="menuitem">
         <span class="material-symbols-rounded">school</span>
         <div>
           <span class="menu-item-title">Perfil Estudiante</span>
           <span class="menu-item-desc">Ver ficha de alumno</span>
         </div>
       </a>
-      <a href="{{ url_for('perfil_profesor') }}" role="menuitem">
+      <a href="{{ url_for('perfil.perfil_profesor') }}" role="menuitem">
         <span class="material-symbols-rounded">co_present</span>
         <div>
           <span class="menu-item-title">Perfil Docente</span>
@@ -52,8 +55,4 @@
     </div>
   </div>
 
-  <a href="{{ url_for('auth.logout') }}" class="sidebar-logout">
-    <span class="material-symbols-rounded">logout</span>
-    Cerrar sesión
-  </a>
 </aside>

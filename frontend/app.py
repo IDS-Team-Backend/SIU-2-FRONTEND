@@ -6,6 +6,8 @@ from services.decorators import proteger_rutas
 from routes import register_routes
 from utils.api_client import api_request
 from flask import Flask, render_template, request, redirect, url_for, abort
+from datetime import datetime
+
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 app = Flask(__name__)
@@ -31,30 +33,6 @@ listar_materias = [
     for c in cursos_mock.values()
 ]
 
-_perfil_estudiante_raw = _load_mock("perfil_estudiante.json")
-perfil_estudiante_mock = {
-    **_perfil_estudiante_raw,
-    "curso": {
-        "codigo": cursos_mock[CURSO_ACTIVO_ID]["codigo"],
-        "nombre": cursos_mock[CURSO_ACTIVO_ID]["nombre"],
-        "carrera": cursos_mock[CURSO_ACTIVO_ID]["carrera"],
-        "modalidad": cursos_mock[CURSO_ACTIVO_ID]["modalidad"],
-        **_perfil_estudiante_raw["curso"],
-    },
-}
-
-_perfil_profesor_raw = _load_mock("perfil_profesor.json")
-perfil_profesor_mock = {
-    **_perfil_profesor_raw,
-    "catedra": {
-        "codigo": cursos_mock[CURSO_ACTIVO_ID]["codigo"],
-        "nombre": cursos_mock[CURSO_ACTIVO_ID]["nombre"],
-        "alumnos": cursos_mock[CURSO_ACTIVO_ID]["stats"]["alumnos"],
-        "modalidad": cursos_mock[CURSO_ACTIVO_ID]["modalidad"],
-        "carga_horaria": cursos_mock[CURSO_ACTIVO_ID]["horas_semanales"],
-        **_perfil_profesor_raw["catedra"],
-    },
-}
 
 
 @app.context_processor
@@ -100,33 +78,6 @@ def material():
         active_page="material",
         materiales=listar_materiales,
     )
-
-
-@app.route("/perfil")
-def perfil():
-    return redirect(url_for("perfil_estudiante"))
-
-
-@app.route("/perfil/estudiante")
-def perfil_estudiante():
-    return render_template(
-        "perfil_estudiante.html",
-        title="Perfil Estudiante",
-        active_page="perfil",
-        perfil=perfil_estudiante_mock,
-    )
-
-
-@app.route("/perfil/profesor")
-def perfil_profesor():
-    return render_template(
-        "perfil_profesor.html",
-        title="Perfil Docente",
-        active_page="perfil",
-        perfil=perfil_profesor_mock,
-    )
-
-
 @app.route("/curso/<int:curso_id>")
 def curso(curso_id):
     curso_data = cursos_mock.get(curso_id)
@@ -152,5 +103,15 @@ def cronograma(curso_id):
     )
 
 
+
+@app.template_filter('formatear_fecha')
+def formatear_fecha(fecha_str):
+    if not fecha_str:
+        return ''
+    try:
+        fecha_obj = datetime.strptime(fecha_str, '%a, %d %b %Y %H:%M:%S %Z')
+        return fecha_obj.strftime('%d/%m/%Y')
+    except:
+        return fecha_str  
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
