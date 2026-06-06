@@ -120,13 +120,15 @@
                             id="nombre"
                             name="nombre"
                             required
-                            class="form-control">
+                            class="form-control"
+                            value="{{ tipo_actual.nombre }}">
                     </div>
                     <div class="form-group">
                         <label class="form-group-checkbox">
                             <input
                                 type="checkbox"
-                                name="es_grupal">
+                                name="es_grupal"
+                                {% if tipo_actual.es_grupal %}checked{% endif %}>
                             <strong>Evaluación grupal</strong>
                         </label>
                     </div>

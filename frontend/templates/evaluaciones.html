@@ -118,7 +118,7 @@
           
           <div class="form-group">
             <label for="titulo_edit">Título *</label>
-            <input type="text" id="titulo_edit" name="titulo" required class="form-control">
+            <input type="text" id="titulo_edit" name="titulo" required class="form-control" value="{{ evaluacion_actual.titulo }}">
           </div>
 
           <div class="form-group">
@@ -131,7 +131,7 @@
                   class="form-control">
                 <option value="">Seleccionar...</option>
                 {% for tipo in tipos_evaluacion %}
-                  <option value="{{ tipo.id }}">
+                  <option value="{{ tipo.id }}" {% if tipo.id == evaluacion_actual.tipo_evaluacion_id %}selected{% endif %}>
                     {{ tipo.nombre }}
                   </option>
                 {% endfor %}
@@ -148,17 +148,17 @@
 
           <div class="form-group">
             <label for="fecha_edit">Fecha *</label>
-            <input type="date" id="fecha_edit" name="fecha" required class="form-control">
+            <input type="date" id="fecha_edit" name="fecha" required class="form-control" value="{{ evaluacion_actual.fecha|fecha_input }}">
           </div>
 
           <div class="form-group">
             <label for="descripcion_edit">Descripción</label>
-            <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control"></textarea>
+            <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control">{{ evaluacion_actual.descripcion or '' }}</textarea>
           </div>
 
           <div class="form-group">
             <label class="form-group-checkbox">
-              <input type="checkbox" name="activo">
+              <input type="checkbox" name="activo" {% if evaluacion_actual.activo %}checked{% endif %}>
               <strong>Evaluación Activa</strong>
             </label>
           </div>

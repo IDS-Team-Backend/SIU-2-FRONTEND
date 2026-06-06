@@ -112,6 +112,15 @@ def formatear_fecha(fecha_str):
         fecha_obj = datetime.strptime(fecha_str, '%a, %d %b %Y %H:%M:%S %Z')
         return fecha_obj.strftime('%d/%m/%Y')
     except:
-        return fecha_str  
+        return fecha_str
+
+@app.template_filter('fecha_input')
+def fecha_input(fecha_str):
+    if not fecha_str:
+        return ''
+    try:
+        return datetime.strptime(fecha_str, '%a, %d %b %Y %H:%M:%S %Z').strftime('%Y-%m-%d')
+    except:
+        return fecha_str
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
