@@ -14,14 +14,14 @@ def index():
     perfiles = obtener_perfiles_usuario()
     if perfiles is None:
         flash("Error al obtener perfiles del usuario.", "danger")
-        return redirect(url_for("index"))
+        return redirect(url_for("public.index"))
     if es_alumno(perfiles):
         return redirect(url_for("perfil.perfil_estudiante"))
     elif es_staff(perfiles):
         return redirect(url_for("perfil.perfil_profesor"))
     else:
         flash("No se pudo determinar el perfil del usuario.", "danger")
-        return redirect(url_for("index"))
+        return redirect(url_for("public.index"))
     
 @perfil_bp.route("/perfil/estudiante")
 @login_required
@@ -29,7 +29,7 @@ def estudiante():
     ok, perfil = perfil_service.obtener_perfil_estudiante(CURSO_ACTIVO_ID)
     if not ok:
         flash(perfil, "danger")
-        return redirect(url_for("curso", curso_id=CURSO_ACTIVO_ID))
+        return redirect(url_for("private.curso", curso_id=CURSO_ACTIVO_ID))
  
     total_evaluaciones = len(perfil["evaluaciones"])
     pagina_actual      = request.args.get("page", 1, type=int)
@@ -62,7 +62,7 @@ def perfil_profesor():
     ok, perfil = perfil_service.obtener_perfil_profesor(CURSO_ACTIVO_ID)
     if not ok:
         flash(perfil, "danger")
-        return redirect(url_for("index"))
+        return redirect(url_for("public.index"))
     return render_template(
         "perfil_profesor.html",
         title="Perfil de Profesor",

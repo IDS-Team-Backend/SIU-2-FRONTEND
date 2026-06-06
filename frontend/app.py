@@ -1,126 +1,27 @@
-import json
 import os
-from pathlib import Path
-from services.auth_service import usuario_logueado
-from services.decorators import proteger_rutas
+
+from flask import Flask
+
 from routes import register_routes
-from utils.api_client import api_request
-from flask import Flask, render_template, request, redirect, url_for, abort
-from datetime import datetime
-
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
-
-app = Flask(__name__)
-app.secret_key = "pon_aqui_una_clave_secreta_segura"
-
-register_routes(app)
-proteger_rutas(app)
+from services.context_processors import registrar_context_processors
+from services.decorators import proteger_rutas
+from utils.filtros_fecha import registrar_filtros_fecha
 
 
-MOCKS_DIR = Path(__file__).parent / "mocks"
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-cambiar-en-produccion")
 
-def _load_mock(filename):
-    with open(MOCKS_DIR / filename, encoding="utf-8") as f:
-        return json.load(f)
+    register_routes(app)            # blueprints (público, privado, backoffice, auth)
+    proteger_rutas(app)             # gate global de autenticación
+    registrar_context_processors(app)  # curso_activo / usuario_actual en plantillas
+    registrar_filtros_fecha(app)    # filtros Jinja de fecha
 
-
-cursos_mock = {int(k): v for k, v in _load_mock("cursos.json").items()}
-listar_alumnos = _load_mock("alumnos.json")
-listar_materiales = _load_mock("materiales.json")
-
-listar_materias = [
-    {"id": c["id"], "codigo": c["codigo"], "nombre": c["nombre"]}
-    for c in cursos_mock.values()
-]
+    return app
 
 
-
-@app.context_processor
-def inject_curso_activo():
-    if not usuario_logueado():
-        return {"curso_activo": {"id": CURSO_ACTIVO_ID, "nombre": "Sistema"}}
-    ok, data = api_request("GET", f"/cursos/{CURSO_ACTIVO_ID}")
-    if ok and data:
-        return {"curso_activo": data}
-    return {"curso_activo": {"id": CURSO_ACTIVO_ID, "nombre": "Sistema"}}
- 
- 
-@app.context_processor
-def inject_usuario_actual():
-    if not usuario_logueado():
-        return {"usuario_actual": None}
-    ok, data = api_request("GET", "/auth/me/perfiles")
-    if ok and data:
-        return {"usuario_actual": {"perfiles": data.get("perfiles", [])}}
-    return {"usuario_actual": None}
+app = create_app()
 
 
-@app.route("/")
-def index():
-    return redirect(url_for("curso", curso_id=CURSO_ACTIVO_ID))
-
-
-@app.route("/materias")
-def materias():
-    return render_template(
-        "materias.html",
-        title="Materias",
-        active_page="materias",
-        materias=listar_materias,
-    )
-
-
-@app.route("/material")
-def material():
-    return render_template(
-        "material.html",
-        title="Material",
-        active_page="material",
-        materiales=listar_materiales,
-    )
-@app.route("/curso/<int:curso_id>")
-def curso(curso_id):
-    curso_data = cursos_mock.get(curso_id)
-    if curso_data is None:
-        abort(404)
-    return render_template(
-        "curso.html",
-        title=curso_data["nombre"],
-        active_page="curso",
-        curso=curso_data,
-    )
-
-
-@app.route("/curso/<int:curso_id>/cronograma")
-def cronograma(curso_id):
-    ok, data = api_request("GET", f"/cursos/{curso_id}/cronograma")
-    semanas = data.get("semanas", []) if ok and data else []
-    return render_template(
-        "cronograma.html",
-        title="Cronograma",
-        active_page="cronograma",
-        semanas=semanas,
-    )
-
-
-
-@app.template_filter('formatear_fecha')
-def formatear_fecha(fecha_str):
-    if not fecha_str:
-        return ''
-    try:
-        fecha_obj = datetime.strptime(fecha_str, '%a, %d %b %Y %H:%M:%S %Z')
-        return fecha_obj.strftime('%d/%m/%Y')
-    except:
-        return fecha_str
-
-@app.template_filter('fecha_input')
-def fecha_input(fecha_str):
-    if not fecha_str:
-        return ''
-    try:
-        return datetime.strptime(fecha_str, '%a, %d %b %Y %H:%M:%S %Z').strftime('%Y-%m-%d')
-    except:
-        return fecha_str
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
