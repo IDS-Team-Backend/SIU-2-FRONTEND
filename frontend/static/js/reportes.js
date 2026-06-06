@@ -136,8 +136,8 @@ function crearGraficoEstado(stats) {
             datasets: [{
                 data: datos.map(x => x.cantidad),
                 backgroundColor: [
-                    COLORS.rojo,
-                    COLORS.verde
+                    COLORS.verde,
+                    COLORS.rojo
                 ]
             }]
         },
