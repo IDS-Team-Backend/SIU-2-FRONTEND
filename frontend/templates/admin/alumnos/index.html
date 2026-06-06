@@ -2,6 +2,7 @@
 
 {% block extra_head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/paginador.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -191,32 +192,19 @@
   {# ── Paginación ──
      Solo cuando NO hay búsqueda de texto: q filtra la página actual (client-side),
      así que mezclarlo con la paginación del servidor sería engañoso. #}
-  {%- macro page_url(n) -%}
-    {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n) }}
-  {%- endmacro -%}
-
-  {% if paginacion and paginacion.total_paginas > 1 and not q %}
-  <div class="pagination">
-    {% set p = paginacion.page %}
-    {% set total = paginacion.total_paginas %}
-
-    <a class="pagination__btn {% if p <= 1 %}pagination__btn--disabled{% endif %}"
-       href="{{ page_url(p-1) if p > 1 else '#' }}">
-      <span class="material-symbols-rounded" style="font-size:18px">chevron_left</span>
-    </a>
-
-    {% for n in range(1, total + 1) %}
-      <a class="pagination__btn {% if n == p %}pagination__btn--active{% endif %}"
-         href="{{ page_url(n) }}">{{ n }}</a>
-    {% endfor %}
-
-    <a class="pagination__btn {% if p >= total %}pagination__btn--disabled{% endif %}"
-       href="{{ page_url(p+1) if p < total else '#' }}">
-      <span class="material-symbols-rounded" style="font-size:18px">chevron_right</span>
-    </a>
-
-    <span class="pagination__info">{{ p }} de {{ total }} ({{ paginacion.total }} alumnos)</span>
-  </div>
+  {# Paginador compartido. Solo sin búsqueda de texto: q filtra la página actual
+     client-side, así que mezclarlo con la paginación del servidor confunde. #}
+  {% if not q %}
+    {% import "admin/components/paginador.html" as pg with context %}
+    {% macro url_pag(n) %}{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n, page_size=page_size) }}{% endmacro %}
+    {{ pg.paginador(
+         paginacion,
+         url_pag,
+         'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
+         url_for('alumnos.listar_alumnos', curso_id=curso_id),
+         page_size,
+         {'estado_filtro': estado_filtro, 'sort': sort_col, 'dir': sort_dir}
+    ) }}
   {% endif %}
 
 </section>

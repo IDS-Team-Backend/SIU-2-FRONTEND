@@ -1,4 +1,5 @@
 {% import "admin/evaluaciones/components/_resultado_macros.html" as r with context %}
+{% import "admin/components/paginador.html" as pg with context %}
 {# Evaluación individual: un alumno por fila (de la inscripción) con su entrega,
    su nota (coloreada + 💬) y el menú de acciones (⋮). Mismo flujo entrega→nota. #}
 <div class="eval-tabla-wrapper">
@@ -52,48 +53,11 @@
   </table>
 </div>
 
-{% if paginacion %}
-  {% set p = paginacion.page %}
-  {% set total = paginacion.total_paginas %}
-  {% set lo = [p - 2, 1] | max %}
-  {% set hi = [p + 2, total] | min %}
-  <div class="eval-paginador">
-    {# Filas por página: al cambiar, vuelve a la página 1 (el form no manda page) #}
-    <form method="get" action="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" class="eval-paginador__size">
-      <label for="page_size">Filas por página</label>
-      <input type="number" id="page_size" name="page_size" min="1" max="100" value="{{ page_size }}"
-             class="eval-paginador__input" onchange="this.form.submit()">
-    </form>
-
-    {% if total > 1 %}
-      <div class="eval-paginador__nav">
-        <a class="eval-pag-btn {% if p <= 1 %}is-disabled{% endif %}" aria-label="Anterior"
-           href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=p-1, page_size=page_size) if p > 1 else '#' }}">
-          <span class="material-symbols-rounded">chevron_left</span>
-        </a>
-
-        {% if lo > 1 %}
-          <a class="eval-pag-btn" href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=1, page_size=page_size) }}">1</a>
-          {% if lo > 2 %}<span class="eval-pag-ellipsis">…</span>{% endif %}
-        {% endif %}
-
-        {% for n in range(lo, hi + 1) %}
-          <a class="eval-pag-btn {% if n == p %}is-active{% endif %}"
-             href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=n, page_size=page_size) }}">{{ n }}</a>
-        {% endfor %}
-
-        {% if hi < total %}
-          {% if hi < total - 1 %}<span class="eval-pag-ellipsis">…</span>{% endif %}
-          <a class="eval-pag-btn" href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=total, page_size=page_size) }}">{{ total }}</a>
-        {% endif %}
-
-        <a class="eval-pag-btn {% if p >= total %}is-disabled{% endif %}" aria-label="Siguiente"
-           href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=p+1, page_size=page_size) if p < total else '#' }}">
-          <span class="material-symbols-rounded">chevron_right</span>
-        </a>
-      </div>
-    {% endif %}
-
-    <span class="eval-paginador__info">{{ paginacion.total }} alumno{{ 's' if paginacion.total != 1 }}</span>
-  </div>
-{% endif %}
+{% macro url_pag(n) %}{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=n, page_size=page_size) }}{% endmacro %}
+{{ pg.paginador(
+     paginacion,
+     url_pag,
+     'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
+     url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id),
+     page_size
+) }}
