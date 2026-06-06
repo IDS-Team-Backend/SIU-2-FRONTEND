@@ -65,10 +65,13 @@ def requiere_alumno(view):
 
 # Endpoints accesibles sin sesión iniciada.
 RUTAS_PUBLICAS = {
-    "static",       # archivos estáticos de Flask (CSS/JS del login)
-    "auth.login",   # pantalla de login (evita loop de redirección)
-    "auth.logout",  # cerrar sesión debe ser siempre accesible
-    "public.index", # raíz (redirige al curso activo)
+    "static",            # archivos estáticos de Flask (CSS/JS del login)
+    "auth.login",        # pantalla de login (evita loop de redirección)
+    "auth.logout",       # cerrar sesión debe ser siempre accesible
+    "public.index",      # raíz (redirige a public.curso)
+    "public.curso",      # home pública del curso activo
+    "public.cronograma", # cronograma público
+    "public.material",   # material público
 }
 
 

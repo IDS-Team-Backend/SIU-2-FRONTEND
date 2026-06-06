@@ -310,6 +310,23 @@ a {
   border-radius: 99px;
 }
 
+/* Navbar del área pública (sin sidebar): pill de links + botón de acceso */
+.nav-publico {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto 32px;
+}
+
+.nav-publico .topbar {
+  margin-bottom: 0;
+}
+
+.nav-publico .btn {
+  margin-left: auto;
+}
+
 .content-wrapper {
   max-width: 1200px;
   width: 100%;
@@ -813,6 +830,29 @@ h1 {
   cursor: pointer;
   transition: var(--transition);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.btn-volver-curso {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.btn-volver-curso:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: #f8fafc;
 }
 
 .btn-login .material-symbols-rounded { font-size: 1.2rem; transition: var(--transition); }
