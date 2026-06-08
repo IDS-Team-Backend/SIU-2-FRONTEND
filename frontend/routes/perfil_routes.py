@@ -43,7 +43,7 @@ def estudiante():
     evaluaciones_pagina = perfil["evaluaciones"][inicio:fin]
  
     return render_template(
-        "perfil_estudiante.html",
+        "admin/perfil/estudiante.html",
         title="Mi Perfil",
         active_page="perfil",
         perfil=perfil,
@@ -64,7 +64,7 @@ def perfil_profesor():
         flash(perfil, "danger")
         return redirect(url_for("public.index"))
     return render_template(
-        "perfil_profesor.html",
+        "admin/perfil/profesor.html",
         title="Perfil de Profesor",
         active_page="perfil",
         perfil=perfil,

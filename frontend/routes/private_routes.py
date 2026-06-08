@@ -12,7 +12,7 @@ private_bp = Blueprint("private", __name__)
 @private_bp.route("/materias")
 def materias():
     return render_template(
-        "materias.html",
+        "admin/materias/index.html",
         title="Materias",
         active_page="materias",
         materias=listar_materias,
@@ -22,7 +22,7 @@ def materias():
 @private_bp.route("/material")
 def material():
     return render_template(
-        "material.html",
+        "admin/material/index.html",
         title="Material",
         active_page="material",
         materiales=listar_materiales,
@@ -35,7 +35,7 @@ def curso(curso_id):
     if curso_data is None:
         abort(404)
     return render_template(
-        "curso.html",
+        "admin/curso/index.html",
         title=curso_data["nombre"],
         active_page="curso",
         curso=curso_data,
@@ -47,7 +47,7 @@ def cronograma(curso_id):
     ok, data = api_request("GET", f"/cursos/{curso_id}/cronograma")
     semanas = data.get("semanas", []) if ok and data else []
     return render_template(
-        "cronograma.html",
+        "admin/cronograma/index.html",
         title="Cronograma",
         active_page="cronograma",
         semanas=semanas,

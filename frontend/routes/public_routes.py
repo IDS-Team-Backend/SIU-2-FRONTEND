@@ -24,7 +24,7 @@ def curso():
     if curso_data is None:
         abort(404)
     return render_template(
-        "publico/curso.html",
+        "public/curso/index.html",
         title=curso_data["nombre"],
         active_page="curso",
         curso=curso_data,
@@ -36,7 +36,7 @@ def cronograma():
     ok, data = api_request("GET", f"/cursos/{CURSO_ACTIVO_ID}/cronograma", auth=False)
     semanas = data.get("semanas", []) if ok and data else []
     return render_template(
-        "publico/cronograma.html",
+        "public/cronograma/index.html",
         title="Cronograma",
         active_page="cronograma",
         semanas=semanas,
@@ -46,7 +46,7 @@ def cronograma():
 @public_bp.route("/material")
 def material():
     return render_template(
-        "publico/material.html",
+        "public/material/index.html",
         title="Material",
         active_page="material",
         materiales=listar_materiales,

@@ -127,7 +127,7 @@ def listar_reportes(curso_id):
         flash(error_msg, "danger")
 
     return render_template(
-        "reportes.html",
+        "admin/reportes/index.html",
         title="Reportes de Cátedra",
         active_page="reportes",
         tab_actual=tab_actual,

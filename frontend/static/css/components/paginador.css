@@ -1,0 +1,66 @@
+/* ── Paginador reutilizable (Alumnos + tabla de evaluación) ─────────────────── */
+.paginador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.paginador__size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+.paginador__input {
+  width: 64px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--text);
+}
+.paginador__input:focus { outline: none; border-color: var(--primary); }
+
+.paginador__nav { display: flex; align-items: center; gap: 4px; }
+
+.paginador__btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.paginador__btn .material-symbols-rounded { font-size: 18px; }
+.paginador__btn:hover { border-color: var(--primary); color: var(--primary); }
+.paginador__btn.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.paginador__btn.is-disabled { opacity: 0.4; pointer-events: none; }
+
+.paginador__ellipsis { color: var(--text-soft); padding: 0 2px; }
+
+.paginador__info {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
