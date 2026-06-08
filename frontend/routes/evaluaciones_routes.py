@@ -35,6 +35,13 @@ def listar_evaluaciones(curso_id):
         
     hoy = date.today().isoformat()
 
+    evaluacion_actual = None
+    if request.args.get("accion") == "editar" and request.args.get("id"):
+        eval_id = request.args.get("id")
+        evaluacion_actual = next(
+            (e for e in evaluaciones if str(e["id"]) == str(eval_id)), None
+        )
+
     return render_template(
         "evaluaciones.html",
         title="Evaluaciones",
@@ -43,6 +50,7 @@ def listar_evaluaciones(curso_id):
         evaluaciones=evaluaciones,
         tipos_evaluacion=tipos_evaluacion,
         hoy=hoy,
+        evaluacion_actual=evaluacion_actual,
     )
 
 

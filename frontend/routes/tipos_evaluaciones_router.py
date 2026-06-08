@@ -20,12 +20,21 @@ def listar_tipo_evaluaciones(curso_id):
     if not ok:
         flash(tipo_evaluaciones, "danger")
         tipo_evaluaciones = []
+
+    tipo_actual = None
+    if request.args.get("accion") == "editar" and request.args.get("id"):
+        tipo_id = request.args.get("id")
+        tipo_actual = next(
+            (t for t in tipo_evaluaciones if str(t["id"]) == str(tipo_id)), None
+        )
+
     return render_template(
         "tipo_evaluaciones.html",
         title="Tipos de Evaluaciones",
         curso_id=curso_id,
         active_page="tipo_evaluaciones",
         tipo_evaluaciones=tipo_evaluaciones,
+        tipo_actual=tipo_actual,
     )
 
 

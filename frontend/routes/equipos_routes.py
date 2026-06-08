@@ -41,6 +41,13 @@ def listar_equipos(curso_id):
         flash(evaluaciones, "danger")
         evaluaciones = []
 
+    equipo_actual = None
+    if request.args.get("accion") == "editar" and request.args.get("id"):
+        equipo_id = request.args.get("id")
+        equipo_actual = next(
+            (e for e in equipos if str(e["id"]) == str(equipo_id)), None
+        )
+
     return render_template(
         "equipos.html",
         title="Equipos",
@@ -48,6 +55,7 @@ def listar_equipos(curso_id):
         active_page="equipos",
         equipos=equipos,
         evaluaciones=evaluaciones,
+        equipo_actual=equipo_actual,
     )
 
 @equipos_bp.route("/curso/<int:curso_id>/equipos", methods=["POST"])
