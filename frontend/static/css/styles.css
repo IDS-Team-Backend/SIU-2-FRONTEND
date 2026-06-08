@@ -1380,3 +1380,16 @@ h1 {
     width: 100% !important;
     height: 350px !important;
 }
+
+
+.pagination-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pagination-info {
+    font-weight: 500;
+}

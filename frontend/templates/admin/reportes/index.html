@@ -1,5 +1,9 @@
 {% extends "admin/base.html" %}
 
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+{% endblock %}
+
 {% block content %}
 <section>
   <div class="page-header">
