@@ -108,16 +108,20 @@ def listar_reportes(curso_id):
             evaluaciones = []
 
         ok_stats, estadisticas_data = obtener_estadisticas_reporte(curso_id, export=False)
-        estadisticas = estadisticas_data if ok_stats else []
-
-        if not ok_stats:
-            error_msg = error_msg or "No se pudieron cargar las estadísticas."
+        
+        if ok_stats:
+            estadisticas = estadisticas_data
+        else:
+            estadisticas = []
+            error_msg = error_msg or f"Estadísticas: {estadisticas_data}"
 
         ok_equipos, equipos_data = obtener_equipos_reporte(curso_id, export=False)
-        equipos = equipos_data if ok_equipos else []
-
-        if not ok_equipos:
-            error_msg = error_msg or "No se pudieron cargar los equipos."
+        
+        if ok_equipos:
+            equipos = equipos_data
+        else:
+            equipos = []
+            error_msg = error_msg or f"Equipos: {equipos_data}"
 
     except Exception as e:
         print(traceback.format_exc())

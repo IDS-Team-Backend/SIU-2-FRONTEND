@@ -44,8 +44,11 @@
 
 </section>
 
-{# Script para gráficos de Chart.js (solo se ejecuta si estamos en estadísticas) #}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-<script src="{{ url_for('static', filename='js/reportes.js') }}"></script>
+{% block extra_js %}
+  {% if tab_actual == 'estadisticas' %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script> 
+    <script src="{{ url_for('static', filename='js/reportes.js') }}" defer></script>
+  {% endif %}
+{% endblock %}
 
 {% endblock %}
