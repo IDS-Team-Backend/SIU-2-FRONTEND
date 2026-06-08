@@ -36,11 +36,31 @@
 
     {# Fila 2: Rendimiento y Evaluación Académica #}
     <div class="filtro-row filtro-row-align-end">
-      
       <div class="form-group filtro-group w-min-180">
-        <label for="evaluacion_id">Evaluación Específica (ID)</label>
-        <input type="number" id="evaluacion_id" name="evaluacion_id" class="form-control" placeholder="Ej: 1" value="{{ evaluacion_filtro }}">
-      </div>
+              <label for="evaluacion_id">
+                  Evaluación
+              </label>
+
+             <select
+                id="evaluacion_id"
+                name="evaluacion_id"
+                class="form-control"
+            >
+                <option value="">
+                    Seleccione una evaluación
+                </option>
+
+                {% for evaluacion in evaluaciones %}
+                    <option
+                        value="{{ evaluacion.id }}"
+                        {% if evaluacion_filtro|string == evaluacion.id|string %}selected{% endif %}
+                    >
+                        {{ evaluacion.titulo }}
+                    </option>
+                {% endfor %}
+            </select>
+          </div>
+
 
       <div class="form-group filtro-group w-min-180">
         <label for="condicion">Estado Examen</label>
@@ -92,3 +112,45 @@
     {% endfor %}
   </tbody>
 </table>
+
+{%- macro page_url(n) -%}
+  {{ url_for(
+      'reportes.listar_reportes',
+      curso_id=curso_id,
+      tab='alumnos',
+      page=n,
+      carrera=carrera_filtro,
+      condicion=condicion_filtro,
+      anio_ingreso=anio_ingreso_filtro,
+      nombre_completo=nombre_filtro,
+      padron=padron_filtro,
+      evaluacion_id=evaluacion_filtro,
+      nota_mayor_a=nota_filtro
+  ) }}
+{%- endmacro -%}
+
+{% if paginacion and paginacion.total_paginas > 1 %}
+<div class="pagination">
+    {% set p = paginacion.page %}
+    {% set total = paginacion.total_paginas %}
+
+    <a class="pagination__btn {% if p <= 1 %}pagination__btn--disabled{% endif %}"
+       href="{{ page_url(p-1) if p > 1 else '#' }}">
+      <span class="material-symbols-rounded" style="font-size:18px">chevron_left</span>
+    </a>
+
+    {% for n in range(1, total + 1) %}
+      <a class="pagination__btn {% if n == p %}pagination__btn--active{% endif %}"
+         href="{{ page_url(n) }}">{{ n }}
+      </a>
+    {% endfor %}
+
+    <a class="pagination__btn {% if p >= total %}pagination__btn--disabled{% endif %}"
+       href="{{ page_url(p+1) if p < total else '#' }}">
+      <span class="material-symbols-rounded" style="font-size:18px">chevron_right</span>
+    </a>
+
+    <span class="pagination__info">{{ p }} de {{ total }} ({{ paginacion.total }} alumnos)
+    </span>
+</div>
+{% endif %}
