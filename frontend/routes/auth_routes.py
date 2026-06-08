@@ -67,7 +67,7 @@ def post_login():
     #       return redirect(url_for("auth.login"))
     # return redirect(url_for(destino))
 
-    return redirect(url_for("curso", curso_id=CURSO_ACTIVO_ID))
+    return redirect(url_for("private.curso", curso_id=CURSO_ACTIVO_ID))
 
 @auth_bp.route("/logout", methods=["GET", "POST"])
 def logout():

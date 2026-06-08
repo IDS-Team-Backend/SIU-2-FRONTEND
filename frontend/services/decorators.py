@@ -68,6 +68,7 @@ RUTAS_PUBLICAS = {
     "static",       # archivos estáticos de Flask (CSS/JS del login)
     "auth.login",   # pantalla de login (evita loop de redirección)
     "auth.logout",  # cerrar sesión debe ser siempre accesible
+    "public.index", # raíz (redirige al curso activo)
 }
 
 

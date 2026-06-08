@@ -55,14 +55,14 @@
     <div class="panel">
       <h2 class="panel-title">Accesos rápidos</h2>
       <div class="section-cards">
-        <a class="section-card" href="{{ url_for('cronograma', curso_id=curso.id) }}">
+        <a class="section-card" href="{{ url_for('private.cronograma', curso_id=curso.id) }}">
           <span class="material-symbols-rounded">calendar_month</span>
           <div>
             <div class="section-card-title">Cronograma</div>
             <div class="section-card-desc">Fechas, temas y modalidad de cada clase</div>
           </div>
         </a>
-        <a class="section-card" href="{{ url_for('material') }}">
+        <a class="section-card" href="{{ url_for('private.material') }}">
           <span class="material-symbols-rounded">menu_book</span>
           <div>
             <div class="section-card-title">Materiales</div>

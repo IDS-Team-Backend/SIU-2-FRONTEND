@@ -6,7 +6,7 @@
 
   <div class="card-grid">
     {% for materia in materias %}
-      <a class="card card-link" href="{{ url_for('curso', curso_id=materia.id) }}">
+      <a class="card card-link" href="{{ url_for('private.curso', curso_id=materia.id) }}">
         <span class="card-codigo">{{ materia.codigo }}</span>
         <h2>{{ materia.nombre }}</h2>
       </a>
