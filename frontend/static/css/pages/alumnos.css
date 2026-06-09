@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PAGE HEADER — acciones a la derecha
+   PAGE HEADER
    ========================================================================== */
 .page-header {
   align-items: flex-start;
@@ -12,6 +12,115 @@
   gap: 10px;
   flex-shrink: 0;
   padding-top: 4px;
+}
+
+/* ==========================================================================
+   LAYOUT DOS COLUMNAS: tabla + panel de formulario
+   ========================================================================== */
+.alumnos-layout {
+  display: block;
+}
+
+.alumnos-layout--with-form {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .alumnos-layout--with-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   PANEL LATERAL DE FORMULARIO
+   ========================================================================== */
+.form-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 24px;
+}
+
+.form-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-panel__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+
+.form-panel__subtitle {
+  font-size: .85rem;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+.form-panel__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  text-decoration: none;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.form-panel__close:hover {
+  background: #f1f5f9;
+  color: var(--text);
+}
+
+.form-panel__body {
+  padding: 20px 24px 24px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.form-panel__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Etiquetas de sección dentro del formulario */
+.form-section-label {
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text-soft);
+  margin: 0 0 12px;
+}
+
+/* Grid 2 columnas dentro del formulario */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Fila resaltada en la tabla cuando está siendo editada */
+.row--editing {
+  background: rgba(59, 130, 246, .05);
+  outline: 2px solid rgba(59, 130, 246, .2);
+  outline-offset: -2px;
 }
 
 /* ==========================================================================
@@ -28,7 +137,7 @@
 .filter-bar__search {
   position: relative;
   flex: 1;
-  min-width: 220px;
+  min-width: 200px;
 }
 
 .filter-bar__icon {
@@ -47,7 +156,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: .9rem;
   color: var(--text);
   background: var(--surface);
   transition: var(--transition);
@@ -56,7 +165,7 @@
 .filter-bar__input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
 }
 
 .filter-bar__clear-btn {
@@ -85,7 +194,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: .9rem;
   color: var(--text);
   background: var(--surface);
   cursor: pointer;
@@ -95,7 +204,7 @@
 .filter-bar__select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
 }
 
 /* ==========================================================================
@@ -111,19 +220,10 @@
   transition: var(--transition);
 }
 
-.sort-header:hover {
-  color: var(--primary);
-}
+.sort-header:hover { color: var(--primary); }
 
-.sort-icon {
-  opacity: 0.3;
-  transition: var(--transition);
-}
-
-.sort-icon--active {
-  opacity: 1;
-  color: var(--primary);
-}
+.sort-icon { opacity: .3; transition: var(--transition); }
+.sort-icon--active { opacity: 1; color: var(--primary); }
 
 /* ==========================================================================
    GHOST BUTTON
@@ -137,7 +237,7 @@
   border: none;
   border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: .9rem;
   font-weight: 500;
   color: var(--text-soft);
   cursor: pointer;
@@ -145,70 +245,69 @@
   transition: var(--transition);
 }
 
-.btn-ghost:hover {
-  background: var(--border);
-  color: var(--text);
-}
+.btn-ghost:hover { background: var(--border); color: var(--text); }
 
 /* ==========================================================================
-   PAGINACIÓN
+   ROW ACTIONS DROPDOWN — position:fixed escapa del overflow-x:auto
    ========================================================================== */
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
+.row-actions { position: relative; display: inline-block; }
 
-.pagination__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 10px;
-  border-radius: var(--radius-md);
+.row-actions summary {
+  list-style: none;
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
-  color: var(--text);
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
+  cursor: pointer;
+  color: var(--text-soft);
   transition: var(--transition);
 }
 
-.pagination__btn:hover:not(.pagination__btn--disabled):not(.pagination__btn--active) {
-  background: #f1f5f9;
+.row-actions summary::-webkit-details-marker { display: none; }
+
+.row-actions summary:hover,
+.row-actions[open] summary {
   border-color: var(--primary);
   color: var(--primary);
+  background: rgba(59, 130, 246, .06);
 }
 
-.pagination__btn--active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
+.row-actions__menu {
+  position: fixed;
+  min-width: 190px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 500;
+  overflow: hidden;
 }
 
-.pagination__btn--disabled {
-  opacity: 0.35;
-  cursor: default;
-  pointer-events: none;
+.row-actions__menu button,
+.row-actions__menu a {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  font-size: .875rem; font-weight: 500;
+  color: var(--text); background: none; border: none;
+  cursor: pointer; text-decoration: none; text-align: left;
+  transition: background .15s;
 }
 
-.pagination__info {
-  margin-left: 8px;
-  font-size: 0.85rem;
-  color: var(--text-soft);
-}
+.row-actions__menu button:hover,
+.row-actions__menu a:hover { background: #f8fafc; }
+
+.row-actions__menu .action--danger { color: #b91c1c; }
+.row-actions__menu .action--danger:hover { background: #fef2f2; }
+.row-actions__divider { height: 1px; background: var(--border); margin: 4px 0; }
 
 /* ==========================================================================
-   TABLE ACTION BUTTONS — más claros en la tabla
+   TABLE ACTION BUTTONS
    ========================================================================== */
 .table__actions .btn-icon {
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  font-size: .8rem;
   font-weight: 500;
   border: 1px solid transparent;
 }

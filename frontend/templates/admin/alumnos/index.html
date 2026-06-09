@@ -20,197 +20,359 @@
     <div class="page-header__actions">
       <form id="import-form"
             action="{{ url_con_filtros('alumnos.importar', curso_id=curso_id) }}"
-            method="post"
-            enctype="multipart/form-data">
+            method="post" enctype="multipart/form-data">
         <input type="file" id="csv_file" name="csv_file" accept=".csv"
-               style="display:none"
-               onchange="this.form.submit()">
+               style="display:none" onchange="this.form.submit()">
         <button type="button" class="btn btn-outline"
                 onclick="document.getElementById('csv_file').click()">
           <span class="material-symbols-rounded" style="font-size:18px">upload</span>
           Importar CSV
         </button>
       </form>
-      <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-primary">
+
+      {# Nuevo estudiante → abre formulario de alta en panel lateral #}
+      <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, form='alta') }}"
+         class="btn {% if form_activo == 'alta' %}btn-primary{% else %}btn-outline{% endif %}">
         <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
+        Nuevo estudiante
+      </a>
+
+      <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, form='vincular') }}"
+         class="btn btn-outline">
+        <span class="material-symbols-rounded" style="font-size:18px">link</span>
         Vincular alumno
       </a>
     </div>
   </div>
 
+  {# ── Layout: tabla + panel de formulario ── #}
+  <div class="alumnos-layout {% if form_activo in ('alta','editar') %}alumnos-layout--with-form{% endif %}">
 
-  {# ── Barra de búsqueda y filtros ── #}
-  <form method="get" action="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="filter-bar">
+    {# ══ COLUMNA IZQUIERDA: filtros + tabla  #}
+    <div class="alumnos-layout__table">
 
-    {# Mantener el ordenamiento activo al filtrar (form GET: el query del action se ignora) #}
-    {% if sort_col != "apellido" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
-    {% if sort_dir != "asc"     %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
+      {# Filtros #}
+      <form method="get" action="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="filter-bar">
+        {% if sort_col != "apellido" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
+        {% if sort_dir != "asc"     %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
+        {% if form_activo           %}<input type="hidden" name="form" value="{{ form_activo }}">{% endif %}
+        {% if alumno_editar         %}<input type="hidden" name="estudiante_id" value="{{ alumno_editar.estudiante_id }}">{% endif %}
 
-    {# Búsqueda de texto libre #}
-    <div class="filter-bar__search">
-      <span class="material-symbols-rounded filter-bar__icon">search</span>
-      <input type="text"
-             name="q"
-             value="{{ q }}"
-             placeholder="Buscar por nombre, apellido, padrón, email o DNI…"
-             class="filter-bar__input">
-      {% if q %}
-        <button type="button"
-                class="filter-bar__clear-btn"
-                onclick="this.previousElementSibling.value='';this.closest('form').submit()">×</button>
-      {% endif %}
-    </div>
+        <div class="filter-bar__search">
+          <span class="material-symbols-rounded filter-bar__icon">search</span>
+          <input type="text" name="q" value="{{ q }}"
+                 placeholder="Nombre, apellido, padrón, email…"
+                 class="filter-bar__input">
+          {% if q %}
+            <button type="button" class="filter-bar__clear-btn"
+                    onclick="this.previousElementSibling.value='';this.closest('form').submit()">×</button>
+          {% endif %}
+        </div>
 
-    {# Filtro por estado #}
-    <select name="estado_filtro" class="filter-bar__select" onchange="this.form.submit()">
-      <option value=""              {% if not estado_filtro      %}selected{% endif %}>Todos los estados</option>
-      <option value="activo"        {% if estado_filtro=="activo"        %}selected{% endif %}>Activo</option>
-      <option value="abandono"      {% if estado_filtro=="abandono"      %}selected{% endif %}>Abandono</option>
-    </select>
+        <select name="estado_filtro" class="filter-bar__select" onchange="this.form.submit()">
+          <option value=""         {% if not estado_filtro         %}selected{% endif %}>Todos</option>
+          <option value="activo"   {% if estado_filtro=="activo"   %}selected{% endif %}>Activo</option>
+          <option value="abandono" {% if estado_filtro=="abandono" %}selected{% endif %}>Abandono</option>
+        </select>
 
-    <button type="submit" class="btn btn-outline">Buscar</button>
+        <button type="submit" class="btn btn-outline">Buscar</button>
 
-    {# Limpiar filtros — solo visible si hay alguno activo #}
-    {% if q or estado_filtro %}
-      <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-ghost">
-        <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">filter_list_off</span>
-        Limpiar
-      </a>
-    {% endif %}
+        {% if q or estado_filtro %}
+          <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-ghost">
+            <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">filter_list_off</span>
+          </a>
+        {% endif %}
+      </form>
 
-  </form>
+      {# Tabla #}
+      {% macro sort_url(col) -%}
+        {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=1,
+                           sort=col, dir='desc' if sort_col==col and sort_dir=='asc' else 'asc') }}
+      {%- endmacro %}
 
-
-  {# ── Tabla ── #}
-
-  {# URL para ordenar por una columna: invierte la dirección si ya está activa y
-     resetea a la página 1. Los demás filtros los preserva url_con_filtros. #}
-  {% macro sort_url(col) -%}
-    {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=1,
-                       sort=col, dir='desc' if sort_col == col and sort_dir == 'asc' else 'asc') }}
-  {%- endmacro %}
-
-  {# Macro para el ícono de flecha en el header #}
-  {% macro sort_icon(col) %}
-    {% if sort_col == col %}
-      <span class="material-symbols-rounded sort-icon sort-icon--active"
-            style="font-size:14px;vertical-align:middle">
-        {% if sort_dir == 'asc' %}arrow_upward{% else %}arrow_downward{% endif %}
-      </span>
-    {% else %}
-      <span class="material-symbols-rounded sort-icon"
-            style="font-size:14px;vertical-align:middle;opacity:.3">unfold_more</span>
-    {% endif %}
-  {% endmacro %}
-
-  <div class="table-wrapper">
-    <table class="table">
-      <thead>
-        <tr>
-          <th><a href="{{ sort_url('padron') }}"   class="sort-header">Padrón   {{ sort_icon('padron')   }}</a></th>
-          <th><a href="{{ sort_url('apellido') }}" class="sort-header">Apellido y Nombre {{ sort_icon('apellido') }}</a></th>
-          <th><a href="{{ sort_url('email') }}"    class="sort-header">Email    {{ sort_icon('email')    }}</a></th>
-          <th><a href="{{ sort_url('dni') }}"      class="sort-header">DNI      {{ sort_icon('dni')      }}</a></th>
-          <th><a href="{{ sort_url('estado') }}"   class="sort-header">Estado   {{ sort_icon('estado')   }}</a></th>
-          <th class="th--center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-
-        {% for alumno in alumnos %}
-        <tr>
-          <td class="text-bold">{{ alumno.padron }}</td>
-          <td>{{ alumno.apellido }}, {{ alumno.nombre }}</td>
-          <td>{{ alumno.email }}</td>
-          <td>{{ alumno.dni }}</td>
-          <td>
-            {% if alumno.estado == "activo" %}
-              <span class="badge badge--success badge--pill">Activo</span>
-            {% elif alumno.estado == "abandono" %}
-              <span class="badge badge--danger badge--pill">Abandono</span>
-            {% endif %}
-          </td>
-          <td class="td--center">
-            <div class="table__actions">
-              {% if alumno.estado == "activo" %}
-                <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
-                      method="post" style="display:inline">
-                  <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
-                  <input type="hidden" name="estado"        value="abandono">
-                  <button type="submit" class="btn-icon btn-icon--danger">Dar de baja</button>
-                </form>
-              {% else %}
-                <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
-                      method="post" style="display:inline">
-                  <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
-                  <input type="hidden" name="estado"        value="activo">
-                  <button type="submit" class="btn-icon">Reactivar</button>
-                </form>
-              {% endif %}
-
-              <form action="{{ url_con_filtros('alumnos.desvincular_alumno', curso_id=curso_id, inscripcion_id=alumno.inscripcion_id) }}"
-                    method="post" style="display:inline">
-                <button type="submit" class="btn-icon btn-icon--danger"
-                        onclick="return confirm('¿Desvincular a {{ alumno.nombre }} {{ alumno.apellido }}?\nEsta acción no se puede deshacer.')">
-                  Desvincular
-                </button>
-              </form>
-            </div>
-          </td>
-        </tr>
-
+      {% macro sort_icon(col) %}
+        {% if sort_col == col %}
+          <span class="material-symbols-rounded sort-icon sort-icon--active" style="font-size:13px;vertical-align:middle">
+            {% if sort_dir == 'asc' %}arrow_upward{% else %}arrow_downward{% endif %}
+          </span>
         {% else %}
-        <tr>
-          <td colspan="6">
-            <div class="tabla-vacia" style="padding:2.5rem;text-align:center">
-              <span class="material-symbols-rounded"
-                    style="font-size:3rem;color:var(--color-text-tertiary,#aaa);display:block;margin-bottom:.75rem">
-                {% if q or estado_filtro %}search_off{% else %}group{% endif %}
-              </span>
-              <p class="text-muted" style="margin:0 0 1rem">
-                {% if q or estado_filtro %}
-                  No se encontraron alumnos con esos criterios.
-                  <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}">Ver todos</a>
-                {% else %}
-                  Todavía no hay alumnos inscriptos en este curso.
-                {% endif %}
-              </p>
-              {% if not q and not estado_filtro %}
-                <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-primary">
-                  Vincular primer alumno
-                </a>
+          <span class="material-symbols-rounded sort-icon" style="font-size:13px;vertical-align:middle;opacity:.3">unfold_more</span>
+        {% endif %}
+      {% endmacro %}
+
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><a href="{{ sort_url('padron') }}"   class="sort-header">Padrón {{ sort_icon('padron') }}</a></th>
+              <th><a href="{{ sort_url('apellido') }}" class="sort-header">Apellido y Nombre {{ sort_icon('apellido') }}</a></th>
+              {% if form_activo not in ('alta','editar') %}
+              <th><a href="{{ sort_url('email') }}"    class="sort-header">Email {{ sort_icon('email') }}</a></th>
+              <th><a href="{{ sort_url('dni') }}"      class="sort-header">DNI {{ sort_icon('dni') }}</a></th>
               {% endif %}
+              <th><a href="{{ sort_url('estado') }}"   class="sort-header">Estado {{ sort_icon('estado') }}</a></th>
+              <th class="th--center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for alumno in alumnos %}
+            <tr {% if alumno_editar and alumno.estudiante_id == alumno_editar.estudiante_id %}
+                  class="row--editing"{% endif %}>
+              <td class="text-bold">{{ alumno.padron }}</td>
+              <td>{{ alumno.apellido }}, {{ alumno.nombre }}</td>
+              {% if form_activo not in ('alta','editar') %}
+              <td>{{ alumno.email }}</td>
+              <td>{{ alumno.dni }}</td>
+              {% endif %}
+              <td>
+                {% if alumno.estado == "activo" %}
+                  <span class="badge badge--success badge--pill">Activo</span>
+                {% elif alumno.estado == "abandono" %}
+                  <span class="badge badge--danger badge--pill">Abandono</span>
+                {% endif %}
+              </td>
+              <td class="td--center">
+                <details class="row-actions">
+                  <summary title="Acciones">
+                    <span class="material-symbols-rounded" style="font-size:18px">more_vert</span>
+                  </summary>
+                  <div class="row-actions__menu">
+
+                    <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id,
+                                 form='editar', estudiante_id=alumno.estudiante_id) }}">
+                      <span class="material-symbols-rounded" style="font-size:16px">edit</span>
+                      Editar
+                    </a>
+
+                    <div class="row-actions__divider"></div>
+
+                    <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id,
+                                      inscripcion_id=alumno.inscripcion_id) }}" method="post">
+                      <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
+                      {% if alumno.estado == "activo" %}
+                        <input type="hidden" name="estado" value="abandono">
+                        <button type="submit" class="action--danger">
+                          <span class="material-symbols-rounded" style="font-size:16px">person_off</span>
+                          Dar de baja
+                        </button>
+                      {% else %}
+                        <input type="hidden" name="estado" value="activo">
+                        <button type="submit">
+                          <span class="material-symbols-rounded" style="font-size:16px">person_check</span>
+                          Reactivar
+                        </button>
+                      {% endif %}
+                    </form>
+
+                    <form action="{{ url_con_filtros('alumnos.desvincular_alumno', curso_id=curso_id,
+                                      inscripcion_id=alumno.inscripcion_id) }}" method="post">
+                      <button type="submit" class="action--danger"
+                              onclick="return confirm('¿Desvincular a {{ alumno.nombre }} {{ alumno.apellido }}?')">
+                        <span class="material-symbols-rounded" style="font-size:16px">link_off</span>
+                        Desvincular
+                      </button>
+                    </form>
+
+                  </div>
+                </details>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6">
+                <div style="padding:2rem;text-align:center">
+                  <span class="material-symbols-rounded"
+                        style="font-size:2.5rem;color:var(--text-soft);display:block;margin-bottom:.5rem">
+                    {% if q or estado_filtro %}search_off{% else %}group{% endif %}
+                  </span>
+                  <p class="text-muted" style="margin:0 0 1rem">
+                    {% if q or estado_filtro %}
+                      Sin resultados. <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}">Ver todos</a>
+                    {% else %}
+                      No hay alumnos inscriptos todavía.
+                    {% endif %}
+                  </p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if not q %}
+        {% import "admin/components/paginador.html" as pg with context %}
+        {% macro url_pag(n) %}{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n, page_size=page_size) }}{% endmacro %}
+        {{ pg.paginador(
+             paginacion, url_pag,
+             'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
+             url_for('alumnos.listar_alumnos', curso_id=curso_id),
+             page_size,
+             {'estado_filtro': estado_filtro, 'sort': sort_col, 'dir': sort_dir}
+        ) }}
+      {% endif %}
+
+    </div>{# /alumnos-layout__table #}
+
+
+    {# ══ COLUMNA DERECHA: formulario activo ══════════════════════════════════ #}
+    {% if form_activo in ('alta', 'editar') %}
+    <div class="alumnos-layout__form">
+      <div class="form-panel">
+
+        <div class="form-panel__header">
+          <div>
+            {% if form_activo == 'alta' %}
+              <h2 class="form-panel__title">Nuevo estudiante</h2>
+              <p class="form-panel__subtitle">Crea la cuenta en el sistema</p>
+            {% else %}
+              <h2 class="form-panel__title">Editar alumno</h2>
+              <p class="form-panel__subtitle">{{ alumno_editar.apellido }}, {{ alumno_editar.nombre }}</p>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}"
+             class="form-panel__close" title="Cerrar">
+            <span class="material-symbols-rounded">close</span>
+          </a>
+        </div>
+
+        <div class="form-panel__body">
+
+          {# ── Formulario Alta ── #}
+          {% if form_activo == 'alta' %}
+          <form action="{{ url_for('alumnos.crear', curso_id=curso_id) }}" method="post">
+
+            <p class="form-section-label">Datos personales</p>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-group__label">Nombre</label>
+                <input type="text" name="nombre" class="form-control" placeholder="María" required>
+              </div>
+              <div class="form-group">
+                <label class="form-group__label">Apellido</label>
+                <input type="text" name="apellido" class="form-control" placeholder="García" required>
+              </div>
             </div>
-          </td>
-        </tr>
-        {% endfor %}
 
-      </tbody>
-    </table>
-  </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-group__label">Email</label>
+                <input type="email" name="email" class="form-control" placeholder="m.garcia@fi.uba.ar" required>
+              </div>
+              <div class="form-group">
+                <label class="form-group__label">DNI</label>
+                <input type="text" name="dni" class="form-control" placeholder="38500001" inputmode="numeric" required>
+              </div>
+            </div>
 
-  {# ── Paginación ──
-     Solo cuando NO hay búsqueda de texto: q filtra la página actual (client-side),
-     así que mezclarlo con la paginación del servidor sería engañoso. #}
-  {# Paginador compartido. Solo sin búsqueda de texto: q filtra la página actual
-     client-side, así que mezclarlo con la paginación del servidor confunde. #}
-  {% if not q %}
-    {% import "admin/components/paginador.html" as pg with context %}
-    {% macro url_pag(n) %}{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n, page_size=page_size) }}{% endmacro %}
-    {{ pg.paginador(
-         paginacion,
-         url_pag,
-         'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
-         url_for('alumnos.listar_alumnos', curso_id=curso_id),
-         page_size,
-         {'estado_filtro': estado_filtro, 'sort': sort_col, 'dir': sort_dir}
-    ) }}
-  {% endif %}
+            <div class="form-group">
+              <label class="form-group__label">Contraseña inicial</label>
+              <input type="password" name="password" class="form-control"
+                     placeholder="Mínimo 8 caracteres" minlength="8" required>
+              <span class="form-group__hint">El alumno podrá cambiarla desde su perfil.</span>
+            </div>
+
+            <p class="form-section-label" style="margin-top:20px">Datos académicos</p>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-group__label">Padrón</label>
+                <input type="number" name="padron" class="form-control" placeholder="100020" min="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-group__label">Año de ingreso</label>
+                <input type="number" name="anio_ingreso" class="form-control" placeholder="2024" min="1900" max="2099" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-group__label">Carrera</label>
+              <input type="text" name="carrera" class="form-control" placeholder="Ingeniería en Informática" required>
+            </div>
+
+            <div class="form-panel__actions">
+              <button type="submit" class="btn btn-primary">
+                <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
+                Crear estudiante
+              </button>
+              <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
+            </div>
+
+          </form>
+          {% endif %}
+
+          {# ── Formulario Editar ── #}
+          {% if form_activo == 'editar' and alumno_editar %}
+          <form action="{{ url_for('alumnos.editar', curso_id=curso_id,
+                                    estudiante_id=alumno_editar.estudiante_id) }}" method="post">
+
+            <input type="hidden" name="usuario_id" value="{{ alumno_editar.usuario_id }}">
+
+            <p class="form-section-label">Datos personales</p>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-group__label">Nombre</label>
+                <input type="text" name="nombre" class="form-control" value="{{ alumno_editar.nombre }}" required>
+              </div>
+              <div class="form-group">
+                <label class="form-group__label">Apellido</label>
+                <input type="text" name="apellido" class="form-control" value="{{ alumno_editar.apellido }}" required>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-group__label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ alumno_editar.email }}" required>
+              </div>
+              <div class="form-group">
+                <label class="form-group__label">DNI</label>
+                <input type="text" name="dni" class="form-control" value="{{ alumno_editar.dni }}" inputmode="numeric" required>
+              </div>
+            </div>
+
+            <p class="form-section-label" style="margin-top:20px">Datos académicos</p>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-group__label">Padrón</label>
+                <input type="number" name="padron" class="form-control" value="{{ alumno_editar.padron }}" min="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-group__label">Año de ingreso</label>
+                <input type="number" name="anio_ingreso" class="form-control" value="{{ alumno_editar.anio_ingreso }}" min="1900" max="2099" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-group__label">Carrera</label>
+              <input type="text" name="carrera" class="form-control" value="{{ alumno_editar.carrera }}" required>
+            </div>
+
+            <div class="form-panel__actions">
+              <button type="submit" class="btn btn-primary">
+                <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">save</span>
+                Guardar cambios
+              </button>
+              <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
+            </div>
+
+          </form>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+    {% endif %}{# /form_activo #}
+
+  </div>{# /alumnos-layout #}
 
 </section>
 
 
-{# ── Modal vincular (sin cambios) ── #}
+{# ══ MODAL — Vincular alumno existente (flujo sin cambios) ══════════════════ #}
 {% if mostrar_modal %}
 <div class="modal-overlay" style="display:flex">
   <div class="modal">
@@ -221,19 +383,14 @@
       </div>
       <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="modal__close">×</a>
     </div>
-
     <div class="modal__body modal__body--padded">
       <form method="get" action="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}">
-        <input type="hidden" name="modal" value="vincular">
+        <input type="hidden" name="form" value="vincular">
         <div class="form-group">
           <label for="padron" class="form-group__label">Padrón del alumno</label>
           <div class="inline-search">
-            <input type="text" id="padron" name="padron"
-                   value="{{ padron_buscado }}"
-                   placeholder="Ej: 100002"
-                   class="inline-search__input"
-                   inputmode="numeric"
-                   autofocus>
+            <input type="text" id="padron" name="padron" value="{{ padron_buscado }}"
+                   placeholder="Ej: 100002" class="inline-search__input" inputmode="numeric" autofocus>
             <button type="submit" class="btn btn-primary">Buscar</button>
           </div>
           {% if buscar_error %}
@@ -244,50 +401,46 @@
           {% endif %}
         </div>
       </form>
-
       {% if alumno_encontrado %}
       <div class="result-card">
         <div class="result-card__header"><h3>Alumno encontrado</h3></div>
         <div class="result-card__body">
           <div class="result-card__grid">
             <div><span class="result-card__field-label">Nombre</span>
-                 <strong class="result-card__field-value">{{ alumno_encontrado.nombre }}</strong></div>
+                 <strong>{{ alumno_encontrado.nombre }}</strong></div>
             <div><span class="result-card__field-label">Apellido</span>
-                 <strong class="result-card__field-value">{{ alumno_encontrado.apellido }}</strong></div>
+                 <strong>{{ alumno_encontrado.apellido }}</strong></div>
             <div><span class="result-card__field-label">Email</span>
-                 <strong class="result-card__field-value">{{ alumno_encontrado.email }}</strong></div>
-            <div><span class="result-card__field-label">DNI</span>
-                 <strong class="result-card__field-value">{{ alumno_encontrado.dni }}</strong></div>
+                 <strong>{{ alumno_encontrado.email }}</strong></div>
             <div><span class="result-card__field-label">Padrón</span>
-                 <strong class="result-card__field-value">{{ alumno_encontrado.padron }}</strong></div>
-            <div><span class="result-card__field-label">Carrera</span>
-                 <strong class="result-card__field-value">{{ alumno_encontrado.carrera }}</strong></div>
+                 <strong>{{ alumno_encontrado.padron }}</strong></div>
           </div>
         </div>
         <div class="result-card__footer">
           <form action="{{ url_con_filtros('alumnos.vincular_alumno', curso_id=curso_id) }}" method="post">
             <input type="hidden" name="estudiante_id" value="{{ alumno_encontrado.id }}">
             <button type="submit" class="btn btn-primary">
-              <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
+              <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">link</span>
               Vincular al Curso
             </button>
           </form>
-          <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id, modal='vincular') }}" class="btn btn-outline">
-            Buscar otro
-          </a>
+          <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id, form='vincular') }}"
+             class="btn btn-outline">Buscar otro</a>
         </div>
       </div>
-
       {% elif not buscar_error %}
-      <div class="result-card__empty" style="text-align:center;padding:1.5rem;color:var(--color-text-secondary,#666)">
-        <span class="material-symbols-rounded" style="font-size:2.5rem;display:block;margin-bottom:.5rem;opacity:.4">manage_search</span>
+      <div style="text-align:center;padding:1.5rem;color:var(--color-text-secondary,#666)">
+        <span class="material-symbols-rounded"
+              style="font-size:2.5rem;display:block;margin-bottom:.5rem;opacity:.4">manage_search</span>
         <p style="margin:0;font-size:.875rem">Ingresá el padrón y hacé clic en <strong>Buscar</strong></p>
       </div>
       {% endif %}
-
     </div>
   </div>
 </div>
 {% endif %}
+
+
+<script src="{{ url_for('static', filename='js/row_actions.js') }}"></script>
 
 {% endblock %}
