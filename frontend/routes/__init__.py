@@ -3,7 +3,6 @@ from routes.auth_routes import auth_bp
 from routes.private_routes import private_bp
 from routes.perfil_routes import perfil_bp
 from routes.alumnos_routes import alumnos_bp
-from routes.materiales_routes import materiales_bp
 from routes.evaluaciones_routes import evaluaciones_bp
 from routes.tipos_evaluaciones_router import tipo_evaluaciones_bp
 from routes.reportes_routes import reportes_bp
@@ -21,13 +20,13 @@ BLUEPRINTS_PUBLICOS = (
 
 # Backoffice: todo lo que se consulta autenticado vive bajo ADMIN_PREFIX.
 BLUEPRINTS_BACKOFFICE = (
-    private_bp,             # curso, materias, material
+    private_bp,             # curso, materias, 
     perfil_bp,             # perfil del usuario
     alumnos_bp,
     evaluaciones_bp,
     tipo_evaluaciones_bp,
     reportes_bp,
-    materiales_bp
+    
 )
 
 

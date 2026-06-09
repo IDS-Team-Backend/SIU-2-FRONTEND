@@ -4,6 +4,10 @@ from services.mocks_service import cursos_mock, listar_materias
 from utils.api_client import api_request
 from services.materiales_service import obtener_materiales_del_curso
 import os
+from flask import request, flash, redirect
+from services.materiales_service import crear_material
+from services.materiales_service import eliminar_material
+
 
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
@@ -38,8 +42,6 @@ def material():
 @private_bp.route("/material/crear", methods=["POST"])
 @requiere_staff
 def subir_material():
-    from flask import request, flash, redirect
-    from services.materiales_service import crear_material
     titulo      = request.form.get("titulo", "").strip()
     archivo_url = request.form.get("archivo_url", "").strip()
     ok, resultado = crear_material(CURSO_ACTIVO_ID, titulo, archivo_url)
@@ -51,8 +53,6 @@ def subir_material():
 @private_bp.route("/material/<int:material_id>/eliminar", methods=["POST"])
 @requiere_staff
 def borrar_material(material_id):
-    from flask import flash, redirect
-    from services.materiales_service import eliminar_material
     ok, resultado = eliminar_material(material_id)
     flash("Material eliminado." if ok else resultado,
           "success" if ok else "danger")
