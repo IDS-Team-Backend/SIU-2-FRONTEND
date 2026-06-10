@@ -1,0 +1,205 @@
+/* ── Record page de una evaluación: equipos + entregas/notas (tabla única) ──── */
+
+.eval-detalle .eval-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  margin-bottom: 6px;
+  transition: var(--transition);
+}
+.eval-detalle .eval-volver:hover { color: var(--primary); }
+
+.eval-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 4px;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.eval-aviso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  color: var(--text-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Secciones ──────────────────────────────────────────────────────────── */
+.eval-seccion { margin-top: 28px; }
+
+.eval-seccion__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.eval-seccion__header h2 { font-size: 1.1rem; margin: 0; }
+
+/* ── Wrapper de la tabla ──────────────────────────────────────────────────
+   Igual look que .table-wrapper global, pero SIN overflow para que el
+   dropdown del menú (⋮) no quede recortado. */
+.eval-tabla-wrapper {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+.eval-tabla thead th:first-child { border-top-left-radius: var(--radius-lg); }
+.eval-tabla thead th:last-child  { border-top-right-radius: var(--radius-lg); }
+.eval-tabla tbody tr:last-child td:first-child { border-bottom-left-radius: var(--radius-lg); }
+.eval-tabla tbody tr:last-child td:last-child  { border-bottom-right-radius: var(--radius-lg); }
+
+/* ── Chip de integrantes ──────────────────────────────────────────────────── */
+.integrantes-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.integrantes-chip .material-symbols-rounded { font-size: 16px; }
+.integrantes-chip:hover { background: #dbeafe; }
+
+/* ── Entrega ──────────────────────────────────────────────────────────────── */
+.entrega-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.entrega-badge--entregado { background: #d1fae5; color: #047857; }
+.entrega-badge--tarde     { background: #fef3c7; color: #b45309; }
+.entrega-badge--rehacer   { background: #fee2e2; color: #b91c1c; }
+
+.eval-tabla .entrega-fecha { color: var(--text-soft); font-size: 0.82rem; margin-top: 3px; }
+.eval-tabla .entrega-archivo { color: var(--primary); }
+.eval-tabla .entrega-archivo:hover { text-decoration: underline; }
+
+/* ── Nota (coloreada por tramo) ───────────────────────────────────────────── */
+.nota-pill {
+  display: inline-block;
+  min-width: 34px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.nota--bajo  { background: #dc2626; color: #fff; }     /* < 4  desaprobado (rojo intenso) */
+.nota--medio { background: #fef3c7; color: #b45309; }  /* 4-6  aprobado    */
+.nota--alto  { background: #d1fae5; color: #047857; }  /* >= 7 muy bueno   */
+
+/* ── Menú de acciones por fila (⋮) ────────────────────────────────────────── */
+.row-menu { position: relative; display: inline-block; }
+
+.row-menu__toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-soft);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  transition: var(--transition);
+}
+.row-menu__toggle:hover { background: #f1f5f9; color: var(--text); }
+
+.row-menu__list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 190px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  z-index: 30;
+  display: none;
+  text-align: left;
+}
+.row-menu.open .row-menu__list { display: block; }
+
+.row-menu__list form { margin: 0; }
+
+.row-menu__item {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.row-menu__item:hover { background: #f1f5f9; }
+.row-menu__item--danger { color: var(--text-danger); }
+
+.row-menu__item--disabled {
+  color: var(--text-soft);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.row-menu__item--disabled:hover { background: none; }
+
+.row-menu__sep { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* Devolución (observaciones de la nota) como ícono 💬 con tooltip */
+.nota-devolucion {
+  margin-left: 6px;
+  font-size: 0.9rem;
+  cursor: help;
+  vertical-align: middle;
+}
+
+/* Separador / subtítulo dentro del modal de editar equipo */
+.eval-modal-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 18px 0 14px;
+}
+.eval-modal-subtitulo {
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+/* ── Modales altos: que no se corten arriba ──────────────────────────────────
+   El modal nunca supera el alto de pantalla; el header queda fijo y el cuerpo
+   scrollea por dentro. (Pisa al global porque este CSS carga después.) */
+.modal-overlay {
+  align-items: center;
+  overflow-y: auto;
+}
+.modal {
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+}
+.modal__header { flex-shrink: 0; }
+.modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}

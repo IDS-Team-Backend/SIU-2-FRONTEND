@@ -1,0 +1,57 @@
+{# Paginador reutilizable (server-side). Lo usan la pantalla de Alumnos y la
+   tabla de alumnos de la evaluación.
+   - paginacion: {page, total_paginas, total}
+   - url_pagina: macro (n) -> href de la página n (lo define cada caller)
+   - unidad:     texto del total (ej "alumnos")
+   - size_form_url + page_size: input "filas por página" (resetea a la página 1)
+   - size_hidden: dict de campos ocultos a preservar en el form de tamaño (filtros) #}
+{% macro paginador(paginacion, url_pagina, unidad='resultados', size_form_url=none, page_size=none, size_hidden=none) %}
+  {% if paginacion %}
+    {% set p = paginacion.page %}
+    {% set total = paginacion.total_paginas %}
+    {% set lo = [p - 2, 1] | max %}
+    {% set hi = [p + 2, total] | min %}
+    <div class="paginador">
+      {% if size_form_url %}
+        <form method="get" action="{{ size_form_url }}" class="paginador__size">
+          {% for k, v in (size_hidden or {}).items() %}
+            <input type="hidden" name="{{ k }}" value="{{ v }}">
+          {% endfor %}
+          <label for="page_size">Filas por página</label>
+          <input type="number" id="page_size" name="page_size" min="1" max="100" value="{{ page_size }}"
+                 class="paginador__input" onchange="this.form.submit()">
+        </form>
+      {% endif %}
+
+      {% if total > 1 %}
+        <div class="paginador__nav">
+          <a class="paginador__btn {% if p <= 1 %}is-disabled{% endif %}" aria-label="Anterior"
+             href="{{ (url_pagina(p - 1) | trim) if p > 1 else '#' }}">
+            <span class="material-symbols-rounded">chevron_left</span>
+          </a>
+
+          {% if lo > 1 %}
+            <a class="paginador__btn" href="{{ url_pagina(1) | trim }}">1</a>
+            {% if lo > 2 %}<span class="paginador__ellipsis">…</span>{% endif %}
+          {% endif %}
+
+          {% for n in range(lo, hi + 1) %}
+            <a class="paginador__btn {% if n == p %}is-active{% endif %}" href="{{ url_pagina(n) | trim }}">{{ n }}</a>
+          {% endfor %}
+
+          {% if hi < total %}
+            {% if hi < total - 1 %}<span class="paginador__ellipsis">…</span>{% endif %}
+            <a class="paginador__btn" href="{{ url_pagina(total) | trim }}">{{ total }}</a>
+          {% endif %}
+
+          <a class="paginador__btn {% if p >= total %}is-disabled{% endif %}" aria-label="Siguiente"
+             href="{{ (url_pagina(p + 1) | trim) if p < total else '#' }}">
+            <span class="material-symbols-rounded">chevron_right</span>
+          </a>
+        </div>
+      {% endif %}
+
+      <span class="paginador__info">{{ paginacion.total }} {{ unidad }}</span>
+    </div>
+  {% endif %}
+{% endmacro %}

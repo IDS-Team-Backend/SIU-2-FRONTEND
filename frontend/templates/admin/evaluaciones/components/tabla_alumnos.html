@@ -1,0 +1,63 @@
+{% import "admin/evaluaciones/components/_resultado_macros.html" as r with context %}
+{% import "admin/components/paginador.html" as pg with context %}
+{# Evaluación individual: un alumno por fila (de la inscripción) con su entrega,
+   su nota (coloreada + 💬) y el menú de acciones (⋮). Mismo flujo entrega→nota. #}
+<div class="eval-tabla-wrapper">
+  <table class="table eval-tabla">
+    <thead>
+      <tr>
+        <th>Alumno</th>
+        <th>Entrega</th>
+        <th class="th--center">Nota</th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for alumno in alumnos %}
+        {% set nota = notas_por_sujeto.get(alumno.id) %}
+        {% set entrega = entregas_por_sujeto.get(alumno.id) %}
+        <tr>
+          <td>
+            <span class="text-bold">{{ alumno.apellido }}, {{ alumno.nombre }}</span>
+            <span class="text-muted" style="margin-left:6px">{{ alumno.padron }}</span>
+            {% if not alumno.activo %}
+              <span class="badge badge--danger badge--pill" style="margin-left:6px">Abandono</span>
+            {% endif %}
+          </td>
+
+          <td>{{ r.entrega_celda(entrega) }}</td>
+
+          <td class="td--center">{{ r.nota_celda(nota) }}</td>
+
+          <td class="td--center">
+            <div class="row-menu">
+              <button type="button" class="row-menu__toggle" aria-haspopup="true" aria-expanded="false" title="Acciones">
+                <span class="material-symbols-rounded">more_vert</span>
+              </button>
+              <div class="row-menu__list" role="menu">
+                {{ r.menu_resultado('alumno', curso_id, evaluacion.id, alumno.id, alumno.apellido ~ ', ' ~ alumno.nombre, entrega, nota, page, page_size) }}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4">
+            <div class="tabla-vacia" style="padding:2rem;text-align:center">
+              <p class="text-muted" style="margin:0">No hay alumnos inscriptos en este curso.</p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% macro url_pag(n) %}{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=n, page_size=page_size) }}{% endmacro %}
+{{ pg.paginador(
+     paginacion,
+     url_pag,
+     'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
+     url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id),
+     page_size
+) }}

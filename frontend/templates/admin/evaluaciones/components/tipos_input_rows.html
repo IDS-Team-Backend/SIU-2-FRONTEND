@@ -1,0 +1,17 @@
+{# Filas del input de tipo: radio (elige el tipo de la evaluación) + nombre
+   editable inline + toggle grupal. Requiere: tipos_evaluacion, curso_id, seleccion. #}
+{% for tipo in tipos_evaluacion %}
+  <div class="tipo-input__row" data-tipo-row
+       data-update-url="{{ url_for('tipo_evaluaciones.actualizar', curso_id=curso_id, tipo_evaluacion_id=tipo.id) }}">
+    <input type="radio" name="tipo_evaluacion_id" value="{{ tipo.id }}" required class="tipo-input__radio"
+           {% if seleccion and seleccion == tipo.id %}checked{% endif %}>
+    <input type="text" class="tipo-input__nombre" value="{{ tipo.nombre }}" data-nombre
+           aria-label="Nombre del tipo">
+    <label class="tipo-input__grupal">
+      <input type="checkbox" data-grupal {% if tipo.es_grupal %}checked{% endif %}> grupal
+    </label>
+    <span class="tipo-input__saved" data-saved aria-hidden="true">✓</span>
+  </div>
+{% else %}
+  <p class="text-muted" style="margin:0">Todavía no hay tipos. Agregá uno abajo.</p>
+{% endfor %}

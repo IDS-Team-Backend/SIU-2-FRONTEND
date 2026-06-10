@@ -1,0 +1,199 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/perfil.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+
+  {# ── Hero ── #}
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <span class="page-hero-eyebrow">Legajo {{ perfil.legajo }} · {{ perfil.curso.carrera }}</span>
+      <h1 class="page-hero-title">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
+      <p class="page-hero-subtitle">Perfil de estudiante en {{ perfil.curso.codigo }} · {{ perfil.curso.nombre }}</p>
+    </div>
+    <div class="page-hero-image">
+      <span class="material-symbols-rounded">school</span>
+    </div>
+  </div>
+
+  {# ── Info cards ── #}
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-card-label">DNI</span>
+      <span class="info-card-value">{{ perfil.dni }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Legajo</span>
+      <span class="info-card-value">{{ perfil.legajo }}</span>
+    </div>
+    {# FIX: email largo → word-break ya aplicado en CSS #}
+    <div class="info-card">
+      <span class="info-card-label">Email</span>
+      <span class="info-card-value" style="font-size:.9rem">{{ perfil.email }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Estado en el curso</span>
+      <span class="info-card-value">{{ perfil.estado_cursada }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Asistencia</span>
+      <span class="info-card-value">
+        {% if perfil.tiene_asistencia %}
+          {{ perfil.asistencia }}
+        {% else %}
+          <span style="font-size:.85rem;font-weight:400;color:var(--text-soft)">Sin datos</span>
+        {% endif %}
+      </span>
+    </div>
+    <div class="info-card">
+      <span class="info-card-label">Promedio</span>
+      <span class="info-card-value">{{ perfil.promedio_curso }}</span>
+    </div>
+  </div>
+
+  {# ── Curso actual ── #}
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Curso actual</h2>
+    <ul class="docentes-list">
+      <li class="docente-item">
+        <span class="material-symbols-rounded">menu_book</span>
+        <div>
+          <div class="docente-nombre">{{ perfil.curso.codigo }} · {{ perfil.curso.nombre }}</div>
+          <div class="docente-rol">
+            Comisión {{ perfil.curso.comision }} · {{ perfil.curso.modalidad }} · Inicio {{ perfil.curso.inicio }}
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  {# ── Evaluaciones con paginación ── #}
+  <div class="panel perfil-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <h2 class="panel-title" style="margin:0">Evaluaciones del curso</h2>
+      {% if total_evaluaciones > 0 %}
+        <span style="font-size:.85rem;color:var(--text-soft)">
+          {{ total_evaluaciones }} evaluación{% if total_evaluaciones != 1 %}es{% endif %}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if not perfil.evaluaciones %}
+      <p class="text-muted" style="padding:.5rem 0">
+        No hay evaluaciones cargadas todavía.
+      </p>
+
+    {% else %}
+      <table class="perfil-table">
+        <thead>
+          <tr>
+            <th>Instancia</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Nota</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in evaluaciones_pagina %}
+          <tr>
+            <td>{{ e.titulo }}</td>
+            <td>
+              <span class="badge badge--pill"
+                    style="background:#f0f4ff;color:#3730a3;font-size:.75rem">
+                {{ e.tipo | default('—') }}
+              </span>
+            </td>
+            <td>{{ e.fecha }}</td>
+            <td>
+              {% if e.nota is not none %}
+                {# FIX: badge verde si aprobó (≥4), rojo si desaprobó #}
+                <span class="estado-badge {{ 'estado-aprobada' if e.nota >= 4 else 'estado-desaprobada' }}">
+                  {{ e.nota }}
+                </span>
+              {% else %}
+                <span class="estado-badge estado-pendiente">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {# FIX: comparación con 'Aprobada' (femenino), no 'Aprobado' #}
+              {% if e.estado == 'Aprobada' %}
+                <span class="estado-badge estado-aprobada">{{ e.estado }}</span>
+              {% elif e.estado == 'Desaprobada' %}
+                <span class="estado-badge estado-desaprobada">{{ e.estado }}</span>
+              {% else %}
+                <span class="estado-badge estado-pendiente">{{ e.estado }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {# ── Paginación ── #}
+      {% if total_paginas > 1 %}
+      <div class="pagination">
+        <span class="pagination__info">
+          Mostrando {{ (pagina_actual - 1) * por_pagina + 1 }}{{ [pagina_actual * por_pagina, total_evaluaciones] | min }}
+          de {{ total_evaluaciones }}
+        </span>
+
+        <div class="pagination__controls">
+          {# Anterior #}
+          {% if pagina_actual > 1 %}
+            <a href="{{ url_for('perfil.estudiante', page=pagina_actual - 1) }}"
+               class="pagination__btn" title="Página anterior"></a>
+          {% else %}
+            <span class="pagination__btn pagination__btn--disabled"></span>
+          {% endif %}
+
+          {# Números de página #}
+          {% for p in range(1, total_paginas + 1) %}
+            {% if p == pagina_actual %}
+              <span class="pagination__btn pagination__btn--active">{{ p }}</span>
+            {% elif p == 1 or p == total_paginas or (p >= pagina_actual - 2 and p <= pagina_actual + 2) %}
+              <a href="{{ url_for('perfil.estudiante', page=p) }}"
+                 class="pagination__btn">{{ p }}</a>
+            {% elif p == pagina_actual - 3 or p == pagina_actual + 3 %}
+              <span class="pagination__btn pagination__btn--disabled"
+                    style="border:none;background:none">…</span>
+            {% endif %}
+          {% endfor %}
+
+          {# Siguiente #}
+          {% if pagina_actual < total_paginas %}
+            <a href="{{ url_for('perfil.estudiante', page=pagina_actual + 1) }}"
+               class="pagination__btn" title="Página siguiente"></a>
+          {% else %}
+            <span class="pagination__btn pagination__btn--disabled"></span>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+    {% endif %}
+  </div>
+
+  {# ── Acciones ── #}
+  <div class="panel perfil-panel">
+    <h2 class="panel-title">Acciones</h2>
+    <div class="perfil-actions">
+      <button type="button" class="perfil-btn-action">
+        <span class="material-symbols-rounded">lock</span>
+        Cambiar contraseña
+      </button>
+
+      <a href="{{ url_for('auth.logout') }}"
+         class="perfil-btn-action perfil-btn-action--danger">
+        <span class="material-symbols-rounded">logout</span>
+        Cerrar sesión
+      </a>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

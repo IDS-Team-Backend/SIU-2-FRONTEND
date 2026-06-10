@@ -1,0 +1,84 @@
+/* ── Input de tipo de evaluación: lista seleccionable + nombre editable ─────── */
+.tipo-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.tipo-input__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.tipo-input__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+}
+.tipo-input__row:hover { background: #f8fafc; }
+
+.tipo-input__radio { flex-shrink: 0; }
+
+/* El nombre se ve como texto plano y se vuelve "campo" al hacer hover/focus */
+.tipo-input__nombre {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+.tipo-input__nombre:hover { border-color: var(--border); }
+.tipo-input__nombre:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  outline: none;
+}
+
+/* `.tipo-input` para ganarle en specificity a `.form-group label` (display:block,
+   margin-bottom, bold), que si no descentra el checkbox. */
+.tipo-input .tipo-input__grupal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+/* Reset del margen nativo de radios/checkbox para que queden centrados en la fila */
+.tipo-input input[type="radio"],
+.tipo-input input[type="checkbox"] {
+  margin: 0;
+}
+
+.tipo-input__saved {
+  width: 14px;
+  color: var(--text-success);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tipo-input__saved.is-on { opacity: 1; }
+
+.tipo-input__add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}

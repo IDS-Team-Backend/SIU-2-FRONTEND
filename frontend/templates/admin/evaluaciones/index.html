@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluaciones.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/tipos_input.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+  <div class="page-header">
+    <h1>{{ title }}</h1>
+    <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}"
+       class="btn btn-primary">
+      <span>+</span> Nueva Evaluación
+    </a>
+  </div>
+
+  {# ── Toolbar del calendario ── #}
+  <div class="cal-toolbar">
+    <div class="cal-nav">
+      <a class="cal-nav__btn" title="Mes anterior"
+         href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=prev_anio, mes=prev_mes) }}">
+        <span class="material-symbols-rounded">chevron_left</span>
+      </a>
+      <h2 class="cal-nav__title">{{ nombre_mes }} {{ anio }}</h2>
+      <a class="cal-nav__btn" title="Mes siguiente"
+         href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=next_anio, mes=next_mes) }}">
+        <span class="material-symbols-rounded">chevron_right</span>
+      </a>
+    </div>
+    <a class="btn btn-outline"
+       href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=hoy.year, mes=hoy.month) }}">Hoy</a>
+  </div>
+
+  {# ── Calendario ── #}
+  <div class="cal-grid">
+    {% for dia_nombre in ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] %}
+      <div class="cal-weekday">{{ dia_nombre }}</div>
+    {% endfor %}
+
+    {% for semana in semanas %}
+      {% for dia in semana %}
+        <div class="cal-day{% if dia.month != mes %} cal-day--muted{% endif %}{% if dia == hoy %} cal-day--hoy{% endif %}">
+          <div class="cal-day__head">
+            <span class="cal-day__num">{{ dia.day }}</span>
+            <a class="cal-day__add" title="Nueva evaluación este día"
+               href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, accion='nueva', fecha=dia.isoformat(), anio=anio, mes=mes) }}">+</a>
+          </div>
+          {% set evs = evaluaciones_por_dia.get(dia) %}
+          {% if evs %}
+            <div class="cal-day__eventos">
+              {% for e in evs %}
+                <a class="cal-evento cal-evento--t{{ (e.tipo_evaluacion_id or 0) % 6 }}{% if not e.activo %} cal-evento--inactiva{% endif %}"
+                   href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=e.id) }}"
+                   title="{{ e.titulo }}{% if not e.activo %} (inactiva){% endif %}">{{ e.titulo }}</a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Modal: nueva evaluación ── #}
+{% if request.args.get('accion') == 'nueva' %}
+<div class="modal-overlay">
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <h2 class="modal__title">Nueva Evaluación</h2>
+      <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes) }}" class="modal__close modal-close-btn">x</a>
+    </div>
+    <div class="modal__body modal__body--padded">
+      <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion', curso_id=curso_id) }}" method="POST">
+        <div class="form-group">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" required class="form-control">
+        </div>
+        {% set seleccion = request.args.get('tipo_evaluacion_id', type=int) %}
+        {% include "admin/evaluaciones/components/tipos_input.html" %}
+
+        <div class="form-group">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" name="fecha" required class="form-control"
+                 value="{{ request.args.get('fecha') or hoy.isoformat() }}">
+        </div>
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
+        </div>
+        <div class="form-actions">
+          <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes) }}" class="btn btn-outline">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/tipos_input.js') }}"></script>
+{% endblock %}

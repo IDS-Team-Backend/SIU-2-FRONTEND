@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<section>
+  <div class="page-header">
+    <h1>Materiales</h1>
+    <button class="btn btn-primary">+ Subir Material</button>
+  </div>
+
+  <div class="material-list">
+    {% if materiales %}
+      {% for material in materiales %}
+      <div class="material-item">
+        <div class="material-item__info">
+          <span class="material-item__icon">📄</span>
+          <div>
+            <span class="material-item__title">{{ material.titulo }}</span>
+            <div class="material-item__date">
+              Subido: {{ material.created_at if material.created_at else 'Fecha no disponible' }}
+            </div>
+          </div>
+        </div>
+        <div class="material-item__actions">
+          <a href="{{ material.archivo_url }}" target="_blank" class="btn-icon btn-icon--primary">
+            📥 Descargar
+          </a>
+          <button class="btn-icon btn-icon--danger">🗑️</button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="material-item__empty">No hay materiales disponibles</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

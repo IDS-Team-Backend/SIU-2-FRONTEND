@@ -24,10 +24,13 @@ def listar_alumnos(curso_id):
     q             = f["q"]
     sort_col      = f["sort"] if f["sort"] in COLUMNAS_ORDENABLES else "apellido"
     sort_dir      = f["dir"] if f["dir"] in ("asc", "desc") else "asc"
+    page_size     = request.args.get("page_size", 8, type=int) or 8
+    page_size     = max(1, min(page_size, 100))  # el backend limita page_size a 100
 
     ok, alumnos, paginacion = obtener_alumnos_del_curso(
         curso_id,
         page=page,
+        page_size=page_size,
         estado=estado_filtro or None,
     )
     if not ok:
@@ -65,12 +68,13 @@ def listar_alumnos(curso_id):
     )
 
     return render_template(
-        "alumnos.html",
+        "admin/alumnos/index.html",
         title="Alumnos",
         active_page="alumnos",
         curso_id=curso_id,
         alumnos=alumnos,
         paginacion=paginacion,
+        page_size=page_size,
         url_con_filtros=url_con_filtros,
         mostrar_modal=mostrar_modal,
         padron_buscado=padron_buscado,
