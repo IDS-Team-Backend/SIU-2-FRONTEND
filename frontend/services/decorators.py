@@ -72,6 +72,8 @@ RUTAS_PUBLICAS = {
     "public.curso",      # home pública del curso activo
     "public.cronograma", # cronograma público
     "public.material",   # material público
+    "password.solicitar_reset",   # formulario de email (sin login)
+    "password.confirmar_reset",   # formulario de nueva contraseña (sin login)
 }
 
 

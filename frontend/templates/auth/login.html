@@ -55,7 +55,9 @@
       </div>
 
       <div class="form-actions">
-        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <a href="{{ url_for('password.solicitar_reset') }}" class="forgot-password">
+          ¿Olvidaste tu contraseña?
+        </a>
       </div>
 
       <button type="submit" class="btn-login">
