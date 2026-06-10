@@ -182,10 +182,10 @@
   <div class="panel perfil-panel">
     <h2 class="panel-title">Acciones</h2>
     <div class="perfil-actions">
-      <button type="button" class="perfil-btn-action">
+      <a href="{{ url_for('password.cambiar') }}" class="perfil-btn-action">
         <span class="material-symbols-rounded">lock</span>
-        Cambiar contraseña
-      </button>
+          Cambiar contraseña
+      </a>
 
       <a href="{{ url_for('auth.logout') }}"
          class="perfil-btn-action perfil-btn-action--danger">

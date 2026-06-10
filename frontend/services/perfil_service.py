@@ -1,6 +1,6 @@
 from datetime import date
 from utils.api_client import api_request
-
+from utils.filtros_fecha import formatear_fecha as _formatear_fecha
 
 
 def obtener_perfil_estudiante(curso_id):
@@ -33,7 +33,13 @@ def obtener_perfil_estudiante(curso_id):
     notas_por_eval = {n["evaluacion_id"]: n.get("nota") for n in notas_lista}
  
     #promedio
-    notas_valores = [v for v in notas_por_eval.values() if v is not None]
+    notas_valores = []
+    for v in notas_por_eval.values():
+        if v is not None:
+            try:
+                notas_valores.append(float(v))
+            except (ValueError, TypeError):
+                pass
     promedio = round(sum(notas_valores) / len(notas_valores), 2) if notas_valores else None
 
     #estado en el curso
@@ -48,14 +54,16 @@ def obtener_perfil_estudiante(curso_id):
     #armar lista evaluaciones con notas
     evaluaciones_con_nota = []
     for ev in evaluaciones_curso:
-        nota = notas_por_eval.get(ev["id"])
+        nota_raw = notas_por_eval.get(ev["id"])
+        nota = float(nota_raw) if nota_raw is not None else None
         evaluaciones_con_nota.append({
             "titulo":  ev.get("titulo", "—"),
-            "fecha":   ev.get("fecha", "—"),
+            "tipo":    ev.get("tipo_evaluacion", "—"),
+            "fecha":   _formatear_fecha(ev.get("fecha")),
             "nota":    nota,
-            "estado":  "Aprobada" if nota is not None and nota >= 4
-                       else "Desaprobada" if nota is not None
-                       else "Pendiente",
+            "estado":  "Aprobada"     if nota is not None and nota >= 4
+                    else "Desaprobada" if nota is not None
+                    else "Pendiente",
         })
 
     #porcentaje asistencia
