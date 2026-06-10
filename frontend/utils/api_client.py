@@ -3,7 +3,7 @@ import requests
 from flask import request
 from datetime import datetime
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:5000").rstrip("/")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:5000").rstrip("/")
 TIMEOUT = int(os.getenv("BACKEND_TIMEOUT", "10"))
 TOKEN_COOKIE_NAME = "access_token_cookie"
 
