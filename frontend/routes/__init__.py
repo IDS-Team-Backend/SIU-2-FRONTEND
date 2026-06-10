@@ -22,7 +22,7 @@ BLUEPRINTS_PUBLICOS = (
 
 # Backoffice: todo lo que se consulta autenticado vive bajo ADMIN_PREFIX.
 BLUEPRINTS_BACKOFFICE = (
-    private_bp,             # curso, materias, material
+    private_bp,             # curso, materias, 
     perfil_bp,             # perfil del usuario
     alumnos_bp,
     evaluaciones_bp,
