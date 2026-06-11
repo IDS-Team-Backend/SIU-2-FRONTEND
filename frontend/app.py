@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 
+from utils.user_context import crear_contexto_usuario
 from routes import register_routes
 from services.context_processors import registrar_context_processors
 from services.decorators import proteger_rutas
@@ -12,6 +13,7 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-cambiar-en-produccion")
 
+    crear_contexto_usuario(app)     # por cada f5, carga datos del usuario logueado en el contexto global ( g.usuario y g.perfiles )
     register_routes(app)            # blueprints (público, privado, backoffice, auth)
     proteger_rutas(app)             # gate global de autenticación
     registrar_context_processors(app)  # curso_activo / usuario_actual en plantillas

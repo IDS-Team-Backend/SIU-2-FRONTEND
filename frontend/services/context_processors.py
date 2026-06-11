@@ -1,7 +1,8 @@
 import os
 
-from services.auth_service import usuario_logueado
+from services.auth_service import usuario_esta_logueado
 from utils.api_client import api_request
+import utils.user_context as UserContext
 
 CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
@@ -13,7 +14,7 @@ def registrar_context_processors(app):
 
     @app.context_processor
     def inject_curso_activo():
-        if not usuario_logueado():
+        if not usuario_esta_logueado():
             return {"curso_activo": _CURSO_FALLBACK}
         ok, data = api_request("GET", f"/cursos/{CURSO_ACTIVO_ID}")
         if ok and data:
@@ -22,9 +23,8 @@ def registrar_context_processors(app):
 
     @app.context_processor
     def inject_usuario_actual():
-        if not usuario_logueado():
+        if not usuario_esta_logueado():
             return {"usuario_actual": None}
-        ok, data = api_request("GET", "/auth/me/perfiles")
-        if ok and data:
-            return {"usuario_actual": {"perfiles": data.get("perfiles", [])}}
-        return {"usuario_actual": None}
+        
+        perfiles = UserContext.get_perfiles()
+        return {"usuario_actual": {"perfiles": perfiles}}
