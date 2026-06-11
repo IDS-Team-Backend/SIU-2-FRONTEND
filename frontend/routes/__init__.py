@@ -7,7 +7,8 @@ from routes.evaluaciones_routes import evaluaciones_bp
 from routes.tipos_evaluaciones_router import tipo_evaluaciones_bp
 from routes.reportes_routes import reportes_bp
 from routes.clases_routes import clases_bp
-
+from routes.contraseña_routes import password_bp
+    
 # Prefijo del backoffice. 
 ADMIN_PREFIX = "/admin"
 
@@ -17,11 +18,12 @@ ADMIN_PREFIX = "/admin"
 BLUEPRINTS_PUBLICOS = (
     public_bp,
     auth_bp,
+    password_bp
 )
 
 # Backoffice: todo lo que se consulta autenticado vive bajo ADMIN_PREFIX.
 BLUEPRINTS_BACKOFFICE = (
-    private_bp,             # curso, materias, material
+    private_bp,             # curso, materias, 
     perfil_bp,             # perfil del usuario
     alumnos_bp,
     evaluaciones_bp,

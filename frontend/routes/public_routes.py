@@ -2,8 +2,9 @@ import os
 
 from flask import Blueprint, abort, redirect, render_template, url_for
 
-from services.mocks_service import cursos_mock, listar_materiales
+from services.mocks_service import cursos_mock
 from utils.api_client import api_request
+from services.materiales_service import obtener_materiales_del_curso
 
 # Router público: páginas accesibles sin sesión iniciada, sin sidebar.
 # Todas resuelven contra el curso activo (no llevan curso_id en la URL).
@@ -45,9 +46,12 @@ def cronograma():
 
 @public_bp.route("/material")
 def material():
+    ok, materiales = obtener_materiales_del_curso(CURSO_ACTIVO_ID)
+    if not ok:
+        materiales = []
     return render_template(
         "public/material/index.html",
         title="Material",
         active_page="material",
-        materiales=listar_materiales,
+        materiales=materiales,
     )
