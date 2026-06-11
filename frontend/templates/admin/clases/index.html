@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+{% from "admin/components/modal_overlay.html" import modal_overlay %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluaciones.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/clases.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+  <div class="page-header">
+    <div>
+      <h1>{{ title }}</h1>
+      <p class="text-muted">Calendario de clases con acceso al detalle y a la asistencia.</p>
+    </div>
+    <a href="{{ url_for('clases.listar_clases', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}" class="btn btn-primary">
+      <span>+</span> Nueva clase
+    </a>
+  </div>
+
+  <div class="cal-toolbar">
+    <div class="cal-nav">
+      <a class="cal-nav__btn" title="Mes anterior"
+         href="{{ url_for('clases.listar_clases', curso_id=curso_id, anio=prev_anio, mes=prev_mes) }}">
+        <span class="material-symbols-rounded">chevron_left</span>
+      </a>
+      <h2 class="cal-nav__title">{{ nombre_mes }} {{ anio }}</h2>
+      <a class="cal-nav__btn" title="Mes siguiente"
+         href="{{ url_for('clases.listar_clases', curso_id=curso_id, anio=next_anio, mes=next_mes) }}">
+        <span class="material-symbols-rounded">chevron_right</span>
+      </a>
+    </div>
+    <a class="btn btn-outline"
+       href="{{ url_for('clases.listar_clases', curso_id=curso_id, anio=hoy.year, mes=hoy.month) }}">Hoy</a>
+  </div>
+
+  <div class="cal-grid">
+    {% for dia_nombre in ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] %}
+      <div class="cal-weekday">{{ dia_nombre }}</div>
+    {% endfor %}
+
+    {% for semana in semanas %}
+      {% for dia in semana %}
+        <div class="cal-day{% if dia.month != mes %} cal-day--muted{% endif %}{% if dia == hoy %} cal-day--hoy{% endif %}">
+          <div class="cal-day__head">
+            <span class="cal-day__num">{{ dia.day }}</span>
+            <a class="cal-day__add" title="Nueva clase este día"
+               href="{{ url_for('clases.listar_clases', curso_id=curso_id, accion='nueva', fecha=dia.isoformat(), anio=anio, mes=mes) }}">+</a>
+          </div>
+
+          {% set clases_del_dia = clases_por_dia.get(dia) %}
+          {% if clases_del_dia %}
+            <div class="cal-day__eventos">
+              {% for clase in clases_del_dia %}
+                <a class="cal-evento cal-evento--clase cal-evento--t{{ clase.color_index }}"
+                   href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id) }}"
+                   title="{{ clase.nombre }}{% if clase.status %} - {{ clase.status|capitalize }}{% endif %}">
+                  {{ clase.nombre }}
+                  {% if clase.status %}
+                    <small class="clase-chip">{{ clase.status|capitalize }}</small>
+                  {% endif %}
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</section>
+
+{% if request.args.get('accion') == 'nueva' %}
+{% call modal_overlay("modal modal--lg") %}
+    <div class="modal__header">
+      <h2 class="modal__title">Nueva clase</h2>
+      <a href="{{ url_for('clases.listar_clases', curso_id=curso_id, anio=anio, mes=mes) }}" class="modal__close modal-close-btn">x</a>
+    </div>
+    <div class="modal__body modal__body--padded">
+      <form class="clase-form-grid" action="{{ url_for('clases.crear_clase_route', curso_id=curso_id) }}" method="POST">
+        <div class="clase-form-grid__col">
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required class="form-control" placeholder="Ej: Clase 1 - Introducción">
+          </div>
+          <div class="form-group">
+            <label for="fecha_hora_inicio">Fecha y hora de inicio</label>
+            <input type="datetime-local" id="fecha_hora_inicio" name="fecha_hora_inicio" required class="form-control" value="{{ fecha_inicio_prefill or '' }}">
+          </div>
+          <div class="form-group">
+            <label for="fecha_hora_fin">Fecha y hora de fin</label>
+            <input type="datetime-local" id="fecha_hora_fin" name="fecha_hora_fin" required class="form-control" value="{{ fecha_fin_prefill or '' }}">
+          </div>
+        </div>
+        <div class="clase-form-grid__col">
+          <div class="form-group">
+            <label for="tema">Tema</label>
+            <textarea id="tema" name="tema" rows="3" class="form-control" placeholder="Temas, observaciones o contenido de la clase..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="tipo">Tipo</label>
+            <select id="tipo" name="tipo" class="form-control">
+              <option value="">Sin definir</option>
+              {% for tipo in tipos_clase %}
+                <option value="{{ tipo }}">{{ tipo|capitalize }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="modalidad">Modalidad</label>
+            <select id="modalidad" name="modalidad" class="form-control">
+              <option value="">Sin definir</option>
+              {% for modalidad in modalidades_clase %}
+                <option value="{{ modalidad }}">{{ modalidad }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" class="form-control" placeholder="Obligatoria, Parcialito">
+          </div>
+          <div class="form-group">
+            <label for="status">Estado</label>
+            <select id="status" name="status" class="form-control">
+              {% for estado in estados_clase %}
+                <option value="{{ estado.get('nombre') }}">{{ estado.get('nombre')|capitalize }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <a href="{{ url_for('clases.listar_clases', curso_id=curso_id, anio=anio, mes=mes) }}" class="btn btn-outline">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+{% endcall %}
+{% endif %}
+{% endblock %}

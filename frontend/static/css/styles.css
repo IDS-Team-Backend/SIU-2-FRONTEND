@@ -654,6 +654,8 @@ h1 {
 }
 
 .modal--sm { max-width: 500px; }
+.modal--md { max-width: 720px; }
+.modal--lg { max-width: 860px; }
 
 .modal__header {
   padding: 24px 28px;

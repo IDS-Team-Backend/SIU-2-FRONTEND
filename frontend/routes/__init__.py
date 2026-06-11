@@ -6,6 +6,7 @@ from routes.alumnos_routes import alumnos_bp
 from routes.evaluaciones_routes import evaluaciones_bp
 from routes.tipos_evaluaciones_router import tipo_evaluaciones_bp
 from routes.reportes_routes import reportes_bp
+from routes.clases_routes import clases_bp
 from routes.contraseña_routes import password_bp
     
 # Prefijo del backoffice. 
@@ -28,7 +29,7 @@ BLUEPRINTS_BACKOFFICE = (
     evaluaciones_bp,
     tipo_evaluaciones_bp,
     reportes_bp,
-    
+    clases_bp,
 )
 
 
