@@ -1,0 +1,7 @@
+{% macro modal_overlay(modal_class='modal modal--sm') -%}
+<div class="modal-overlay">
+  <div class="{{ modal_class }}">
+    {{ caller() }}
+  </div>
+</div>
+{%- endmacro %}
