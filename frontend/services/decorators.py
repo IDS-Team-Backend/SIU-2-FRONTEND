@@ -2,9 +2,9 @@ from functools import wraps
 
 from flask import flash, redirect, request, url_for
 
+import utils.user_context as UserContext
 from services.auth_service import (
-    usuario_logueado,
-    obtener_perfiles_usuario,
+    usuario_esta_logueado,
     es_staff,
     es_alumno,
 )
@@ -13,7 +13,7 @@ from services.auth_service import (
 def login_required(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
-        if not usuario_logueado():
+        if not usuario_esta_logueado():
             flash("Primero iniciá sesión.", "warning")
             return redirect(url_for("auth.login"))
 
@@ -25,11 +25,11 @@ def login_required(view):
 def requiere_staff(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
-        if not usuario_logueado():
+        if not usuario_esta_logueado():
             flash("Primero iniciá sesión.", "warning")
             return redirect(url_for("auth.login"))
 
-        perfiles = obtener_perfiles_usuario()
+        perfiles = UserContext.get_perfiles()
         print(f"DEBUG perfiles: {perfiles}")   # ← agregar esta línea
         print(f"DEBUG es_staff: {es_staff(perfiles)}")  # ← y esta
         if not es_staff(perfiles):
@@ -44,11 +44,11 @@ def requiere_staff(view):
 def requiere_alumno(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
-        if not usuario_logueado():
+        if not usuario_esta_logueado():
             flash("Primero iniciá sesión.", "warning")
             return redirect(url_for("auth.login"))
 
-        perfiles = obtener_perfiles_usuario()
+        perfiles = UserContext.get_perfiles()
 
         if not es_alumno(perfiles):
             flash("No tenés permiso para acceder a esta sección.", "danger")
@@ -94,7 +94,7 @@ def proteger_rutas(app):
             return None
 
         # Usuario logueado -> pasa (los decoradores de rol siguen corriendo).
-        if usuario_logueado():
+        if usuario_esta_logueado():
             return None
 
         # No logueado -> flash + redirect al login.

@@ -5,7 +5,7 @@ FORMATO_BACKEND = "%a, %d %b %Y %H:%M:%S %Z"
 
 
 def parsear_fecha_hora(valor):
-    """Convierte strings del backend, del HTML o instancias a datetime."""
+    """Convierte strings del backend (RFC 1123) o instancias de fecha a datetime."""
     if not valor:
         return None
 
@@ -15,19 +15,10 @@ def parsear_fecha_hora(valor):
     if isinstance(valor, date):
         return datetime.combine(valor, datetime.min.time())
 
-    texto = str(valor).strip()
-
-    try: # se intenta primero con el formato de backend
-        return datetime.strptime(texto, FORMATO_BACKEND)
+    try:
+        return datetime.strptime(str(valor).strip(), FORMATO_BACKEND)
     except (ValueError, TypeError):
-        pass  # Si falla, no nos rendimos todavía
-
-    try: # se intenta con el formato que manda el HTML (ej: "2026-06-15T14:30")
-        return datetime.fromisoformat(texto)
-    except (ValueError, TypeError):
-        pass
-        
-    return None
+        return None
 
 
 def fecha_a_date(valor):
