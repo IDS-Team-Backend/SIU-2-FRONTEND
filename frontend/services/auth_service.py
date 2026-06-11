@@ -1,4 +1,4 @@
-from flask import request
+from flask import g, request
 
 from utils.api_client import api_request, TOKEN_COOKIE_NAME
 
@@ -73,20 +73,9 @@ def borrar_token_cookie(response):
 #  PERFILE, PERMISOS Y AUTENTICACIÓN
 #////////////////////////////////////////
 
-def usuario_logueado():
+def usuario_esta_logueado():
     return bool(request.cookies.get(TOKEN_COOKIE_NAME))
 
-
-def obtener_perfiles_usuario():
-    ok, data = api_request("GET", "/auth/me/perfiles")
-
-    if not ok:
-        return []
-
-    if not isinstance(data, dict):
-        return []
-
-    return data.get("perfiles", [])
 
 def es_staff(perfiles):
     return (

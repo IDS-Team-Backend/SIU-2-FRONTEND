@@ -1,12 +1,12 @@
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
+import utils.user_context as UserContext
 from services.auth_service import (
     validar_formulario_login,
     login_backend,
     guardar_token_en_cookie,
     borrar_token_cookie,
-    usuario_logueado,
-    obtener_perfiles_usuario,
+    usuario_esta_logueado,
     obtener_destino_por_perfil,
 )
 from services.decorators import login_required
@@ -17,7 +17,7 @@ CURSO_ACTIVO_ID = 1
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if usuario_logueado():
+    if usuario_esta_logueado():
         return redirect(url_for("auth.post_login"))
 
     if request.method == "POST":
@@ -56,7 +56,7 @@ def login():
 @auth_bp.route("/post-login")
 @login_required
 def post_login():
-    perfiles = obtener_perfiles_usuario()
+    perfiles = UserContext.get_perfiles()
 
     #remplazar a futuro con obtener_destino_por_perfil(perfiles) cuando se tenga perfiles
     #POR AHORA ESTA HARDCODEADO PARA REDIRIGIR AL CURSO ACTIVO, YA QUE NO HAY PERFILES NI ASIGNACIÓN DE PERFILES A USUARIOS EN EL BACKEND

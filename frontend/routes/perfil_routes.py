@@ -1,7 +1,8 @@
 import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request
+import utils.user_context as UserContext
 from services.decorators import login_required
-from services.auth_service import obtener_perfiles_usuario, es_staff, es_alumno
+from services.auth_service import es_staff, es_alumno
 from services import perfil_service
  
 perfil_bp = Blueprint("perfil", __name__)
@@ -11,7 +12,7 @@ POR_PAGINA = 5
 @perfil_bp.route("/perfil")
 @login_required
 def index():
-    perfiles = obtener_perfiles_usuario()
+    perfiles = UserContext.get_perfiles()
     if perfiles is None:
         flash("Error al obtener perfiles del usuario.", "danger")
         return redirect(url_for("public.index"))

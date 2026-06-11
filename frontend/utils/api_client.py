@@ -64,7 +64,7 @@ def extraer_mensaje_error(response, data):
     return f"Error del backend ({response.status_code})"
 
 
-def api_request(method, path, params=None, json_body=None, auth=True, is_binary=False):
+def api_request(method, path, params=None, json_body=None, auth=True, is_binary=False) -> (bool, dict or bytes):
     url = f"{BACKEND_URL}{path}"
 
     try:
