@@ -1,8 +1,15 @@
 import requests as req_lib
 from utils.api_client import api_request, BACKEND_URL, armar_cookies_backend
-
+import secrets
+import string
 ESTADOS_VALIDOS = ("activo", "abandono")
 
+
+
+def _password_inutilizable():
+    """64 caracteres random — nadie la conoce, el alumno no puede loguearse."""
+    return ''.join(secrets.choice(string.ascii_letters + string.digits + "!@#$") 
+                   for _ in range(64))
 
 def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
     """Retorna (ok, alumnos, paginacion) donde paginacion es un dict con page/total_paginas/total."""
@@ -47,7 +54,7 @@ def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
     return True, resultado, paginacion
 
 
-def crear_alumno(nombre, apellido, email, dni, password, padron, carrera, anio_ingreso):
+def crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso):
     """
     Alta de un nuevo estudiante (sin inscribirlo al curso):
       1. POST /usuarios/   → crea la cuenta
@@ -55,6 +62,7 @@ def crear_alumno(nombre, apellido, email, dni, password, padron, carrera, anio_i
     El admin luego lo vincula al curso con el flujo de vincular.
     """
     # Crear usuario 
+    password = _password_inutilizable()  # no se usa, el alumno no puede loguearse hasta que se vincule al curso
     ok_u, data_u = api_request("POST", "/usuarios/", json_body={
         "nombre":   nombre.strip(),
         "apellido": apellido.strip(),
