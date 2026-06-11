@@ -109,14 +109,13 @@ def crear(curso_id):
     apellido     = request.form.get("apellido",     "").strip()
     email        = request.form.get("email",        "").strip()
     dni          = request.form.get("dni",          "").strip()
-    password     = request.form.get("password",     "").strip()
     padron       = request.form.get("padron",       "").strip()
     carrera      = request.form.get("carrera",      "").strip()
     anio_ingreso = request.form.get("anio_ingreso", "").strip()
 
     ok, error = crear_alumno(
-        nombre, apellido, email, dni, password,
-        padron, carrera, anio_ingreso,
+        nombre, apellido, email, dni,
+        padron, carrera, anio_ingreso
     )
 
     if ok:
