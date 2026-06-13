@@ -1,12 +1,11 @@
-import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 import utils.user_context as UserContext
 from services.decorators import login_required
-from services.auth_service import es_staff, es_alumno
+from services.auth_service import obtener_perfiles_usuario, es_staff, es_alumno
+from services.cursos_service import obtener_curso_activo_id
 from services import perfil_service
- 
+
 perfil_bp = Blueprint("perfil", __name__)
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 POR_PAGINA = 5
 
 @perfil_bp.route("/perfil")
@@ -27,10 +26,11 @@ def index():
 @perfil_bp.route("/perfil/estudiante")
 @login_required
 def estudiante():
-    ok, perfil = perfil_service.obtener_perfil_estudiante(CURSO_ACTIVO_ID)
+    curso_id = obtener_curso_activo_id()
+    ok, perfil = perfil_service.obtener_perfil_estudiante(curso_id)
     if not ok:
         flash(perfil, "danger")
-        return redirect(url_for("private.curso", curso_id=CURSO_ACTIVO_ID))
+        return redirect(url_for("private.curso", curso_id=curso_id))
  
     total_evaluaciones = len(perfil["evaluaciones"])
     pagina_actual      = request.args.get("page", 1, type=int)
@@ -60,7 +60,7 @@ def estudiante():
 @perfil_bp.route("/perfil/profesor")
 @login_required
 def perfil_profesor():
-    ok, perfil = perfil_service.obtener_perfil_profesor(CURSO_ACTIVO_ID)
+    ok, perfil = perfil_service.obtener_perfil_profesor(obtener_curso_activo_id())
     if not ok:
         flash(perfil, "danger")
         return redirect(url_for("public.index"))

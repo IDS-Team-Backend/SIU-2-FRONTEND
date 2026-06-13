@@ -32,6 +32,10 @@
       <span class="info-card-value">{{ perfil.rol }}</span>
     </div>
     <div class="info-card">
+      <span class="info-card-label">Fecha de ingreso</span>
+      <span class="info-card-value">{{ perfil.fecha_ingreso | formatear_fecha or "—" }}</span>
+    </div>
+    <div class="info-card">
       <span class="info-card-label">Antigüedad</span>
       <span class="info-card-value">{{ perfil.antiguedad }}</span>
     </div>

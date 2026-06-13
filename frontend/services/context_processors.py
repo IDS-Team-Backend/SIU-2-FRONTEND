@@ -1,5 +1,5 @@
-import os
-
+import re as _re
+from flask import request as _request
 from services.auth_service import usuario_esta_logueado
 from utils.api_client import api_request
 import utils.user_context as UserContext
@@ -8,18 +8,27 @@ CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 _CURSO_FALLBACK = {"id": CURSO_ACTIVO_ID, "nombre": "Sistema"}
 
+def _curso_id_del_path():
+    """Extrae el curso_id de rutas tipo /admin/curso/<id>/... sin llamadas a la API."""
+    m = _re.search(r'/curso/(\d+)', _request.path)
+    return int(m.group(1)) if m else None
+
 
 def registrar_context_processors(app):
-    """Inyecta `curso_activo` y `usuario_actual` en todas las plantillas."""
+    """Inyecta `curso_activo`, `curso_id_contexto` y `usuario_actual` en todas las plantillas."""
 
     @app.context_processor
     def inject_curso_activo():
+        # La cursada activa es un dato del sistema (endpoint público); el sidebar
+        # del backoffice la usa para armar la navegación y el bloque de contexto.
         if not usuario_esta_logueado():
-            return {"curso_activo": _CURSO_FALLBACK}
-        ok, data = api_request("GET", f"/cursos/{CURSO_ACTIVO_ID}")
-        if ok and data:
-            return {"curso_activo": data}
-        return {"curso_activo": _CURSO_FALLBACK}
+            return {"curso_activo": _CURSO_FALLBACK, "curso_id_contexto": _CURSO_FALLBACK["id"]}
+        ok, data = api_request("GET", "/cursos-publico/activa", auth=False)
+        curso_activo = data if (ok and data) else _CURSO_FALLBACK
+        # curso_id_contexto: el id de la cursada que se está viendo ahora (puede ser
+        # distinto a la activa cuando el admin navega una cursada histórica).
+        curso_id_contexto = _curso_id_del_path() or curso_activo.get("id") or _CURSO_FALLBACK["id"]
+        return {"curso_activo": curso_activo, "curso_id_contexto": curso_id_contexto}
 
     @app.context_processor
     def inject_usuario_actual():

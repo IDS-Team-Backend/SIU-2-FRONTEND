@@ -1,17 +1,14 @@
-import os
-
 from flask import Blueprint, abort, redirect, render_template, url_for
 
-from services.mocks_service import cursos_mock
+from services.mocks_service import listar_materiales
+from services.cursos_service import obtener_curso_activo, obtener_curso_activo_id
 from utils.api_client import api_request
 from services.materiales_service import obtener_materiales_del_curso
 
 # Router público: páginas accesibles sin sesión iniciada, sin sidebar.
-# Todas resuelven contra el curso activo (no llevan curso_id en la URL).
+# Todas resuelven contra la cursada activa del sistema (no llevan curso_id en la URL).
 # (Recordá sumar sus endpoints a RUTAS_PUBLICAS en services/decorators.py.)
 public_bp = Blueprint("public", __name__)
-
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 
 @public_bp.route("/")
@@ -21,8 +18,8 @@ def index():
 
 @public_bp.route("/curso")
 def curso():
-    curso_data = cursos_mock.get(CURSO_ACTIVO_ID)
-    if curso_data is None:
+    ok, curso_data = obtener_curso_activo()
+    if not ok:
         abort(404)
     return render_template(
         "public/curso/index.html",
@@ -34,7 +31,7 @@ def curso():
 
 @public_bp.route("/cronograma")
 def cronograma():
-    ok, data = api_request("GET", f"/cursos/{CURSO_ACTIVO_ID}/cronograma", auth=False)
+    ok, data = api_request("GET", f"/cursos/{obtener_curso_activo_id()}/cronograma", auth=False)
     semanas = data.get("semanas", []) if ok and data else []
     return render_template(
         "public/cronograma/index.html",
