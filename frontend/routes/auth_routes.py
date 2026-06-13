@@ -10,6 +10,7 @@ from services.auth_service import (
     obtener_destino_por_perfil,
 )
 from services.decorators import login_required
+from utils.api_client import api_request
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -51,6 +52,33 @@ def login():
 
     return render_template("auth/login.html")
 
+
+
+@auth_bp.route("/finalizar-registracion", methods=["GET", "POST"])
+def finalizar_registracion():
+    email = (request.values.get("email") or "").strip()
+
+    if request.method == "POST":
+        ok, data = api_request(
+            "POST",
+            "/auth/finalizar-registro",
+            json_body={
+                "email":              email,
+                "codigo":             (request.form.get("codigo") or "").strip(),
+                "nueva_password":     request.form.get("nueva_password") or "",
+                "confirmar_password": request.form.get("confirmar_password") or "",
+            },
+            auth=False,
+        )
+
+        if ok:
+            flash("Registración finalizada. Ya podés iniciar sesión.", "success")
+            return redirect(url_for("auth.login"))
+
+        error = data.get("error", "No se pudo finalizar la registración.") if isinstance(data, dict) else "Error inesperado."
+        return render_template("auth/finalizar_registracion.html", email=email, error=error)
+
+    return render_template("auth/finalizar_registracion.html", email=email)
 
 
 @auth_bp.route("/post-login")
