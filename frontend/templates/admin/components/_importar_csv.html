@@ -1,0 +1,15 @@
+{# Botón reutilizable de carga masiva por CSV: input file oculto + auto-submit.
+   Pensado para cualquier pantalla (equipos, alumnos, …): sólo cambia `action_url`.
+   `input_id` debe ser único si hay más de un importador en la misma página. #}
+{% macro boton_importar_csv(action_url, input_id='csv_file', label='Importar CSV') %}
+  <form action="{{ action_url }}" method="post" enctype="multipart/form-data">
+    <input type="file" id="{{ input_id }}" name="csv_file" accept=".csv"
+           style="display:none"
+           onchange="this.form.submit()">
+    <button type="button" class="btn btn-outline"
+            onclick="document.getElementById('{{ input_id }}').click()">
+      <span class="material-symbols-rounded" style="font-size:18px">upload</span>
+      {{ label }}
+    </button>
+  </form>
+{% endmacro %}

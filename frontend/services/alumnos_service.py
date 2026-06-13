@@ -1,5 +1,5 @@
-import requests as req_lib
-from utils.api_client import api_request, BACKEND_URL, armar_cookies_backend
+from utils.api_client import api_request
+from utils.importador import importar_lote_csv
 import secrets
 import string
 ESTADOS_VALIDOS = ("activo", "abandono")
@@ -225,36 +225,8 @@ def cambiar_estado_inscripcion(inscripcion_id, estudiante_id, curso_id, nuevo_es
 
 
 def importar_csv(archivo, curso_id):
-    try:
-        resp = req_lib.post(
-            f"{BACKEND_URL}/estudiante_curso/importar-lote",
-            files={"archivo": (archivo.filename, archivo.stream, "text/csv")},
-            data={"curso_id": curso_id},
-            cookies=armar_cookies_backend(),
-            timeout=30,
-        )
-        resp.raise_for_status()
-
-        data = resp.json()
-        resultado_raw = data.get("resultado", {})
-
-        return True, {
-            "exitosos":   resultado_raw.get("procesados_exito",    0),
-            "duplicados": resultado_raw.get("ignorados_duplicados", 0),
-            "errores":    resultado_raw.get("errores_encontrados",  0),
-            "detalles":   resultado_raw.get("detalles_errores",     []),
-        }
-
-    except req_lib.exceptions.HTTPError as e:
-        try:
-            errores = e.response.json().get("errors", [])
-            msg = errores[0].get("message", str(e)) if errores else str(e)
-        except Exception:
-            msg = str(e)
-        return False, msg
-
-    except req_lib.exceptions.ConnectionError:
-        return False, "No se pudo conectar con el servidor."
-
-    except Exception as e:
-        return False, f"Error inesperado: {e}"
+    return importar_lote_csv(
+        archivo,
+        "/estudiante_curso/importar-lote",
+        data={"curso_id": curso_id},
+    )
