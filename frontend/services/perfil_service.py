@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 from utils.api_client import api_request
-from utils.filtros_fecha import formatear_fecha as _formatear_fecha
+from utils.filtros_fecha import FORMATO_BACKEND
+
 
 
 def obtener_perfil_estudiante(curso_id):
@@ -113,13 +114,13 @@ def obtener_perfil_profesor(curso_id):
                                   params={"curso_id": curso_id})
     total_alumnos = data_cu.get("total", 0) if ok_cu and data_cu else 0
  
-    #Calcular antigüedad desde fecha_ingreso
+    #Calcular antigüedad desde fecha_ingreso (el backend la serializa en RFC 1123)
     antiguedad = "—"
     fecha_ingreso = profesor.get("fecha_ingreso")
     if fecha_ingreso:
         try:
-            anio_ingreso = int(str(fecha_ingreso)[:4])
-            anios = date.today().year - anio_ingreso
+            ingreso = datetime.strptime(str(fecha_ingreso), FORMATO_BACKEND).date()
+            anios = max(0, date.today().year - ingreso.year)
             antiguedad = f"{anios} año{'s' if anios != 1 else ''}"
         except (ValueError, TypeError):
             antiguedad = str(fecha_ingreso)
@@ -133,6 +134,7 @@ def obtener_perfil_profesor(curso_id):
         "email":        profesor.get("email", "—"),
         "rol":          profesor.get("titulo", "Docente"),
         "departamento": profesor.get("departamento", "—"),
+        "fecha_ingreso": fecha_ingreso,
         "antiguedad":   antiguedad,
         # Cátedra
         "catedra": {

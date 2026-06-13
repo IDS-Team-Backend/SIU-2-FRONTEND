@@ -6,9 +6,18 @@
 
 {% block content %}
 <section>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+    <a href="{{ url_for('gestion.gestionar', curso_id=curso.id) }}" class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">tune</span>
+      Gestionar cursada
+    </a>
+  </div>
   <div class="page-hero">
     <div class="page-hero-text">
       <span class="page-hero-eyebrow">{{ curso.codigo }} · {{ curso.carrera }}</span>
+      <div style="margin:.35rem 0">
+        <span class="badge badge--pill {% if curso.estado == 'abierta' %}badge--success{% elif curso.estado == 'finalizada' %}badge--danger{% endif %}">{{ curso.estado_label }}</span>
+      </div>
       <h1 class="page-hero-title">{{ curso.nombre }}</h1>
       <p class="page-hero-subtitle">{{ curso.descripcion }}</p>
     </div>
@@ -28,7 +37,7 @@
     </div>
     <div class="info-card">
       <span class="info-card-label">Carga horaria</span>
-      <span class="info-card-value">{{ curso.horas_semanales }} hs/semana</span>
+      <span class="info-card-value">{{ curso.horas_semanales or '—' }} hs/semana</span>
     </div>
     <div class="info-card">
       <span class="info-card-label">Alumnos inscriptos</span>

@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+{% set rol_labels_estado = {'abierta': 'Inscripción abierta', 'inscripcion_cerrada': 'Inscripción cerrada', 'finalizada': 'Finalizada'} %}
+
+<section>
+
+  <div class="page-header">
+    <div>
+      <h1>Historial de cursadas</h1>
+      <p class="text-muted">
+        {{ cursadas | length }} cursada{% if cursadas | length != 1 %}s{% endif %} en el sistema
+      </p>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Materia</th>
+          <th>Nombre</th>
+          <th>Año / Cuatri</th>
+          <th>Estado</th>
+          <th class="th--center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cursadas %}
+        <tr>
+          <td class="text-muted" style="font-size:.875rem">{{ c.materia_nombre }}</td>
+          <td class="text-bold">
+            {{ c.nombre }}
+            {% if c.activa %}
+              <span class="badge badge--pill badge--success" style="margin-left:.4rem">Activa</span>
+            {% endif %}
+          </td>
+          <td>{{ c.anio }} · {{ c.cuatrimestre }}°C</td>
+          <td>
+            {% if c.estado == 'abierta' %}
+              <span class="badge badge--pill badge--success">{{ rol_labels_estado.get(c.estado, c.estado) }}</span>
+            {% elif c.estado == 'finalizada' %}
+              <span class="badge badge--pill badge--danger">{{ rol_labels_estado.get(c.estado, c.estado) }}</span>
+            {% else %}
+              <span class="badge badge--pill badge--soft">{{ rol_labels_estado.get(c.estado, c.estado) }}</span>
+            {% endif %}
+          </td>
+          <td class="td--center">
+            <div class="table__actions">
+              <a href="{{ url_for('gestion.gestionar', curso_id=c.id) }}" class="btn-icon btn-icon--primary">
+                Abrir
+              </a>
+              {% if not c.activa and c.estado != 'finalizada' %}
+              <form action="{{ url_for('gestion.historial_activar') }}" method="post" style="display:inline">
+                <input type="hidden" name="cursada_id" value="{{ c.id }}">
+                <button type="submit" class="btn-icon"
+                        onclick="return confirm('¿Activar «{{ c.nombre }}»? La cursada activa actual quedará finalizada.')">
+                  Activar
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">
+            <div style="padding:2.5rem;text-align:center;color:var(--text-soft)">
+              <span class="material-symbols-rounded" style="font-size:3rem;display:block;margin-bottom:.75rem;opacity:.4">history_edu</span>
+              <p style="margin:0">No hay cursadas cargadas.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</section>
+{% endblock %}

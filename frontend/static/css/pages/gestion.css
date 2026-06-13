@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Gestión de la cursada
+   ========================================================================== */
+
+/* Tarjeta unificada: header + cuerpo, todo dentro del mismo borde */
+.gestion-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.gestion-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.gestion-card__head h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.gestion-card__head .sub {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  margin: 3px 0 0;
+}
+
+.gestion-card__body {
+  padding: 24px;
+}
+
+/* La tabla ocupa todo el ancho de la card, sin doble borde/sombra */
+.gestion-card .gtable {
+  overflow-x: auto;
+}
+
+.gestion-card .gtable .table {
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}
+
+/* Layout de 2 columnas (colapsa en pantallas angostas) */
+.gestion-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .gestion-grid { grid-template-columns: 1fr; }
+}
+
+/* Formulario compacto en 2 columnas */
+.gestion-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.25rem;
+}
+
+.gestion-form .form-group { margin-bottom: 16px; }
+.gestion-form .col-full { grid-column: 1 / -1; }
+
+.gestion-form .trio { display: flex; gap: 1rem; flex-wrap: wrap; }
+.gestion-form .trio > div { flex: 1; min-width: 90px; }
+
+/* Stepper de estados */
+.stepper { display: flex; align-items: stretch; gap: 0.5rem; }
+
+.stepper__step {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: #f1f5f9;
+  color: var(--text-soft);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.stepper__step .material-symbols-rounded { font-size: 18px; }
+.stepper__step--done { background: #e0e7ff; color: #3730a3; }
+.stepper__step--current { background: var(--primary); color: #fff; font-weight: 600; }
+.stepper__sep { display: flex; align-items: center; color: #cbd5e1; }
+
+/* Botonera de acciones del estado */
+.gestion-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.gestion-actions__right {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Fila de la cursada que se está gestionando */
+.row-actual { background: rgba(59, 130, 246, 0.06); }

@@ -1,0 +1,308 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/gestion.css') }}">
+{% endblock %}
+
+{% set rol_labels = {'titular': 'Titular', 'jefe_tp': 'Jefe de TP', 'ayudante': 'Ayudante'} %}
+
+{% block content %}
+<section>
+
+  <div class="page-header">
+    <div>
+      <h1>Gestión de la cursada</h1>
+      <p class="text-muted">Editá la información del curso y su equipo docente</p>
+    </div>
+    <div class="page-header__actions">
+      <a href="{{ url_for('private.curso', curso_id=curso_id) }}" class="btn btn-outline">
+        <span class="material-symbols-rounded" style="font-size:18px">visibility</span>
+        Ver curso
+      </a>
+    </div>
+  </div>
+
+  {# ── Estado de la cursada ── #}
+  {% set estado_keys = estados | map(attribute='key') | list %}
+  {% set actual_idx = estado_keys.index(curso.estado) if curso.estado in estado_keys else 0 %}
+  {% macro transicion(estado_destino, etiqueta, confirmacion, clase='btn btn-primary') %}
+    <form action="{{ url_for('gestion.cambiar_estado', curso_id=curso_id) }}" method="post" style="display:inline">
+      <input type="hidden" name="estado" value="{{ estado_destino }}">
+      <button type="submit" class="{{ clase }}" onclick="return confirm('{{ confirmacion }}')">{{ etiqueta }}</button>
+    </form>
+  {% endmacro %}
+
+  <div class="gestion-card" id="estado">
+    <div class="gestion-card__head"><h2>Estado de la cursada</h2></div>
+    <div class="gestion-card__body">
+      <div class="stepper">
+        {% for e in estados %}
+          {% set i = loop.index0 %}
+          <div class="stepper__step {% if i == actual_idx %}stepper__step--current{% elif i < actual_idx %}stepper__step--done{% endif %}">
+            <span class="material-symbols-rounded">
+              {% if i < actual_idx %}check_circle{% elif i == actual_idx %}radio_button_checked{% else %}radio_button_unchecked{% endif %}
+            </span>
+            {{ e.label }}
+          </div>
+          {% if not loop.last %}<span class="stepper__sep material-symbols-rounded">chevron_right</span>{% endif %}
+        {% endfor %}
+      </div>
+
+      {# Reabrir (retroceder) solo en la cursada activa; crear siguiente solo cuando está finalizada. #}
+      <div class="gestion-actions">
+        {% if curso.activa %}
+          <span class="badge badge--pill badge--success">Cursada activa</span>
+        {% endif %}
+        <div class="gestion-actions__right">
+          {% if curso.estado == 'abierta' %}
+            {{ transicion('inscripcion_cerrada', 'Cerrar inscripciones', '¿Cerrar las inscripciones de la cursada?') }}
+          {% elif curso.estado == 'inscripcion_cerrada' %}
+            {% if curso.activa %}{{ transicion('abierta', 'Reabrir inscripciones', '¿Reabrir las inscripciones?', 'btn btn-outline') }}{% endif %}
+            {{ transicion('finalizada', 'Cerrar cursada', '¿Cerrar (finalizar) la cursada?') }}
+          {% elif curso.estado == 'finalizada' and curso.activa %}
+            {{ transicion('inscripcion_cerrada', 'Reabrir cursada', '¿Reabrir la cursada?', 'btn btn-outline') }}
+          {% endif %}
+
+          {% if curso.activa and curso.estado == 'finalizada' %}
+            <form action="{{ url_for('gestion.crear_siguiente', curso_id=curso_id) }}" method="post" style="display:inline">
+              <button type="submit" class="btn btn-primary"
+                      onclick="return confirm('¿Crear la siguiente cursada? La nueva pasa a ser la activa.')">
+                <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">add</span>
+                Crear siguiente cursada
+              </button>
+            </form>
+          {% elif not curso.activa and curso.estado != 'finalizada' %}
+            <form action="{{ url_for('gestion.activar', curso_id=curso_id) }}" method="post" style="display:inline">
+              <input type="hidden" name="cursada_id" value="{{ curso_id }}">
+              <button type="submit" class="btn btn-outline"
+                      onclick="return confirm('¿Activar esta cursada? La cursada activa actual quedará finalizada.')">
+                Activar esta cursada
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Información + Equipo docente (2 columnas) ── #}
+  <div class="gestion-grid">
+
+    {# Información de la cursada #}
+    <div class="gestion-card">
+      <div class="gestion-card__head"><h2>Información de la cursada</h2></div>
+      <div class="gestion-card__body">
+        <form class="gestion-form" action="{{ url_for('gestion.actualizar_info', curso_id=curso_id) }}" method="post">
+          <div class="form-group col-full">
+            <label for="nombre">Nombre del curso</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required value="{{ curso.nombre or '' }}">
+          </div>
+          <div class="form-group col-full">
+            <label for="materia_id">Materia</label>
+            <select id="materia_id" name="materia_id" class="form-control" required>
+              {% for m in materias %}
+                <option value="{{ m.id }}" {% if curso.materia_id == m.id %}selected{% endif %}>
+                  {{ m.nombre }}{% if m.codigo %} ({{ m.codigo }}){% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-full trio">
+            <div>
+              <label for="anio">Año</label>
+              <input type="number" id="anio" name="anio" class="form-control" required min="2000" value="{{ curso.anio or '' }}">
+            </div>
+            <div>
+              <label for="cuatrimestre">Cuatrimestre</label>
+              <select id="cuatrimestre" name="cuatrimestre" class="form-control" required>
+                <option value="1" {% if curso.cuatrimestre == 1 %}selected{% endif %}>1°</option>
+                <option value="2" {% if curso.cuatrimestre == 2 %}selected{% endif %}>2°</option>
+              </select>
+            </div>
+            <div>
+              <label for="horas_semanales">Horas / semana</label>
+              <input type="number" id="horas_semanales" name="horas_semanales" class="form-control" min="0"
+                     value="{{ curso.horas_semanales if curso.horas_semanales is not none else '' }}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="carrera">Carrera</label>
+            <input type="text" id="carrera" name="carrera" class="form-control" maxlength="150" value="{{ curso.carrera or '' }}">
+          </div>
+          <div class="form-group">
+            <label for="modalidad">Modalidad</label>
+            <input type="text" id="modalidad" name="modalidad" class="form-control" maxlength="50"
+                   placeholder="Ej: Virtual con presenciales" value="{{ curso.modalidad or '' }}">
+          </div>
+          <div class="form-group col-full">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" name="descripcion" class="form-control" rows="3">{{ curso.descripcion or '' }}</textarea>
+          </div>
+          <div class="col-full" style="display:flex;justify-content:flex-end">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {# Equipo docente #}
+    <div class="gestion-card" id="equipo">
+      <div class="gestion-card__head">
+        <div>
+          <h2>Equipo docente</h2>
+          <p class="sub">{{ integrantes | length }} integrante{% if integrantes | length != 1 %}s{% endif %}</p>
+        </div>
+        <a href="{{ url_for('gestion.gestionar', curso_id=curso_id, modal='agregar') }}" class="btn btn-primary">
+          <span class="material-symbols-rounded" style="font-size:18px">person_add</span> Agregar
+        </a>
+      </div>
+      <div class="gtable">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Legajo</th>
+              <th>Apellido y Nombre</th>
+              <th>Participación</th>
+              <th class="th--center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for integrante in integrantes %}
+            <tr>
+              <td class="text-bold">{{ integrante.legajo }}</td>
+              <td>
+                {{ integrante.apellido }}, {{ integrante.nombre }}
+                <div class="text-muted" style="font-size:.8rem">{{ integrante.email }}</div>
+              </td>
+              <td>
+                <form action="{{ url_for('gestion.cambiar_participacion_curso', curso_id=curso_id, integrante_id=integrante.id) }}"
+                      method="post" style="display:inline">
+                  <select name="rol" class="filter-bar__select" onchange="this.form.submit()">
+                    {% for rol in roles %}
+                      <option value="{{ rol }}" {% if integrante.rol == rol %}selected{% endif %}>
+                        {{ rol_labels.get(rol, rol) }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </td>
+              <td class="td--center">
+                <div class="table__actions">
+                  <form action="{{ url_for('gestion.quitar_docente_curso', curso_id=curso_id, integrante_id=integrante.id) }}"
+                        method="post" style="display:inline">
+                    <button type="submit" class="btn-icon btn-icon--danger"
+                            onclick="return confirm('¿Quitar a {{ integrante.nombre }} {{ integrante.apellido }} del equipo docente?')">
+                      Quitar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4">
+                <div class="tabla-vacia" style="padding:2.5rem;text-align:center">
+                  <span class="material-symbols-rounded"
+                        style="font-size:3rem;color:var(--text-soft);display:block;margin-bottom:.75rem">groups</span>
+                  <p class="text-muted" style="margin:0 0 1rem">Todavía no hay integrantes en el equipo docente.</p>
+                  <a href="{{ url_for('gestion.gestionar', curso_id=curso_id, modal='agregar') }}" class="btn btn-primary">
+                    Agregar primer integrante
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+{# ── Modal: Agregar integrante (buscar profesor por legajo) ── #}
+{% if mostrar_modal %}
+<div class="modal-overlay" style="display:flex">
+  <div class="modal">
+    <div class="modal__header">
+      <div>
+        <h2 class="modal__title">Agregar integrante</h2>
+        <p class="modal__subtitle">Buscá un profesor por legajo y asignale su tipo de participación</p>
+      </div>
+      <a href="{{ url_for('gestion.gestionar', curso_id=curso_id) }}" class="modal__close">×</a>
+    </div>
+
+    <div class="modal__body modal__body--padded">
+      <form method="get" action="{{ url_for('gestion.gestionar', curso_id=curso_id) }}">
+        <input type="hidden" name="modal" value="agregar">
+        <div class="form-group">
+          <label for="legajo" class="form-group__label">Legajo del profesor</label>
+          <div class="inline-search">
+            <input type="text" id="legajo" name="legajo"
+                   value="{{ legajo_buscado }}"
+                   placeholder="Ej: 500001"
+                   class="inline-search__input"
+                   inputmode="numeric"
+                   autofocus>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+          </div>
+          {% if buscar_error %}
+            <p class="text-danger" style="margin-top:.5rem;font-size:.875rem">
+              <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle">error</span>
+              {{ buscar_error }}
+            </p>
+          {% endif %}
+        </div>
+      </form>
+
+      {% if profesor_encontrado %}
+      <div class="result-card">
+        <div class="result-card__header"><h3>Profesor encontrado</h3></div>
+        <div class="result-card__body">
+          <div class="result-card__grid">
+            <div><span class="result-card__field-label">Nombre</span>
+                 <strong class="result-card__field-value">{{ profesor_encontrado.nombre }}</strong></div>
+            <div><span class="result-card__field-label">Apellido</span>
+                 <strong class="result-card__field-value">{{ profesor_encontrado.apellido }}</strong></div>
+            <div><span class="result-card__field-label">Email</span>
+                 <strong class="result-card__field-value">{{ profesor_encontrado.email }}</strong></div>
+            <div><span class="result-card__field-label">Legajo</span>
+                 <strong class="result-card__field-value">{{ profesor_encontrado.legajo }}</strong></div>
+            <div><span class="result-card__field-label">Departamento</span>
+                 <strong class="result-card__field-value">{{ profesor_encontrado.departamento }}</strong></div>
+          </div>
+        </div>
+        <div class="result-card__footer">
+          <form action="{{ url_for('gestion.agregar_docente_curso', curso_id=curso_id) }}" method="post"
+                style="display:flex;gap:.5rem;align-items:center">
+            <input type="hidden" name="docente_id" value="{{ profesor_encontrado.id }}">
+            <select name="rol" class="filter-bar__select" required>
+              {% for rol in roles %}
+                <option value="{{ rol }}">{{ rol_labels.get(rol, rol) }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">
+              <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
+              Agregar al curso
+            </button>
+          </form>
+          <a href="{{ url_for('gestion.gestionar', curso_id=curso_id, modal='agregar') }}" class="btn btn-outline">
+            Buscar otro
+          </a>
+        </div>
+      </div>
+
+      {% elif not buscar_error %}
+      <div class="result-card__empty" style="text-align:center;padding:1.5rem;color:var(--text-soft)">
+        <span class="material-symbols-rounded" style="font-size:2.5rem;display:block;margin-bottom:.5rem;opacity:.4">manage_search</span>
+        <p style="margin:0;font-size:.875rem">Ingresá el legajo y hacé clic en <strong>Buscar</strong></p>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+

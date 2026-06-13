@@ -1,6 +1,7 @@
 from flask import Blueprint, abort, render_template, url_for
 from services.decorators import requiere_staff
-from services.mocks_service import cursos_mock, listar_materias
+from services.mocks_service import listar_materias
+from services.cursos_service import obtener_curso_para_vista
 from utils.api_client import api_request
 from services.materiales_service import obtener_materiales_del_curso
 import os
@@ -61,8 +62,8 @@ def borrar_material(material_id):
 
 @private_bp.route("/curso/<int:curso_id>")
 def curso(curso_id):
-    curso_data = cursos_mock.get(curso_id)
-    if curso_data is None:
+    ok, curso_data = obtener_curso_para_vista(curso_id)
+    if not ok:
         abort(404)
     return render_template(
         "admin/curso/index.html",
@@ -80,5 +81,6 @@ def cronograma(curso_id):
         "admin/cronograma/index.html",
         title="Cronograma",
         active_page="cronograma",
+        curso_id=curso_id,
         semanas=semanas,
     )

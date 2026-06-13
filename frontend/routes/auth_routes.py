@@ -10,11 +10,10 @@ from services.auth_service import (
     obtener_destino_por_perfil,
 )
 from services.decorators import login_required
+from services.cursos_service import obtener_curso_activo_id
 from utils.api_client import api_request
 
 auth_bp = Blueprint("auth", __name__)
-
-CURSO_ACTIVO_ID = 1
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -95,7 +94,7 @@ def post_login():
     #       return redirect(url_for("auth.login"))
     # return redirect(url_for(destino))
 
-    return redirect(url_for("private.curso", curso_id=CURSO_ACTIVO_ID))
+    return redirect(url_for("private.curso", curso_id=obtener_curso_activo_id()))
 
 @auth_bp.route("/logout", methods=["GET", "POST"])
 def logout():

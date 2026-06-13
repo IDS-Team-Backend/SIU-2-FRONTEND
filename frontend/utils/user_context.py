@@ -1,22 +1,17 @@
-    
-from flask import flash, g
-from utils.api_client import api_request
+from flask import g, request
+from utils.api_client import api_request, TOKEN_COOKIE_NAME
 
 def crear_contexto_usuario(app):
-    """ esta funcion se ejecuta antes de cada request, y se encarga de cargar en el contexto de la app (objeto 'g' de flask temporal) los datos del usuario logueado, si es que hay uno"""
+    """Carga datos del usuario logueado en g.usuario y g.perfiles antes de cada request."""
 
     @app.before_request
     def guardar_sesion_del_usuario():
-        """ esta funcion, en caso de que el usuario este logueado, 
-        obtiene sus datos y perfiles y los guarda en el contexto de la app (objeto 'g' de flask temporal)"""
+        # Solo intentar si hay cookie de sesión — evita spam de warnings en páginas públicas.
+        if not request.cookies.get(TOKEN_COOKIE_NAME):
+            return
 
         ok, respuesta = api_request("GET", "/auth/me")
-
-        if not ok or not respuesta: 
-            flash("No se pudieron obtener los datos del usuario.", "warning")
-            return
-        
-        if ok and respuesta: 
+        if ok and respuesta:
             g.usuario = respuesta.get("usuario", {})
             g.perfiles = respuesta.get("perfiles", [])
 
