@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from utils.api_client import api_request
-from utils.filtros_fecha import formatear_fecha as _formatear_fechafrom utils.filtros_fecha import FORMATO_BACKEND
+from utils.filtros_fecha import FORMATO_BACKEND
 
 
 
