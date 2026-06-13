@@ -26,8 +26,22 @@ from services.clases_service import (
     params_mes_desde_fecha,
 )
 from services.decorators import requiere_staff
+from services.docentes_service import obtener_equipo_docente
 
 clases_bp = Blueprint("clases", __name__)
+
+
+def _resolver_profesor_id(curso_id):
+    """Devuelve el profesor_id del usuario logueado, o el titular de la cursada si es admin."""
+    profesor_id = UserContext.get_profesor_id()
+    if profesor_id:
+        return profesor_id
+    # Admin sin registro de profesor: usar el titular de la cursada
+    ok, equipo = obtener_equipo_docente(curso_id)
+    if ok and equipo:
+        titular = next((m for m in equipo if m.get("rol") == "titular"), equipo[0])
+        return titular.get("docente_id")
+    return None
 
 
 def _redireccionar_a_mes_fecha(curso_id, fecha_texto):
@@ -75,9 +89,9 @@ def listar_clases(curso_id):
 def crear_clase_route(curso_id):
     fecha_hora_inicio = request.form.get("fecha_hora_inicio", "").strip()
 
-    profesor_id = UserContext.get_profesor_id()
+    profesor_id = _resolver_profesor_id(curso_id)
     if not profesor_id:
-        flash("No tienes permisos de profesor para crear una clase.", "danger")
+        flash("No hay docentes asignados a esta cursada. Agregá un profesor al equipo docente primero.", "danger")
         return _redireccionar_a_mes_fecha(curso_id, fecha_hora_inicio)
 
     ok, resultado = crear_clase(

@@ -4,9 +4,7 @@ from services.auth_service import usuario_esta_logueado
 from utils.api_client import api_request
 import utils.user_context as UserContext
 
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
-
-_CURSO_FALLBACK = {"id": CURSO_ACTIVO_ID, "nombre": "Sistema"}
+_CURSO_FALLBACK = {"id": 1, "nombre": "Sistema"}
 
 def _curso_id_del_path():
     """Extrae el curso_id de rutas tipo /admin/curso/<id>/... sin llamadas a la API."""

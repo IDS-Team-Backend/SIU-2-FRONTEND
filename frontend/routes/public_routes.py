@@ -1,9 +1,12 @@
+import os
+
 from flask import Blueprint, abort, redirect, render_template, url_for
 
-from services.mocks_service import listar_materiales
 from services.cursos_service import obtener_curso_activo, obtener_curso_activo_id
 from utils.api_client import api_request
 from services.materiales_service import obtener_materiales_del_curso
+
+CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
 
 # Router público: páginas accesibles sin sesión iniciada, sin sidebar.
 # Todas resuelven contra la cursada activa del sistema (no llevan curso_id en la URL).

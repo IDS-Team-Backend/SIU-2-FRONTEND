@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 import utils.user_context as UserContext
 from services.decorators import login_required
-from services.auth_service import obtener_perfiles_usuario, es_staff, es_alumno
+from services.auth_service import es_staff, es_alumno
 from services.cursos_service import obtener_curso_activo_id
 from services import perfil_service
 

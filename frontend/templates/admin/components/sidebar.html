@@ -67,9 +67,9 @@
         <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">bar_chart</span>Reportes
         </a>
-    <a class="{% if active_page == 'clases' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_activo.id) }}">
-      <span class="material-symbols-rounded">class</span>Clases
-    </a>
+        <a class="{% if active_page == 'clases' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">class</span>Clases
+        </a>
         {% if feature_asistencia %}
         <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('private.cronograma', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">how_to_reg</span>Asistencia
@@ -111,11 +111,11 @@
     <button class="sidebar-user" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
       <span class="material-symbols-rounded user-avatar">account_circle</span>
       <div class="user-info">
-        <span class="user-name"> {{ g.usuario.nombre }}</span>
+        <span class="user-name">{{ g.usuario.nombre if g.usuario is defined and g.usuario else 'Usuario' }}</span>
         <span class="user-role">
           {%- set etiquetas = [] -%}
           {%- for p in perfiles -%}{%- set _ = etiquetas.append(rol_labels.get(p|lower, p|capitalize)) -%}{%- endfor -%}
-          {{ etiquetas | join(', ') if etiquetas else ' {{ g.perfiles.0|capitalize }}' }}
+          {{ etiquetas | join(', ') if etiquetas else 'Administrador' }}
         </span>
       </div>
       <span class="material-symbols-rounded user-arrow">unfold_more</span>
