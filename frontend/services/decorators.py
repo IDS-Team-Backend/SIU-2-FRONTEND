@@ -68,6 +68,7 @@ RUTAS_PUBLICAS = {
     "static",            # archivos estáticos de Flask (CSS/JS del login)
     "auth.login",        # pantalla de login (evita loop de redirección)
     "auth.logout",       # cerrar sesión debe ser siempre accesible
+    "auth.finalizar_registracion",  # el profesor define su contraseña sin estar logueado
     "public.index",      # raíz (redirige a public.curso)
     "public.curso",      # home pública del curso activo
     "public.cronograma", # cronograma público
