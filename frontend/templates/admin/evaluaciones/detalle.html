@@ -45,6 +45,7 @@
 {% endmacro %}
 
 {% block content %}
+{% import "admin/components/_importar_csv.html" as imp with context %}
 <section class="eval-detalle">
 
   {# ── Encabezado ── #}
@@ -79,10 +80,14 @@
     <div class="eval-seccion">
       <div class="eval-seccion__header">
         <h2>Equipos</h2>
-        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, accion='nuevo_equipo') }}"
-           class="btn btn-primary">
-          <span>+</span> Nuevo equipo
-        </a>
+        <div class="eval-seccion__acciones">
+          {{ imp.boton_importar_csv(
+               url_for('evaluaciones.importar_equipos_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id)) }}
+          <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, accion='nuevo_equipo') }}"
+             class="btn btn-primary">
+            <span>+</span> Nuevo equipo
+          </a>
+        </div>
       </div>
       {% include "admin/evaluaciones/components/tabla_equipos.html" %}
     </div>

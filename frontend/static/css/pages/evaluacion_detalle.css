@@ -44,6 +44,12 @@
 }
 .eval-seccion__header h2 { font-size: 1.1rem; margin: 0; }
 
+.eval-seccion__acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* ── Wrapper de la tabla ──────────────────────────────────────────────────
    Igual look que .table-wrapper global, pero SIN overflow para que el
    dropdown del menú (⋮) no quede recortado. */

@@ -23,6 +23,7 @@ from services.equipos_service import (
     crear_equipo,
     actualizar_equipo,
     eliminar_equipo,
+    importar_equipos_csv,
 )
 from services.equipo_integrantes_service import (
     obtener_integrantes,
@@ -346,6 +347,30 @@ def crear_equipo_evaluacion(curso_id, evaluacion_id):
     else:
         flash(resultado, "danger")
 
+    return redirect(url_for("evaluaciones.ver_evaluacion", curso_id=curso_id, evaluacion_id=evaluacion_id))
+
+
+@evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones/<int:evaluacion_id>/equipos/importar", methods=["POST"])
+@requiere_staff
+def importar_equipos_evaluacion(curso_id, evaluacion_id):
+    archivo = request.files.get("csv_file")
+    if not archivo or not archivo.filename:
+        flash("Seleccioná un archivo CSV.", "warning")
+        return redirect(url_for("evaluaciones.ver_evaluacion", curso_id=curso_id, evaluacion_id=evaluacion_id))
+    if not archivo.filename.lower().endswith(".csv"):
+        flash("El archivo debe tener extensión .csv", "danger")
+        return redirect(url_for("evaluaciones.ver_evaluacion", curso_id=curso_id, evaluacion_id=evaluacion_id))
+
+    ok, resultado = importar_equipos_csv(archivo, curso_id, evaluacion_id)
+    if ok:
+        flash(
+            f"Importación completada: {resultado['exitosos']} equipos creados, "
+            f"{resultado['duplicados']} duplicados ignorados, "
+            f"{resultado['errores']} errores.",
+            "success" if resultado["errores"] == 0 else "warning",
+        )
+    else:
+        flash(f"Error en la importación: {resultado}", "danger")
     return redirect(url_for("evaluaciones.ver_evaluacion", curso_id=curso_id, evaluacion_id=evaluacion_id))
 
 

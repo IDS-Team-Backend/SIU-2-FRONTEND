@@ -1,4 +1,5 @@
 from utils.api_client import api_request
+from utils.importador import importar_lote_csv
 
 
 def obtener_equipos(curso_id, evaluacion_id=None):
@@ -119,3 +120,13 @@ def eliminar_equipo(equipo_id):
         return False, error_msg
 
     return True, None
+
+
+def importar_equipos_csv(archivo, curso_id, evaluacion_id):
+    """Carga masiva de equipos. curso_id y evaluacion_id van como data del multipart
+    (no en el CSV). Devuelve (ok, {exitosos, duplicados, errores, detalles}) o (False, msg)."""
+    return importar_lote_csv(
+        archivo,
+        "/equipos/bulk",
+        data={"curso_id": curso_id, "evaluacion_id": evaluacion_id},
+    )
