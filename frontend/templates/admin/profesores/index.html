@@ -34,7 +34,6 @@
           <th>Email</th>
           <th>Departamento</th>
           <th>Cursadas en que participa</th>
-          <th>Estado</th>
         </tr>
       </thead>
       <tbody>
@@ -56,11 +55,6 @@
             {% endif %}
           </td>
           <td>
-            {% if profesor.activo %}
-              <span class="badge badge--success badge--pill">Activo</span>
-            {% else %}
-              <span class="badge badge--danger badge--pill">Inactivo</span>
-            {% endif %}
           </td>
         </tr>
         {% else %}
