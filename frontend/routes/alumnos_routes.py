@@ -9,6 +9,8 @@ from services.alumnos_service import (
     importar_csv,
     crear_alumno,
     editar_alumno,
+    vincular_alumnos_masivo, 
+    importar_estudiantes_csv
 )
 from utils.filtros import leer_filtros, url_con_filtros
 
@@ -203,6 +205,59 @@ def importar(curso_id):
     if ok:
         flash(
             f"Importación completada: {resultado['exitosos']} inscriptos, "
+            f"{resultado['duplicados']} duplicados ignorados, "
+            f"{resultado['errores']} errores.",
+            "success" if resultado["errores"] == 0 else "warning",
+        )
+    else:
+        flash(f"Error en la importación: {resultado}", "danger")
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+
+
+@alumnos_bp.route("/curso/<int:curso_id>/alumnos/vincular-masivo", methods=["POST"])
+@requiere_staff
+def vincular_masivo(curso_id):
+    # checkboxes name="seleccionados" lista de estudiante_id
+    ids_raw = request.form.getlist("seleccionados")
+    estudiante_ids = []
+    for v in ids_raw:
+        try:
+            estudiante_ids.append(int(v))
+        except (ValueError, TypeError):
+            pass
+ 
+    if not estudiante_ids:
+        flash("No seleccionaste ningún alumno.", "warning")
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+ 
+    ok, resumen = vincular_alumnos_masivo(estudiante_ids, curso_id)
+ 
+    if not ok:
+        flash(f"Error: {resumen}", "danger")
+    else:
+        msg = (f"{resumen['vinculados']} vinculados, "
+               f"{resumen['duplicados']} ya estaban inscriptos, "
+               f"{resumen['errores']} con error.")
+        categoria = "success" if resumen["errores"] == 0 else "warning"
+        flash(msg, categoria)
+ 
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+
+@alumnos_bp.route("/curso/<int:curso_id>/alumnos/importar-altas", methods=["POST"])
+@requiere_staff
+def importar_altas(curso_id):
+    archivo = request.files.get("csv_altas")
+    if not archivo or not archivo.filename:
+        flash("Seleccioná un archivo CSV.", "warning")
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+    if not archivo.filename.lower().endswith(".csv"):
+        flash("El archivo debe tener extensión .csv", "danger")
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+ 
+    ok, resultado = importar_estudiantes_csv(archivo)
+    if ok:
+        flash(
+            f"Altas completadas: {resultado['exitosos']} creados, "
             f"{resultado['duplicados']} duplicados ignorados, "
             f"{resultado['errores']} errores.",
             "success" if resultado["errores"] == 0 else "warning",
