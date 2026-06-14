@@ -52,7 +52,9 @@
               {% for e in evs %}
                 <a class="cal-evento cal-evento--t{{ (e.tipo_evaluacion_id or 0) % 6 }}"
                    href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=e.id) }}"
-                   title="{{ e.titulo }}{% if not e.activo %} (inactiva){% endif %}">{{ e.titulo }}</a>
+                   title="{{ e.titulo }}{% if not e.activo %} (inactiva){% endif %}">
+                   <span>{{ e.titulo }}</span>
+                </a>
               {% endfor %}
             </div>
           {% endif %}
