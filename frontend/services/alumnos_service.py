@@ -230,3 +230,27 @@ def importar_csv(archivo, curso_id):
         "/estudiante_curso/importar-lote",
         data={"curso_id": curso_id},
     )
+
+def vincular_alumnos_masivo(estudiante_ids, curso_id):
+    if not estudiante_ids:
+        return False, "No se seleccionó ningún alumno."
+    if not curso_id:
+        return False, "Faltó el ID del curso."
+ 
+    ok, data = api_request("POST", "/estudiante_curso/inscribir-lote", json_body={
+        "curso_id":       curso_id,
+        "estudiante_ids": estudiante_ids,
+        "estado":         "activo",
+    })
+ 
+    if not ok:
+        return False, data.get("error", "Error al inscribir alumnos.") if data else "Error de conexión."
+ 
+    resultado = data.get("resultado", {}) if data else {}
+    resumen = {
+        "vinculados": resultado.get("procesados_exito",     0),
+        "duplicados": resultado.get("ignorados_duplicados", 0),
+        "errores":    resultado.get("errores_encontrados",  0),
+        "detalles":   resultado.get("detalles_errores",     []),
+    }
+    return True, resumen
