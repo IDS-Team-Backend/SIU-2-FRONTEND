@@ -254,3 +254,12 @@ def vincular_alumnos_masivo(estudiante_ids, curso_id):
         "detalles":   resultado.get("detalles_errores",     []),
     }
     return True, resumen
+
+
+def importar_estudiantes_csv(archivo):
+    # importe para carga masiva de estudiantes nuevos
+    return importar_lote_csv(
+        archivo,
+        "/estudiantes/importar-lote",
+    )
+ 
