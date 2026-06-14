@@ -37,30 +37,16 @@
     {# Fila 2: Rendimiento y Evaluación Académica #}
     <div class="filtro-row filtro-row-align-end">
       <div class="form-group filtro-group w-min-180">
-              <label for="evaluacion_id">
-                  Evaluación
-              </label>
-
-             <select
-                id="evaluacion_id"
-                name="evaluacion_id"
-                class="form-control"
-            >
-                <option value="">
-                    Seleccione una evaluación
-                </option>
-
-                {% for evaluacion in evaluaciones %}
-                    <option
-                        value="{{ evaluacion.id }}"
-                        {% if evaluacion_filtro|string == evaluacion.id|string %}selected{% endif %}
-                    >
-                        {{ evaluacion.titulo }}
-                    </option>
-                {% endfor %}
-            </select>
-          </div>
-
+        <label for="evaluacion_id">Evaluación</label>
+        <select id="evaluacion_id" name="evaluacion_id" class="form-control">
+          <option value="">Seleccione una evaluación</option>
+          {% for evaluacion in evaluaciones %}
+            <option value="{{ evaluacion.id }}" {% if evaluacion_filtro|string == evaluacion.id|string %}selected{% endif %}>
+              {{ evaluacion.titulo }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
 
       <div class="form-group filtro-group w-min-180">
         <label for="condicion">Estado Examen</label>
@@ -113,6 +99,7 @@
   </tbody>
 </table>
 
+{# ── Paginador con estilos de la clase .paginador ── #}
 {%- macro page_url(n) -%}
   {{ url_for(
       'reportes.listar_reportes',
@@ -130,27 +117,57 @@
 {%- endmacro -%}
 
 {% if paginacion and paginacion.total_paginas > 1 %}
-<div class="pagination">
+<div class="paginador">
     {% set p = paginacion.page %}
     {% set total = paginacion.total_paginas %}
 
-    <a class="pagination__btn {% if p <= 1 %}pagination__btn--disabled{% endif %}"
-       href="{{ page_url(p-1) if p > 1 else '#' }}">
-      <span class="material-symbols-rounded" style="font-size:18px">chevron_left</span>
-    </a>
-
-    {% for n in range(1, total + 1) %}
-      <a class="pagination__btn {% if n == p %}pagination__btn--active{% endif %}"
-         href="{{ page_url(n) }}">{{ n }}
+    {# Navegación izquierda #}
+    <div class="paginador__nav">
+      <a class="paginador__btn {% if p <= 1 %}is-disabled{% endif %}"
+         href="{{ page_url(p-1) if p > 1 else '#' }}">
+        <span class="material-symbols-rounded">chevron_left</span>
       </a>
-    {% endfor %}
 
-    <a class="pagination__btn {% if p >= total %}pagination__btn--disabled{% endif %}"
-       href="{{ page_url(p+1) if p < total else '#' }}">
-      <span class="material-symbols-rounded" style="font-size:18px">chevron_right</span>
-    </a>
+      {# Páginas con lógica de elipsis #}
+      {% if total <= 7 %}
+        {% for n in range(1, total + 1) %}
+          <a class="paginador__btn {% if n == p %}is-active{% endif %}"
+             href="{{ page_url(n) }}">{{ n }}</a>
+        {% endfor %}
+      {% else %}
+        {# Siempre primera página #}
+        <a class="paginador__btn {% if 1 == p %}is-active{% endif %}"
+           href="{{ page_url(1) }}">1</a>
 
-    <span class="pagination__info">{{ p }} de {{ total }} ({{ paginacion.total }} alumnos)
+        {% if p > 3 %}
+          <span class="paginador__ellipsis">⋯</span>
+        {% endif %}
+
+        {# Páginas alrededor de la actual #}
+        {% for n in range([2, p-1]|max, [total-1, p+2]|min) %}
+          {% if n > 1 and n < total %}
+            <a class="paginador__btn {% if n == p %}is-active{% endif %}"
+               href="{{ page_url(n) }}">{{ n }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if p < total - 2 %}
+          <span class="paginador__ellipsis">⋯</span>
+        {% endif %}
+
+        {# Siempre última página #}
+        <a class="paginador__btn {% if total == p %}is-active{% endif %}"
+           href="{{ page_url(total) }}">{{ total }}</a>
+      {% endif %}
+
+      <a class="paginador__btn {% if p >= total %}is-disabled{% endif %}"
+         href="{{ page_url(p+1) if p < total else '#' }}">
+        <span class="material-symbols-rounded">chevron_right</span>
+      </a>
+    </div>
+
+    <span class="paginador__info">
+      Página {{ p }} de {{ total }} ({{ paginacion.total }} alumnos)
     </span>
 </div>
 {% endif %}
