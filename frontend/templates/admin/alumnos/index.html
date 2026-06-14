@@ -31,9 +31,20 @@
         <span class="material-symbols-rounded" style="font-size:18px">link</span>
         Vincular alumno
       </a>
-    </div>
-  </div>
 
+      {# ── importar altas ── #}
+      <form action="{{ url_con_filtros('alumnos.importar_altas', curso_id=curso_id) }}"
+            method="post" enctype="multipart/form-data" style="display:inline">
+        <input type="file" id="csv_altas" name="csv_altas" accept=".csv"
+               style="display:none" onchange="this.form.submit()">
+        <button type="button" class="btn btn-outline"
+                onclick="document.getElementById('csv_altas').click()">
+          <span class="material-symbols-rounded" style="font-size:18px">group_add</span>
+          Importar altas
+        </button>
+      </form>
+    </div>{# /page-header__actions #}    
+  </div>{# /page-header #}   
   {# ── Layout: tabla + panel de formulario ── #}
   <div class="alumnos-layout {% if form_activo in ('alta','editar') %}alumnos-layout--with-form{% endif %}">
 
@@ -88,11 +99,23 @@
           <span class="material-symbols-rounded sort-icon" style="font-size:13px;vertical-align:middle;opacity:.3">unfold_more</span>
         {% endif %}
       {% endmacro %}
+      
+      {# ── NUEVO: form masivo (vacío, los checkboxes se asocian por id) ── #}
+      <form method="post" id="form-masivo"
+            action="{{ url_con_filtros('alumnos.vincular_masivo', curso_id=curso_id) }}"></form>
 
+      <div id="barra-masiva" class="barra-masiva" style="display:none">
+        <span id="contador-seleccion" class="barra-masiva__contador">0 seleccionados</span>
+        <button type="submit" form="form-masivo" class="btn btn-primary btn-sm">
+          <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">link</span>
+          Vincular seleccionados
+        </button>
+      </div>
       <div class="table-wrapper">
         <table class="table">
           <thead>
             <tr>
+              <th style="width:36px"><input type="checkbox" id="check-todos" title="Seleccionar todos"></th>
               <th><a href="{{ sort_url('padron') }}"   class="sort-header">Padrón {{ sort_icon('padron') }}</a></th>
               <th><a href="{{ sort_url('apellido') }}" class="sort-header">Apellido y Nombre {{ sort_icon('apellido') }}</a></th>
               {% if form_activo not in ('alta','editar') %}
@@ -105,8 +128,11 @@
           </thead>
           <tbody>
             {% for alumno in alumnos %}
-            <tr {% if alumno_editar and alumno.estudiante_id == alumno_editar.estudiante_id %}
-                  class="row--editing"{% endif %}>
+            <tr {% if alumno_editar and alumno.estudiante_id == alumno_editar.estudiante_id %}class="row--editing"{% endif %}>
+              <td>
+                <input type="checkbox" class="check-fila" name="seleccionados"
+                       value="{{ alumno.estudiante_id }}" form="form-masivo">
+              </td>
               <td class="text-bold">{{ alumno.padron }}</td>
               <td>{{ alumno.apellido }}, {{ alumno.nombre }}</td>
               {% if form_activo not in ('alta','editar') %}
@@ -425,5 +451,6 @@
 
 
 <script src="{{ url_for('static', filename='js/row_actions.js') }}"></script>
+<script src="{{ url_for('static', filename='js/seleccion_masiva.js') }}"></script>
 
 {% endblock %}
