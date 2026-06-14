@@ -263,3 +263,21 @@ def importar_estudiantes_csv(archivo):
         "/estudiantes/importar-lote",
     )
  
+
+def desvincular_alumnos_masivo(estudiante_ids, curso_id):
+    if not estudiante_ids:
+        return False, "No se seleccionó ningún alumno."
+
+    ok, data = api_request("POST", "/estudiante_curso/desvincular-lote", json_body={
+        "curso_id":       curso_id,
+        "estudiante_ids": estudiante_ids,
+    })
+    if not ok:
+        return False, data.get("error", "Error al desvincular.") if data else "Error de conexión."
+
+    resultado = data.get("resultado", {}) if data else {}
+    return True, {
+        "desvinculados": resultado.get("procesados_exito",    0),
+        "errores":       resultado.get("errores_encontrados", 0),
+        "detalles":      resultado.get("detalles_errores",    []),
+    }

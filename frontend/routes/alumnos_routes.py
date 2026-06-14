@@ -10,7 +10,8 @@ from services.alumnos_service import (
     crear_alumno,
     editar_alumno,
     vincular_alumnos_masivo, 
-    importar_estudiantes_csv
+    importar_estudiantes_csv,
+    desvincular_alumnos_masivo
 )
 from utils.filtros import leer_filtros, url_con_filtros
 
@@ -264,4 +265,23 @@ def importar_altas(curso_id):
         )
     else:
         flash(f"Error en la importación: {resultado}", "danger")
+    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+
+
+@alumnos_bp.route("/curso/<int:curso_id>/alumnos/desvincular-masivo", methods=["POST"])
+@requiere_staff
+def desvincular_masivo(curso_id):
+    ids_raw = request.form.getlist("seleccionados")
+    estudiante_ids = [int(v) for v in ids_raw if v.isdigit()]
+
+    if not estudiante_ids:
+        flash("No seleccionaste ningún alumno.", "warning")
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
+
+    ok, resumen = desvincular_alumnos_masivo(estudiante_ids, curso_id)
+    if ok:
+        flash(f"{resumen['desvinculados']} desvinculados, {resumen['errores']} con error.",
+              "success" if resumen["errores"] == 0 else "warning")
+    else:
+        flash(f"Error: {resumen}", "danger")
     return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
