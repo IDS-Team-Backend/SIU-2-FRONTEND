@@ -181,7 +181,6 @@ def actualizar(curso_id, evaluacion_id):
     tipo_evaluacion_id = request.form.get("tipo_evaluacion_id")
     fecha = request.form.get("fecha", "").strip()
     descripcion = request.form.get("descripcion", "").strip()
-    activo = request.form.get("activo") == "on"
 
     ok, resultado = actualizar_evaluacion(
         evaluacion_id,
@@ -189,8 +188,7 @@ def actualizar(curso_id, evaluacion_id):
         tipo_evaluacion_id,
         fecha,
         descripcion,
-        curso_id,
-        activo
+        curso_id
     )
 
     if ok:

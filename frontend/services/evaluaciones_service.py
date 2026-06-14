@@ -42,7 +42,7 @@ def crear_evaluacion(titulo, tipo_evaluacion_id, fecha, descripcion, curso_id):
 
     return True, data
 
-def actualizar_evaluacion(evaluacion_id, titulo, tipo_evaluacion_id, fecha, descripcion, curso_id, activo):
+def actualizar_evaluacion(evaluacion_id, titulo, tipo_evaluacion_id, fecha, descripcion, curso_id):
     if not evaluacion_id:
         return False, "Falta el ID de la evaluación."
     if not titulo or not titulo.strip():
@@ -57,7 +57,6 @@ def actualizar_evaluacion(evaluacion_id, titulo, tipo_evaluacion_id, fecha, desc
         "tipo_evaluacion_id": int(tipo_evaluacion_id),
         "fecha": fecha.strip(),
         "curso_id": int(curso_id),
-        "activo": bool(activo),
     }
 
     if descripcion and descripcion.strip():
