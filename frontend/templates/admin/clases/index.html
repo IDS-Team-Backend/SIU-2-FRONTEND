@@ -52,10 +52,10 @@
           {% if clases_del_dia %}
             <div class="cal-day__eventos">
               {% for clase in clases_del_dia %}
-                <a class="cal-evento cal-evento--clase cal-evento--t{{ clase.color_index }}"
+                <a class="cal-evento cal-evento--clase cal-evento--t{{ clase.color_index }} {% if clase.status in ['finalizada', 'suspendida'] %} cal-evento--inactiva{% endif %}"
                    href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id) }}"
                    title="{{ clase.nombre }}{% if clase.status %} - {{ clase.status|capitalize }}{% endif %}">
-                  {{ clase.nombre }}
+                  <span>{{ clase.nombre }}</span>
                   {% if clase.status %}
                     <small class="clase-chip">{{ clase.status|capitalize }}</small>
                   {% endif %}

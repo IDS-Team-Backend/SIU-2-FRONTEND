@@ -117,4 +117,11 @@
 .cal-evento--t4 { background: #faf5ff; color: #7e22ce; border-left-color: #a855f7; }
 .cal-evento--t5 { background: #ecfeff; color: #0e7490; border-left-color: #06b6d4; }
 
-.cal-evento--inactiva { opacity: 0.55; text-decoration: line-through; }
+.cal-evento--inactiva {
+  opacity: 0.7;
+}
+
+.cal-evento--inactiva span { 
+  opacity: 0.55; 
+  text-decoration: line-through; 
+}
