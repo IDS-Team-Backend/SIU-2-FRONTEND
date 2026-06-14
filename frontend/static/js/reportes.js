@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     const dataContainer = document.getElementById("data-container-stats");
-
     if (!dataContainer) return;
 
     try {
@@ -13,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         crearGraficoEstado(stats);
         crearGraficoRendimiento(stats);
         crearGraficoTipos(stats);
+        crearGraficoPromedioPorAsistencia(stats);
     } catch (error) {
         console.error("Error al generar gráficos:", error);
     }
@@ -75,15 +74,10 @@ function crearGraficoRendimiento(stats) {
     });
 }
 
-
 function crearGraficoTipos(stats) {
-
     const datos = stats.promedio_por_tipo;
-
     const canvas = document.getElementById("tipoChart");
-
     if (!canvas || !datos?.length) return;
-
     new Chart(canvas, {
         type: "bar",
         data: {
@@ -91,12 +85,14 @@ function crearGraficoTipos(stats) {
             datasets: [{
                 label: "Promedio",
                 data: datos.map(x => Number(x.promedio)),
-                backgroundColor: [
-                    COLORS.azul,
-                    COLORS.verde,
-                    COLORS.amarillo,
-                    COLORS.rojo
-                ]
+                backgroundColor: datos.map(x => {
+                    const promedio = Number(x.promedio);
+
+                    if (promedio >= 7) return COLORS.verde;
+                    if (promedio >= 4) return COLORS.amarillo;
+
+                    return COLORS.rojo;
+                }),
             }]
         },
         options: {
@@ -120,15 +116,10 @@ function crearGraficoTipos(stats) {
     });
 }
 
-
 function crearGraficoEstado(stats) {
-
     const datos = stats.estado_cursada;
-
     const canvas = document.getElementById("estadoChart");
-
     if (!canvas || !datos?.length) return;
-
     new Chart(canvas, {
         type: "pie",
         data: {
@@ -153,13 +144,9 @@ function crearGraficoEstado(stats) {
     });
 }
 
-
 function crearGraficoDistribucion(stats) {
-
     const datos = stats.distribucion_notas;
-
     const canvas = document.getElementById("notasChart");
-
     if (!canvas || !datos?.length) return;
 
     new Chart(canvas, {
@@ -192,13 +179,9 @@ function crearGraficoDistribucion(stats) {
     });
 }
 
-
 function crearGraficoAsistencia(stats) {
-
     const datos = stats.asistencia_por_clase;
-
     const canvas = document.getElementById("asistenciaChart");
-
     if (!canvas || !datos?.length) return;
 
     new Chart(canvas, {
@@ -239,6 +222,68 @@ function crearGraficoAsistencia(stats) {
                     title: {
                         display: true,
                         text: "% de asistencia"
+                    }
+                }
+            }
+        }
+    });
+}
+
+function crearGraficoPromedioPorAsistencia(stats) {
+    const datos = stats.rendimiento;
+    const canvas = document.getElementById(
+        "promedioPorAsistenciaChart"
+    );
+    if (!canvas || !datos?.length) return;
+
+    new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: datos.map(x => x.rango),
+            datasets: [{
+                label: "Promedio >= 7",
+                data: datos.map(x => Number(x.promedio)),
+                backgroundColor: datos.map(x => {
+                    const promedio = Number(x.promedio);
+
+                    if (promedio >= 7) return COLORS.verde;
+                    if (promedio >= 4) return COLORS.amarillo;
+
+                    return COLORS.rojo;
+                }),
+                borderColor: COLORS.azulClaro,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Relación entre asistencia y rendimiento"
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Promedio: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Porcentaje de asistencia"
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 10,
+                    title: {
+                        display: true,
+                        text: "Promedio de notas"
                     }
                 }
             }
