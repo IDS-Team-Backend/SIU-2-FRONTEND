@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-{% set rol_labels = {'titular': 'Titular', 'jefe_tp': 'Jefe TP', 'ayudante': 'Ayudante'} %}
+{% set rol_labels = {'titular': 'Titular', 'jefe_tp': 'Jefe TP', 'ayudante': 'Ayudante', 'colaborador': 'Colaborador'} %}
 <section>
 
   {# ── Encabezado ── #}
@@ -162,7 +162,7 @@
 
 {% block extra_js %}
 <script type="module">
-var ROL_LABELS = { titular: "Titular", jefe_tp: "Jefe TP", ayudante: "Ayudante" };
+var ROL_LABELS = { titular: "Titular", jefe_tp: "Jefe TP", ayudante: "Ayudante", colaborador: "Colaborador" };
 var overlay = document.getElementById("modal-cursadas-prof");
 var titulo  = document.getElementById("modal-cursadas-prof-titulo");
 var body    = document.getElementById("modal-cursadas-prof-body");

@@ -1,6 +1,6 @@
 from utils.api_client import api_request
 
-ROLES_PARTICIPACION = ("titular", "jefe_tp", "ayudante")
+ROLES_PARTICIPACION = ("titular", "jefe_tp", "ayudante", "colaborador")
 
 
 def obtener_equipo_docente(curso_id):
