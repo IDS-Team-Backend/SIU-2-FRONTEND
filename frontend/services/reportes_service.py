@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 def obtener_alumnos_reporte(
     curso_id,
@@ -36,8 +36,7 @@ def obtener_alumnos_reporte(
         params["nota_mayor_a"] = nota_mayor_a
     if export:
         params["export"] = export
-    ok, data = api_request(
-        "GET",
+    ok, data = api.get(
         "/reportes/alumnos",
         params=params,
         is_binary=export
@@ -72,7 +71,7 @@ def obtener_estadisticas_reporte(curso_id, export=None):
     params = {"curso_id": int(curso_id)}
     if export: params["export"] = export
 
-    ok, data = api_request("GET", "/reportes/estadisticas", params=params, is_binary=export)
+    ok, data = api.get("/reportes/estadisticas", params=params, is_binary=export)
     
     if not ok:
         error_msg = data.get("error", "Error al obtener estadísticas.") if data else "Error de conexión."
@@ -92,7 +91,7 @@ def obtener_equipos_reporte(curso_id, export=None):
     params = {"curso_id": int(curso_id)}
     if export: params["export"] = export
 
-    ok, data = api_request("GET", "/reportes/equipos", params=params, is_binary=export)
+    ok, data = api.get("/reportes/equipos", params=params, is_binary=export)
     
     if not ok:
         error_msg = data.get("error", "Error al obtener equipos.") if data else "Error de conexión."

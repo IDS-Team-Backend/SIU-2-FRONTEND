@@ -2,7 +2,7 @@ from flask import Blueprint, abort, render_template, url_for
 from services.decorators import requiere_staff
 from services.mocks_service import listar_materias
 from services.cursos_service import obtener_curso_para_vista
-from utils.api_client import api_request
+from utils import api_client as api
 from services.materiales_service import obtener_materiales_del_curso
 import os
 from flask import request, flash, redirect
@@ -78,7 +78,7 @@ def curso(curso_id):
 
 @private_bp.route("/curso/<int:curso_id>/cronograma")
 def cronograma(curso_id):
-    ok, data = api_request("GET", f"/cursos/{curso_id}/cronograma")
+    ok, data = api.get(f"/cursos/{curso_id}/cronograma")
     semanas = data.get("semanas", []) if ok and data else []
     return render_template(
         "admin/cronograma/index.html",

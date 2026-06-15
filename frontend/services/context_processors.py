@@ -2,7 +2,7 @@ import re as _re
 from flask import request as _request
 from services.auth_service import usuario_esta_logueado
 from services.cursos_service import obtener_curso_para_vista
-from utils.api_client import api_request
+from utils import api_client as api
 import utils.user_context as UserContext
 
 _CURSO_FALLBACK = {"id": 1, "nombre": "Sistema"}
@@ -26,7 +26,7 @@ def registrar_context_processors(app):
                 "curso_id_contexto": _CURSO_FALLBACK["id"],
                 "curso_contexto": _CURSO_FALLBACK,
             }
-        ok, data = api_request("GET", "/cursos-publico/activa", auth=False)
+        ok, data = api.get("/cursos-publico/activa", auth=False)
         curso_activo = data if (ok and data) else _CURSO_FALLBACK
         # curso_id_contexto: el id de la cursada que se está viendo ahora (puede ser
         # distinto a la activa cuando el admin navega una cursada histórica).

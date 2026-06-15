@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 from utils.importador import importar_lote_csv
 import secrets
 import string
@@ -17,7 +17,7 @@ def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
     if estado:
         params["estado"] = estado
 
-    ok_cu, data_cu = api_request("GET", "/estudiante_curso/", params=params)
+    ok_cu, data_cu = api.get("/estudiante_curso/", params=params)
     if not ok_cu:
         return False, data_cu.get("error", "Error al obtener inscripciones."), {}
 
@@ -63,7 +63,7 @@ def crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso):
     """
     # Crear usuario 
     password = _password_inutilizable()  # no se usa, el alumno no puede loguearse hasta que se vincule al curso
-    ok_u, data_u = api_request("POST", "/usuarios/", json_body={
+    ok_u, data_u = api.post("/usuarios/", json={
         "nombre":   nombre.strip(),
         "apellido": apellido.strip(),
         "email":    email.strip(),
@@ -81,7 +81,7 @@ def crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso):
         return False, "No se pudo obtener el ID del usuario creado."
 
     # Crear estudiante 
-    ok_e, data_e = api_request("POST", "/estudiantes/", json_body={
+    ok_e, data_e = api.post("/estudiantes/", json={
         "usuario_id":   usuario_id,
         "padron":       int(padron),
         "carrera":      carrera.strip(),
@@ -113,7 +113,7 @@ def editar_alumno(estudiante_id, usuario_id, nombre, apellido, email, dni,
         except (ValueError, TypeError):
             return False, "El DNI debe ser un número de 8 dígitos."
 
-        ok_u, data_u = api_request("PUT", f"/usuarios/{usuario_id}", json_body={
+        ok_u, data_u = api.put(f"/usuarios/{usuario_id}", json={
             "nombre":   nombre.strip(),
             "apellido": apellido.strip(),
             "email":    email.strip(),
@@ -143,8 +143,8 @@ def editar_alumno(estudiante_id, usuario_id, nombre, apellido, email, dni,
             errores.append("El año de ingreso debe ser un número.")
 
     if est_body:
-        ok_e, data_e = api_request("PATCH", f"/estudiantes/{estudiante_id}",
-                                   json_body=est_body)
+        ok_e, data_e = api.patch(f"/estudiantes/{estudiante_id}",
+                                   json=est_body)
         if not ok_e:
             e_list = data_e.get("errors", []) if data_e else []
             msg = "; ".join(e.get("description", e.get("message", "")) for e in e_list) if e_list \
@@ -165,7 +165,7 @@ def buscar_alumno_por_padron(padron):
     if not padron.isdigit():
         return False, "El padrón debe contener solo números."
 
-    ok, data = api_request("GET", f"/estudiantes/padron/{padron}")
+    ok, data = api.get(f"/estudiantes/padron/{padron}")
 
     if not ok:
         if data and data.get("status_code") == 404:
@@ -181,7 +181,7 @@ def vincular_alumno_a_curso(estudiante_id, curso_id):
     if not curso_id:
         return False, "Faltó el ID del curso."
 
-    ok, data = api_request("POST", "/estudiante_curso/", json_body={
+    ok, data = api.post("/estudiante_curso/", json={
         "estudiante_id": estudiante_id,
         "curso_id":      curso_id,
         "estado":        "activo",
@@ -197,7 +197,7 @@ def vincular_alumno_a_curso(estudiante_id, curso_id):
 
 
 def desvincular_alumno_del_curso(inscripcion_id):
-    ok, data = api_request("DELETE", f"/estudiante_curso/{inscripcion_id}")
+    ok, data = api.delete(f"/estudiante_curso/{inscripcion_id}")
 
     if not ok:
         if data and data.get("status_code") == 404:
@@ -213,7 +213,7 @@ def cambiar_estado_inscripcion(inscripcion_id, estudiante_id, curso_id, nuevo_es
 
     if not estudiante_id or not curso_id:
         return False, "Faltan datos obligatorios para actualizar el estado."
-    ok, data = api_request("PUT", f"/estudiante_curso/{inscripcion_id}", json_body={
+    ok, data = api.put(f"/estudiante_curso/{inscripcion_id}", json={
         "estudiante_id": estudiante_id,
         "curso_id":      curso_id,
         "estado":        nuevo_estado,

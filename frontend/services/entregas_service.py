@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 
 def _normalizar_fecha(valor):
@@ -9,8 +9,7 @@ def _normalizar_fecha(valor):
 
 def _entregas_por(evaluacion_id, clave):
     """Devuelve {valor_de_clave: entrega} para las entregas de la evaluación."""
-    ok, data = api_request(
-        "GET",
+    ok, data = api.get(
         "/entregas/",
         params={"evaluacion_id": evaluacion_id}
     )
@@ -68,10 +67,9 @@ def crear_entrega(evaluacion_id, fecha_entrega, estado, archivo_url=None, observ
     if observaciones and observaciones.strip():
         parametros["observaciones"] = observaciones.strip()
 
-    ok, data = api_request(
-        "POST",
+    ok, data = api.post(
         "/entregas/",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -88,8 +86,7 @@ def eliminar_entrega(entrega_id):
     if not entrega_id:
         return False, "Falta el ID de la entrega."
 
-    ok, data = api_request(
-        "DELETE",
+    ok, data = api.delete(
         f"/entregas/{entrega_id}"
     )
 

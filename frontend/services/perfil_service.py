@@ -1,11 +1,11 @@
 from datetime import date, datetime
-from utils.api_client import api_request
+from utils import api_client as api
 from utils.filtros_fecha import FORMATO_BACKEND
 
 
 
 def obtener_perfil_estudiante(curso_id):
-    ok, estudiante = api_request("GET", "/estudiantes/me")
+    ok, estudiante = api.get("/estudiantes/me")
     if not ok:
         if estudiante and estudiante.get("status_code") == 404:
             return False, "Estudiante no encontrado."
@@ -13,7 +13,7 @@ def obtener_perfil_estudiante(curso_id):
 
 
     # datos curso
-    ok_curso, curso = api_request("GET", f"/cursos/{curso_id}")
+    ok_curso, curso = api.get(f"/cursos/{curso_id}")
     if not ok_curso:
         if curso and curso.get("status_code") == 404:
             return False, "Curso del estudiante no encontrado."
@@ -21,15 +21,15 @@ def obtener_perfil_estudiante(curso_id):
     curso = curso if ok_curso and curso else {}
 
     #datos asistencia
-    ok_asistencia, asistencia = api_request("GET", f"/asistencia/cursos/{curso_id}/me")
+    ok_asistencia, asistencia = api.get(f"/asistencia/cursos/{curso_id}/me")
     asistencia = asistencia if ok_asistencia and asistencia else {}
 
     #datos evaluaciones
-    ok_evaluacion, data_evaluacion = api_request("GET", "/evaluaciones/", params={"curso_id": curso_id})
+    ok_evaluacion, data_evaluacion = api.get("/evaluaciones/", params={"curso_id": curso_id})
     evaluaciones_curso = data_evaluacion.get("evaluaciones", []) if ok_evaluacion and data_evaluacion else []
 
     #notas alumnos
-    ok_notas, data_notas = api_request("GET", "/notas/", params={"alumno_id": estudiante["id"]})
+    ok_notas, data_notas = api.get("/notas/", params={"alumno_id": estudiante["id"]})
     notas_lista = data_notas.get("notas", []) if ok_notas and data_notas else []
     notas_por_eval = {n["evaluacion_id"]: n.get("nota") for n in notas_lista}
  
@@ -44,7 +44,7 @@ def obtener_perfil_estudiante(curso_id):
     promedio = round(sum(notas_valores) / len(notas_valores), 2) if notas_valores else None
 
     #estado en el curso
-    ok_estado, estado_data = api_request("GET", f"/curso_usuarios/",
+    ok_estado, estado_data = api.get(f"/curso_usuarios/",
     params={"curso_id": curso_id, "usuario_id": estudiante["usuario_id"]})
     estado_cursada = "Activo"
     if ok_estado and estado_data:
@@ -99,18 +99,18 @@ def obtener_perfil_estudiante(curso_id):
 
 
 def obtener_perfil_profesor(curso_id):
-    ok, profesor = api_request("GET", "/profesores/me")
+    ok, profesor = api.get("/profesores/me")
     if not ok:
         if profesor and profesor.get("status_code") == 404:
             return False, "Tu usuario no tiene un perfil de docente asociado."
         return False, profesor.get("error", "Error al cargar perfil.") if profesor else "Error de conexión."
  
     #Datos del curso (cátedra)
-    ok_c, curso = api_request("GET", f"/cursos/{curso_id}")
+    ok_c, curso = api.get(f"/cursos/{curso_id}")
     curso = curso if ok_c and curso else {}
  
     #Cantidad de alumnos inscriptos
-    ok_cu, data_cu = api_request("GET", "/curso_usuarios/",
+    ok_cu, data_cu = api.get("/curso_usuarios/",
                                   params={"curso_id": curso_id})
     total_alumnos = data_cu.get("total", 0) if ok_cu and data_cu else 0
  

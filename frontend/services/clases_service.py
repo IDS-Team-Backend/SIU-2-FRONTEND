@@ -3,7 +3,7 @@ import json
 import re
 from datetime import date, timedelta
 
-from utils.api_client import api_request
+from utils import api_client as api
 from utils.filtros_fecha import (
     fecha_a_date,
     fecha_hora_api,
@@ -219,7 +219,7 @@ def extraer_id_clase_creada(respuesta):
 
 
 def obtener_clases_del_curso(curso_id):
-    ok, data = api_request("GET", "/clases", params={"curso_id": curso_id})
+    ok, data = api.get("/clases", params={"curso_id": curso_id})
 
     if not ok:
         error_msg = data.get("error", "Error al obtener clases.") if data else "Error de conexión."
@@ -233,7 +233,7 @@ def obtener_clase_por_id(clase_id):
     if not clase_id:
         return False, "Falta el ID de la clase."
 
-    ok, data = api_request("GET", f"/clases/{clase_id}")
+    ok, data = api.get(f"/clases/{clase_id}")
 
     if not ok:
         error_msg = data.get("error", "Error al obtener la clase.") if data else "Error de conexión."
@@ -247,7 +247,7 @@ def obtener_clase_por_id(clase_id):
 
 
 def obtener_estados_clase():
-    ok, data = api_request("GET", "/clases/estados")
+    ok, data = api.get("/clases/estados")
 
     if not ok:
         error_msg = data.get("error", "Error al obtener estados de clase.") if data else "Error de conexión."
@@ -300,7 +300,7 @@ def crear_clase(
     if tags_normalizados is not None:
         payload["tags"] = tags_normalizados
 
-    ok, data = api_request("POST", "/clases", json_body=payload)
+    ok, data = api.post("/clases", json=payload)
 
     if not ok:
         error_msg = data.get("error", "Error al crear la clase.") if data else "Error de conexión."
@@ -341,7 +341,10 @@ def actualizar_clase(
     if not payload:
         return False, "No hay cambios para guardar."
 
-    ok, data = api_request(metodo, f"/clases/{clase_id}", json_body=payload)
+    if metodo == "PUT":
+        ok, data = api.put(f"/clases/{clase_id}", json=payload)
+    else:
+        ok, data = api.patch(f"/clases/{clase_id}", json=payload)
 
     if not ok:
         error_msg = data.get("error", "Error al actualizar la clase.") if data else "Error de conexión."
@@ -354,7 +357,7 @@ def eliminar_clase(clase_id):
     if not clase_id:
         return False, "Falta el ID de la clase."
 
-    ok, data = api_request("DELETE", f"/clases/{clase_id}")
+    ok, data = api.delete(f"/clases/{clase_id}")
 
     if not ok:
         error_msg = data.get("error", "Error al eliminar la clase.") if data else "Error de conexión."

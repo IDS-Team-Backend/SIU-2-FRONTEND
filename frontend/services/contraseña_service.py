@@ -1,12 +1,11 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 def solicitar_reset (email):
     if not email or email.strip() == "":
         raise ValueError("El correo electrónico es obligatorio.")
     
-    ok, data = api_request(
-        "POST", "/password/solicitar",
-        json_body={"email": email.strip()},
+    ok, data = api.post("/password/solicitar",
+        json={"email": email.strip()},
         auth=False,
     )
 
@@ -25,9 +24,8 @@ def confirmar_reset (token, nueva_contraseña, confirmar_contraseña):
     if nueva_contraseña != confirmar_contraseña:
         return False, "Las contraseñas no coinciden."
 
-    ok, data = api_request(
-        "POST", "/password/confirmar",
-        json_body={
+    ok, data = api.post("/password/confirmar",
+        json={
             "token":              token,
             "nueva_password":     nueva_contraseña,
             "confirmar_password": confirmar_contraseña,
@@ -54,9 +52,8 @@ def cambiar_contraseña (contraseña_actual, nueva_contraseña, confirmar_contra
     if len(nueva_contraseña) < 8:
         return False, "La nueva contraseña debe tener al menos 8 caracteres."
 
-    ok, data = api_request(
-        "POST", "/password/cambiar",
-        json_body={
+    ok, data = api.post("/password/cambiar",
+        json={
             "password_actual":    contraseña_actual,
             "nueva_password":     nueva_contraseña,
             "confirmar_password": confirmar_contraseña,

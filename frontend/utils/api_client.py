@@ -64,7 +64,7 @@ def extraer_mensaje_error(response, data):
     return f"Error del backend ({response.status_code})"
 
 
-def api_request(method, path, params=None, json_body=None, auth=True, is_binary=False) -> (bool, dict or bytes):
+def _request(method, path, params=None, json_body=None, auth=True, is_binary=False) -> (bool, dict or bytes):
     url = f"{BACKEND_URL}{path}"
 
     try:
@@ -101,3 +101,23 @@ def api_request(method, path, params=None, json_body=None, auth=True, is_binary=
             return True, response.content  # Retorna los bytes puros del archivo
 
     return True, data
+
+
+def get(path, *, params=None, auth=True, is_binary=False):
+    return _request("GET", path, params=params, auth=auth, is_binary=is_binary)
+
+
+def post(path, *, json=None, params=None, auth=True):
+    return _request("POST", path, params=params, json_body=json, auth=auth)
+
+
+def put(path, *, json=None, params=None, auth=True):
+    return _request("PUT", path, params=params, json_body=json, auth=auth)
+
+
+def patch(path, *, json=None, params=None, auth=True):
+    return _request("PATCH", path, params=params, json_body=json, auth=auth)
+
+
+def delete(path, *, params=None, auth=True):
+    return _request("DELETE", path, params=params, auth=auth)
