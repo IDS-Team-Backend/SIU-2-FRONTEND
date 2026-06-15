@@ -5,19 +5,19 @@
     <h2>Sistema</h2>
   </div>
 
-  {# ── Contexto: cursada activa del sistema (nombre + período + estado) ── #}
+  {# ── Contexto: cursada que se está navegando (nombre + período + estado) ── #}
   {% set estado_badge = {'abierta': 'badge--success', 'finalizada': 'badge--danger', 'inscripcion_cerrada': 'badge--soft'} %}
   {% set estado_texto = {'abierta': 'Abierta', 'finalizada': 'Finalizada', 'inscripcion_cerrada': 'Inscripción cerrada'} %}
-  {% set ctx_titulo = curso_activo.materia_nombre or curso_activo.nombre %}
+  {% set ctx_titulo = curso_contexto.materia_nombre or curso_contexto.nombre %}
   <div class="sidebar-context">
     <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
     <div class="sidebar-context__info">
       <span class="sidebar-context__name" title="{{ ctx_titulo }}">{{ ctx_titulo }}</span>
-      {% if curso_activo.anio or curso_activo.estado %}
+      {% if curso_contexto.anio or curso_contexto.estado %}
       <span class="sidebar-context__meta">
-        {% if curso_activo.anio %}{{ curso_activo.anio }}{% if curso_activo.cuatrimestre %} · {{ curso_activo.cuatrimestre }}º cuat.{% endif %}{% endif %}
-        {% if curso_activo.estado %}
-          <span class="badge badge--pill {{ estado_badge.get(curso_activo.estado, 'badge--soft') }}">{{ estado_texto.get(curso_activo.estado, curso_activo.estado) }}</span>
+        {% if curso_contexto.anio %}{{ curso_contexto.anio }}{% if curso_contexto.cuatrimestre %} · {{ curso_contexto.cuatrimestre }}º cuat.{% endif %}{% endif %}
+        {% if curso_contexto.estado %}
+          <span class="badge badge--pill {{ estado_badge.get(curso_contexto.estado, 'badge--soft') }}">{{ estado_texto.get(curso_contexto.estado, curso_contexto.estado) }}</span>
         {% endif %}
       </span>
       {% endif %}
