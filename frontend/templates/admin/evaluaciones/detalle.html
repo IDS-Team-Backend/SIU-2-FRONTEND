@@ -58,7 +58,6 @@
       <h1>{{ evaluacion.titulo }}</h1>
       <p class="eval-meta">
         <span><strong>Fecha:</strong> {{ evaluacion.fecha|formatear_fecha }}</span>
-        <span><strong>Estado:</strong> {{ 'Activa' if evaluacion.activo else 'Inactiva' }}</span>
         {% if evaluacion.descripcion %}<span><strong>Descripción:</strong> {{ evaluacion.descripcion }}</span>{% endif %}
       </p>
     </div>
@@ -339,12 +338,6 @@
         <div class="form-group">
           <label for="descripcion_edit">Descripción</label>
           <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control">{{ evaluacion.descripcion or '' }}</textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-group-checkbox">
-            <input type="checkbox" name="activo" {% if evaluacion.activo %}checked{% endif %}>
-            <strong>Evaluación Activa</strong>
-          </label>
         </div>
         <div class="form-actions modal-actions-spacing">
           <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" class="btn btn-outline">Cancelar</a>

@@ -3,9 +3,7 @@ from utils.importador import importar_lote_csv
 
 
 def obtener_equipos(curso_id, evaluacion_id=None):
-    params = {
-        "curso_id": curso_id
-    }
+    params = {"curso_id": curso_id}
 
     if evaluacion_id:
         params["evaluacion_id"] = evaluacion_id
@@ -22,11 +20,11 @@ def obtener_equipos(curso_id, evaluacion_id=None):
             if data else "Error de conexión."
         )
         return False, error_msg
-
+    
+    if data is None:
+        return True, []
     equipos = data.get("equipos", [])
-
     return True, equipos
-
 
 def crear_equipo(curso_id, evaluacion_id, nombre):
     if not evaluacion_id:

@@ -71,7 +71,7 @@
             <div class="section-card-desc">Fechas, temas y modalidad de cada clase</div>
           </div>
         </a>
-        <a class="section-card" href="{{ url_for('private.material') }}">
+        <a class="section-card" href="{{ url_for('private.material', curso_id=curso.id) }}">
           <span class="material-symbols-rounded">menu_book</span>
           <div>
             <div class="section-card-title">Materiales</div>

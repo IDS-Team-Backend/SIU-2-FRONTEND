@@ -20,6 +20,10 @@
         <h3>Promedio por tipo de evaluación</h3>
         <canvas id="tipoChart"></canvas>
     </div>
+    <div class="chart-card chart-full">
+        <h3>Promedio por porcentaje de asistencia</h3>
+        <canvas id="promedioPorAsistenciaChart"></canvas>
+    </div>
 </div>
 
 <div id="data-container-stats" data-json='{{ (estadisticas | default({})) | tojson | safe }}'></div>

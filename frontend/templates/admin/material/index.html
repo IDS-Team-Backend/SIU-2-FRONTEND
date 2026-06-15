@@ -36,7 +36,7 @@
     📥 Descargar
   </a>
   {% if usuario_actual and ('docente' in usuario_actual.perfiles or 'admin' in usuario_actual.perfiles) %}
-  <form method="POST" action="/admin/material/{{ material.id }}/eliminar"
+  <form method="POST" action="{{ url_for('private.borrar_material', curso_id=curso_id, material_id=material.id) }}"
         onsubmit="return confirm('¿Eliminar este material?')">
     <button type="submit" class="btn-icon btn-icon--danger">🗑️</button>
   </form>
@@ -56,7 +56,7 @@
   <div style="background:white; border-radius:8px; padding:2rem; width:100%; max-width:480px;">
     <h2 style="margin-bottom:1.5rem;">Subir Material</h2>
 
-    <form method="POST" action="/admin/material/crear">
+    <form method="POST" action="{{ url_for('private.subir_material', curso_id=curso_id) }}">
       <div style="margin-bottom:1rem;">
         <label style="display:block; margin-bottom:.4rem; font-weight:600;">Título</label>
         <input type="text" name="titulo" required maxlength="255"

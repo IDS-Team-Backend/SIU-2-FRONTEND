@@ -1,11 +1,11 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 # Formato en el que el backend serializa las fechas (RFC 1123).
 FORMATO_BACKEND = "%a, %d %b %Y %H:%M:%S %Z"
 
 
 def parsear_fecha_hora(valor):
-    """Convierte strings del backend (RFC 1123) o instancias de fecha a datetime."""
+    """Convierte strings DEL BACKEND (RFC 1123) o instancias de fecha a datetime."""
     if not valor:
         return None
 
@@ -30,14 +30,23 @@ def fecha_a_date(valor):
     return dt.date() if dt else None
 
 
-def fecha_hora_api(valor):
-    """Normaliza fecha/hora a string estándar para enviar a la API."""
-    dt = parsear_fecha_hora(valor)
-    if dt:
-        return dt.strftime("%Y-%m-%d %H:%M:%S")
-
-    texto = str(valor).strip() if valor else ""
-    return texto or None
+def fecha_hora_api(fecha_str: str) -> str:
+    """
+    Convierte el datetime recibido del formulario HTML (datetime-local)
+    al formato ISO 8601: '2026-07-02T15:00:00'
+    """
+    if not fecha_str:
+        return ""
+    
+    # datetime-local puede venir como '2026-07-02T15:00' o '2026-07-02T15:00:00'
+    for fmt in ("%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S"):
+        try:
+            dt = datetime.strptime(fecha_str, fmt)
+            return dt.strftime("%Y-%m-%dT%H:%M:%S")
+        except ValueError:
+            continue
+    
+    raise ValueError(f"Formato de fecha no reconocido: {fecha_str}")
 
 
 def _transformar_formato(fecha_str, formato_destino):

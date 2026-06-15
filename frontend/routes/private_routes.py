@@ -28,36 +28,39 @@ def materias():
     )
 
 
-@private_bp.route("/material")
-def material():
-    ok, materiales = obtener_materiales_del_curso(CURSO_ACTIVO_ID)
+@private_bp.route("/curso/<int:curso_id>/material")
+def material(curso_id):
+    ok, materiales = obtener_materiales_del_curso(curso_id)
     if not ok:
         materiales = []
     return render_template(
         "admin/material/index.html",
         title="Material",
         active_page="material",
+        curso_id=curso_id,
         materiales=materiales,
     )
 
-@private_bp.route("/material/crear", methods=["POST"])
+@private_bp.route("/curso/<int:curso_id>/material/crear", methods=["POST"])
 @requiere_staff
-def subir_material():
+def subir_material(curso_id):
     titulo      = request.form.get("titulo", "").strip()
     archivo_url = request.form.get("archivo_url", "").strip()
-    ok, resultado = crear_material(CURSO_ACTIVO_ID, titulo, archivo_url)
+    ok, resultado = crear_material(curso_id, titulo, archivo_url)
     flash("Material subido correctamente." if ok else resultado,
           "success" if ok else "danger")
-    return redirect(url_for("private.material"))
+    return redirect(url_for("private.material", curso_id=curso_id))
 
 
-@private_bp.route("/material/<int:material_id>/eliminar", methods=["POST"])
+@private_bp.route("/curso/<int:curso_id>/material/<int:material_id>/eliminar", methods=["POST"])
 @requiere_staff
-def borrar_material(material_id):
+def borrar_material(curso_id, material_id):
     ok, resultado = eliminar_material(material_id)
     flash("Material eliminado." if ok else resultado,
           "success" if ok else "danger")
-    return redirect(url_for("private.material"))
+    return redirect(url_for("private.material", curso_id=curso_id))
+
+
 
 
 @private_bp.route("/curso/<int:curso_id>")
