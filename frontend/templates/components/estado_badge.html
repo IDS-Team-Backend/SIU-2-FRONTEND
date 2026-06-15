@@ -1,0 +1,17 @@
+{# Badge del estado de la cursada. Única fuente del mapa estado -> (texto, color).
+   Para sumar un estado nuevo, editar solo estos dos diccionarios. #}
+{% macro estado_curso_badge(estado) %}
+  {% set textos = {
+    'abierta': 'Inscripción abierta',
+    'inscripcion_cerrada': 'Inscripción cerrada',
+    'periodo_evaluativo': 'Periodo evaluativo',
+    'finalizada': 'Finalizada',
+  } %}
+  {% set colores = {
+    'abierta': 'badge--success',
+    'inscripcion_cerrada': 'badge--soft',
+    'periodo_evaluativo': 'badge--soft',
+    'finalizada': 'badge--danger',
+  } %}
+  <span class="badge badge--pill {{ colores.get(estado, 'badge--soft') }}">{{ textos.get(estado, estado) }}</span>
+{%- endmacro %}

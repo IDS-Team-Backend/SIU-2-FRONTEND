@@ -1,7 +1,7 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
-{% set rol_labels_estado = {'abierta': 'Inscripción abierta', 'inscripcion_cerrada': 'Inscripción cerrada', 'finalizada': 'Finalizada'} %}
+{% import "components/estado_badge.html" as badges %}
 
 <section>
 
@@ -37,13 +37,7 @@
           </td>
           <td>{{ c.anio }} · {{ c.cuatrimestre }}°C</td>
           <td>
-            {% if c.estado == 'abierta' %}
-              <span class="badge badge--pill badge--success">{{ rol_labels_estado.get(c.estado, c.estado) }}</span>
-            {% elif c.estado == 'finalizada' %}
-              <span class="badge badge--pill badge--danger">{{ rol_labels_estado.get(c.estado, c.estado) }}</span>
-            {% else %}
-              <span class="badge badge--pill badge--soft">{{ rol_labels_estado.get(c.estado, c.estado) }}</span>
-            {% endif %}
+            {{ badges.estado_curso_badge(c.estado) }}
           </td>
           <td class="td--center">
             <div class="table__actions">

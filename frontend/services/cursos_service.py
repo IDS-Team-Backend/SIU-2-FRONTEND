@@ -5,8 +5,37 @@ ROL_LABELS = {"titular": "Titular", "jefe_tp": "Jefe de TP", "ayudante": "Ayudan
 ESTADO_LABELS = {
     "abierta": "Inscripción abierta",
     "inscripcion_cerrada": "Inscripción cerrada",
+    "periodo_evaluativo": "Periodo evaluativo",
     "finalizada": "Cursada finalizada",
 }
+
+# Ciclo de vida de la cursada: para cada estado, a qué estado se AVANZA y a cuál se
+# RETROCEDE, con el texto del botón. (destino, etiqueta, confirmación).
+# Avanzar siempre se puede; retroceder solo si la cursada está activa.
+_AVANCE = {
+    "abierta":             ("inscripcion_cerrada", "Cerrar inscripciones", "¿Cerrar las inscripciones de la cursada?"),
+    "inscripcion_cerrada": ("periodo_evaluativo",  "Iniciar periodo evaluativo", "¿Iniciar el periodo evaluativo?"),
+    "periodo_evaluativo":  ("finalizada",          "Cerrar periodo evaluativo y finalizar", "¿Finalizar la cursada?"),
+}
+_RETROCESO = {
+    "inscripcion_cerrada": ("abierta",             "Reabrir inscripciones", "¿Reabrir las inscripciones?"),
+    "periodo_evaluativo":  ("inscripcion_cerrada", "Volver a cursada", "¿Volver al estado anterior?"),
+    "finalizada":          ("periodo_evaluativo",  "Reabrir periodo evaluativo", "¿Reabrir el periodo evaluativo?"),
+}
+
+
+def transiciones_disponibles(curso):
+    """Botones de cambio de estado para la pantalla de gestión.
+    Avanzar siempre se puede; retroceder solo si la cursada está activa."""
+    estado, activa = curso.get("estado"), curso.get("activa")
+    botones = []
+    if activa and estado in _RETROCESO:
+        destino, etiqueta, confirmacion = _RETROCESO[estado]
+        botones.append({"destino": destino, "etiqueta": etiqueta, "confirmacion": confirmacion, "clase": "btn btn-outline"})
+    if estado in _AVANCE:
+        destino, etiqueta, confirmacion = _AVANCE[estado]
+        botones.append({"destino": destino, "etiqueta": etiqueta, "confirmacion": confirmacion, "clase": "btn btn-primary"})
+    return botones
 
 
 def _normalizar_curso(data):
