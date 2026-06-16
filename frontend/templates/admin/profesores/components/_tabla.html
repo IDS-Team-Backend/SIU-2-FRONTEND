@@ -1,0 +1,47 @@
+{# Tabla de profesores. Usa el componente empty_state para el caso sin filas.
+   Requiere en contexto: profesores. #}
+{% import "components/empty_state.html" as es with context %}
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Legajo</th>
+        <th>Apellido y Nombre</th>
+        <th>Email</th>
+        <th>Departamento</th>
+        <th>Cursadas en que participa</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for profesor in profesores %}
+      <tr>
+        <td class="text-bold">{{ profesor.legajo }}</td>
+        <td>{{ profesor.apellido }}, {{ profesor.nombre }}</td>
+        <td>{{ profesor.email }}</td>
+        <td>{{ profesor.departamento }}</td>
+        <td>
+          {% if profesor.participaciones %}
+            <button type="button" class="btn-cursadas-prof"
+              data-nombre="{{ profesor.apellido }}, {{ profesor.nombre }}"
+              data-cursadas='{{ profesor.participaciones | tojson }}'>
+              {{ profesor.participaciones | length }} cursada{% if profesor.participaciones | length != 1 %}s{% endif %}
+            </button>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6">
+          {{ es.empty_state('co_present', 'Todavía no hay profesores cargados.',
+                            accion_url=url_for('profesores.listar_profesores', accion='nueva'),
+                            accion_texto='Crear primer profesor') }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

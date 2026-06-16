@@ -1,0 +1,69 @@
+{# Card "Equipo docente": tabla de integrantes con cambio de rol y baja.
+   Local de la pantalla gestion. Comparte el contexto del index. #}
+{% import "components/empty_state.html" as es with context %}
+
+<div class="gestion-card" id="equipo">
+  <div class="gestion-card__head">
+    <div>
+      <h2>Equipo docente</h2>
+      <p class="sub">{{ integrantes | length }} integrante{% if integrantes | length != 1 %}s{% endif %}</p>
+    </div>
+    <a href="{{ url_for('gestion.gestionar', curso_id=curso_id, modal='agregar') }}" class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">person_add</span> Agregar
+    </a>
+  </div>
+  <div class="gtable">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Legajo</th>
+          <th>Apellido y Nombre</th>
+          <th>Participación</th>
+          <th class="th--center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for integrante in integrantes %}
+        <tr>
+          <td class="text-bold">{{ integrante.legajo }}</td>
+          <td>
+            {{ integrante.apellido }}, {{ integrante.nombre }}
+            <div class="text-muted" style="font-size:.8rem">{{ integrante.email }}</div>
+          </td>
+          <td>
+            <form action="{{ url_for('gestion.cambiar_participacion_curso', curso_id=curso_id, integrante_id=integrante.id) }}"
+                  method="post" style="display:inline">
+              <select name="rol" class="filter-bar__select" onchange="this.form.submit()">
+                {% for rol in roles %}
+                  <option value="{{ rol }}" {% if integrante.rol == rol %}selected{% endif %}>
+                    {{ rol_labels.get(rol, rol) }}
+                  </option>
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+          <td class="td--center">
+            <div class="table__actions">
+              <form action="{{ url_for('gestion.quitar_docente_curso', curso_id=curso_id, integrante_id=integrante.id) }}"
+                    method="post" style="display:inline">
+                <button type="submit" class="btn-icon btn-icon--danger"
+                        onclick="return confirm('¿Quitar a {{ integrante.nombre }} {{ integrante.apellido }} del equipo docente?')">
+                  Quitar
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4">
+            {{ es.empty_state('groups', 'Todavía no hay integrantes en el equipo docente.',
+                              accion_url=url_for('gestion.gestionar', curso_id=curso_id, modal='agregar'),
+                              accion_texto='Agregar primer integrante') }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

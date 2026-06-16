@@ -1,0 +1,76 @@
+{# Modales de alta y edición de tipo de evaluación. Usan la macro modal
+   compartida. Requiere en contexto: curso_id, tipo_actual. #}
+{% import "components/modal.html" as modal with context %}
+
+{# ── Nuevo tipo de evaluación ── #}
+{% if request.args.get('accion') == 'nueva' %}
+  {% call modal.modal('Nuevo Tipo de Evaluación',
+                      cerrar_url=url_for('tipo_evaluaciones.listar_tipo_evaluaciones', curso_id=curso_id)) %}
+    <form action="{{ url_for('tipo_evaluaciones.crear_nueva_evaluacion',curso_id=curso_id) }}" method="POST">
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                required
+                class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-group-checkbox">
+                <input type="checkbox" name="es_grupal">
+                <strong>Evaluación grupal</strong>
+            </label>
+        </div>
+        <div class="form-actions">
+            <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
+                                curso_id=curso_id) }}"
+               class="btn btn-outline">
+                Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                Guardar
+            </button>
+        </div>
+    </form>
+  {% endcall %}
+{% endif %}
+
+{# ── Editar tipo de evaluación ── #}
+{% if request.args.get('accion') == 'editar' %}
+  {% set tipo_evaluacion_id = request.args.get('id')|int %}
+  {% call modal.modal('Editar Tipo de Evaluación',
+                      cerrar_url=url_for('tipo_evaluaciones.listar_tipo_evaluaciones', curso_id=curso_id)) %}
+    <form action="{{ url_for('tipo_evaluaciones.actualizar',curso_id=curso_id,tipo_evaluacion_id=tipo_evaluacion_id) }}" method="POST">
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                required
+                class="form-control"
+                value="{{ tipo_actual.nombre }}">
+        </div>
+        <div class="form-group">
+            <label class="form-group-checkbox">
+                <input
+                    type="checkbox"
+                    name="es_grupal"
+                    {% if tipo_actual.es_grupal %}checked{% endif %}>
+                <strong>Evaluación grupal</strong>
+            </label>
+        </div>
+        <div class="form-actions modal-actions-spacing">
+            <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
+                                curso_id=curso_id) }}"
+               class="btn btn-outline">
+                Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+  {% endcall %}
+{% endif %}

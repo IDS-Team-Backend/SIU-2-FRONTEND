@@ -1,0 +1,36 @@
+{# Modal overlay reutilizable. Reemplaza los 15+ modales escritos a mano
+   (div.modal-overlay > div.modal > __header/__body) repartidos por las pantallas.
+
+   - titulo / subtitulo: encabezado opcional. Si no se pasa titulo, no hay header.
+   - cerrar_url: si se pasa, dibuja la "×" como enlace de cierre (flujo server-side).
+   - size: 'sm' (default) | 'md' | 'lg'  -> clase modal--{size}
+   - padded: padding estándar del body (default true).
+
+   El cuerpo del modal (formulario, contenido) va en el bloque {% call %}.
+
+   Uso:
+   {% import "components/modal.html" as modal with context %}
+   {% if mostrar_modal %}
+     {% call modal.modal('Vincular alumno', cerrar_url=url_for('...'),
+                          subtitulo='Buscá por padrón') %}
+       <form ...>...</form>
+     {% endcall %}
+   {% endif %} #}
+{% macro modal(titulo=None, cerrar_url=None, subtitulo=None, size='sm', padded=True) %}
+<div class="modal-overlay" style="display:flex">
+  <div class="modal modal--{{ size }}">
+    {% if titulo or cerrar_url %}
+      <div class="modal__header">
+        <div>
+          {% if titulo %}<h2 class="modal__title">{{ titulo }}</h2>{% endif %}
+          {% if subtitulo %}<p class="modal__subtitle">{{ subtitulo }}</p>{% endif %}
+        </div>
+        {% if cerrar_url %}<a href="{{ cerrar_url }}" class="modal__close" title="Cerrar">×</a>{% endif %}
+      </div>
+    {% endif %}
+    <div class="modal__body{% if padded %} modal__body--padded{% endif %}">
+      {{ caller() }}
+    </div>
+  </div>
+</div>
+{% endmacro %}

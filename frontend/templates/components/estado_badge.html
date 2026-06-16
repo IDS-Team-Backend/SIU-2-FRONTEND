@@ -15,3 +15,14 @@
   } %}
   <span class="badge badge--pill {{ colores.get(estado, 'badge--soft') }}">{{ textos.get(estado, estado) }}</span>
 {%- endmacro %}
+
+{# Badge genérico (texto + tono). tono: success | danger | soft | warning. #}
+{% macro badge(texto, tono='soft') %}
+  <span class="badge badge--pill badge--{{ tono }}">{{ texto }}</span>
+{%- endmacro %}
+
+{# Badge booleano para "cursada activa / finalizada". Centraliza el
+   span.badge--success>Activa que estaba hardcodeado en historial, gestion y profesores. #}
+{% macro badge_activa(activa, texto_activa='Activa', texto_inactiva='Finalizada') %}
+  {% if activa %}{{ badge(texto_activa, 'success') }}{% else %}{{ badge(texto_inactiva, 'danger') }}{% endif %}
+{%- endmacro %}

@@ -1,24 +1,12 @@
 // Input de tipo de evaluación: nombre editable inline + alta, sin recargar.
 // Reusa el ABM de tipos por fetch (las rutas responden 204 a las llamadas AJAX).
 // Se carga como módulo: el scope ya es local, sin IIFE.
+import { post } from "./api.js";
 
 const root = document.querySelector("[data-tipo-input]");
 
 if (root) {
   const lista = root.querySelector("[data-tipo-list]");
-
-  const post = (url, data) => {
-    const body = new URLSearchParams();
-    Object.keys(data).forEach((k) => {
-      if (data[k] != null) body.set(k, data[k]);
-    });
-    return fetch(url, {
-      method: "POST",
-      body,
-      headers: { "X-Requested-With": "fetch" },
-      credentials: "same-origin",
-    });
-  };
 
   const marcarGuardado = (row) => {
     const s = row.querySelector("[data-saved]");

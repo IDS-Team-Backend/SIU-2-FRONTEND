@@ -1,0 +1,96 @@
+{# Panel de formulario unificado alta/editar.
+   - form_activo == 'alta'   → crea un estudiante (action crear, sin precarga).
+   - form_activo == 'editar' → edita alumno_editar (action editar, precarga + hidden usuario_id). #}
+{% set es_editar = (form_activo == 'editar' and alumno_editar) %}
+<div class="form-panel">
+
+  <div class="form-panel__header">
+    <div>
+      {% if es_editar %}
+        <h2 class="form-panel__title">Editar alumno</h2>
+        <p class="form-panel__subtitle">{{ alumno_editar.apellido }}, {{ alumno_editar.nombre }}</p>
+      {% else %}
+        <h2 class="form-panel__title">Nuevo estudiante</h2>
+        <p class="form-panel__subtitle">Crea la cuenta en el sistema</p>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}"
+       class="form-panel__close" title="Cerrar">
+      <span class="material-symbols-rounded">close</span>
+    </a>
+  </div>
+
+  <div class="form-panel__body">
+
+    <form action="{% if es_editar %}{{ url_for('alumnos.editar', curso_id=curso_id, estudiante_id=alumno_editar.estudiante_id) }}{% else %}{{ url_for('alumnos.crear', curso_id=curso_id) }}{% endif %}" method="post">
+
+      {% if es_editar %}
+      <input type="hidden" name="usuario_id" value="{{ alumno_editar.usuario_id }}">
+      {% endif %}
+
+      <p class="form-section-label">Datos personales</p>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Nombre</label>
+          <input type="text" name="nombre" class="form-control"
+                 {% if es_editar %}value="{{ alumno_editar.nombre }}"{% else %}placeholder="María"{% endif %} required>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">Apellido</label>
+          <input type="text" name="apellido" class="form-control"
+                 {% if es_editar %}value="{{ alumno_editar.apellido }}"{% else %}placeholder="García"{% endif %} required>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Email</label>
+          <input type="email" name="email" class="form-control"
+                 {% if es_editar %}value="{{ alumno_editar.email }}"{% else %}placeholder="m.garcia@fi.uba.ar"{% endif %} required>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">DNI</label>
+          <input type="text" name="dni" class="form-control" inputmode="numeric"
+                 {% if es_editar %}value="{{ alumno_editar.dni }}"{% else %}placeholder="38500001"{% endif %} required>
+        </div>
+      </div>
+
+      <p class="form-section-label" style="margin-top:20px">Datos académicos</p>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Padrón</label>
+          <input type="number" name="padron" class="form-control" min="1"
+                 {% if es_editar %}value="{{ alumno_editar.padron }}"{% else %}placeholder="100020"{% endif %} required>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">Año de ingreso</label>
+          <input type="number" name="anio_ingreso" class="form-control" min="1900" max="2099"
+                 {% if es_editar %}value="{{ alumno_editar.anio_ingreso }}"{% else %}placeholder="2024"{% endif %} required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group__label">Carrera</label>
+        <input type="text" name="carrera" class="form-control"
+               {% if es_editar %}value="{{ alumno_editar.carrera }}"{% else %}placeholder="Ingeniería en Informática"{% endif %} required>
+      </div>
+
+      <div class="form-panel__actions">
+        <button type="submit" class="btn btn-primary">
+          {% if es_editar %}
+            <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">save</span>
+            Guardar cambios
+          {% else %}
+            <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
+            Crear estudiante
+          {% endif %}
+        </button>
+        <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>

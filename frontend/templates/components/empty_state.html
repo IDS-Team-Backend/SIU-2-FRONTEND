@@ -1,0 +1,27 @@
+{# Estado vacío reutilizable: ícono + mensaje + acción opcional.
+   Reemplaza los bloques `div ... text-align:center` repetidos en ~7 pantallas
+   (alumnos, profesores, gestion, historial, clases, evaluaciones).
+
+   Uso simple:
+   {% import "components/empty_state.html" as es with context %}
+   {{ es.empty_state('group', 'No hay alumnos inscriptos todavía.') }}
+
+   Con acción:
+   {{ es.empty_state('search_off', 'Sin resultados.',
+                     accion_url=url_for('...'), accion_texto='Ver todos') }}
+
+   Para mensajes con HTML (un enlace dentro del texto) usar el bloque {% call %}:
+   {% call es.empty_state('search_off') %}
+     Sin resultados. <a href="...">Ver todos</a>
+   {% endcall %} #}
+{% macro empty_state(icono='inbox', mensaje=None, accion_url=None, accion_texto=None) %}
+<div class="empty-state">
+  <span class="material-symbols-rounded empty-state__icon">{{ icono }}</span>
+  <p class="empty-state__text">
+    {% if caller %}{{ caller() }}{% else %}{{ mensaje }}{% endif %}
+  </p>
+  {% if accion_url and accion_texto %}
+    <a href="{{ accion_url }}" class="btn btn-primary empty-state__action">{{ accion_texto }}</a>
+  {% endif %}
+</div>
+{% endmacro %}

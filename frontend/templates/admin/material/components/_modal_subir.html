@@ -1,0 +1,45 @@
+{# Modal client-side "Subir Material". Se abre/cierra con static/js/modal.js:
+   el overlay lleva id="modal-subir" y hidden; el botón disparador usa
+   data-modal-open="modal-subir" y los cierres usan data-modal-close.
+
+   Usa la estructura del modal compartido (.modal-overlay/.modal/.modal__header/
+   .modal__body) para conservar las clases y estilos. No se usa la macro
+   components/modal.html porque ésta fuerza style="display:flex" y no expone
+   id/hidden, incompatibles con el toggle client-side de modal.js.
+
+   Requiere en contexto: curso_id. #}
+<div class="modal-overlay" id="modal-subir" hidden>
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <div>
+        <h2 class="modal__title">Subir Material</h2>
+      </div>
+      <button type="button" class="modal__close" data-modal-close title="Cerrar">×</button>
+    </div>
+    <div class="modal__body modal__body--padded">
+      <form method="POST" action="{{ url_for('private.subir_material', curso_id=curso_id) }}">
+        <div style="margin-bottom:1rem;">
+          <label style="display:block; margin-bottom:.4rem; font-weight:600;">Título</label>
+          <input type="text" name="titulo" required maxlength="255"
+                 placeholder="Ej: Apunte Unidad 1"
+                 style="width:100%; padding:.6rem; border:1px solid #ccc; border-radius:6px;">
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block; margin-bottom:.4rem; font-weight:600;">URL del archivo</label>
+          <input type="url" name="archivo_url" required maxlength="255"
+                 placeholder="https://drive.google.com/..."
+                 style="width:100%; padding:.6rem; border:1px solid #ccc; border-radius:6px;">
+          <small style="color:#666;">Pegá el link de Google Drive, Dropbox u otro servicio.</small>
+        </div>
+
+        <div style="display:flex; gap:1rem; justify-content:flex-end;">
+          <button type="button" class="btn" data-modal-close>
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">Subir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

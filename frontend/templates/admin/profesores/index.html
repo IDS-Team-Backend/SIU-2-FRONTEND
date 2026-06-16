@@ -1,199 +1,29 @@
 {% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
 
 {% block extra_head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
 {% endblock %}
 
 {% block content %}
-{% set rol_labels = {'titular': 'Titular', 'jefe_tp': 'Jefe TP', 'ayudante': 'Ayudante', 'colaborador': 'Colaborador'} %}
 <section>
 
-  {# ── Encabezado ── #}
-  <div class="page-header">
-    <div>
-      <h1>Profesores</h1>
-      <p class="text-muted">
-        {{ profesores | length }} profesor{% if profesores | length != 1 %}es{% endif %}
-      </p>
-    </div>
-    <div class="page-header__actions">
-      <a href="{{ url_for('profesores.listar_profesores', accion='nueva') }}" class="btn btn-primary">
-        <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
-        Nuevo profesor
-      </a>
-    </div>
-  </div>
+  {% call ph.page_header('Profesores', profesores | length ~ ' profesor' ~ ('es' if profesores | length != 1 else '')) %}
+    <a href="{{ url_for('profesores.listar_profesores', accion='nueva') }}" class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
+      Nuevo profesor
+    </a>
+  {% endcall %}
 
-  {# ── Tabla ── #}
-  <div class="table-wrapper">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Legajo</th>
-          <th>Apellido y Nombre</th>
-          <th>Email</th>
-          <th>Departamento</th>
-          <th>Cursadas en que participa</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for profesor in profesores %}
-        <tr>
-          <td class="text-bold">{{ profesor.legajo }}</td>
-          <td>{{ profesor.apellido }}, {{ profesor.nombre }}</td>
-          <td>{{ profesor.email }}</td>
-          <td>{{ profesor.departamento }}</td>
-          <td>
-            {% if profesor.participaciones %}
-              <button type="button" class="btn-cursadas-prof"
-                data-nombre="{{ profesor.apellido }}, {{ profesor.nombre }}"
-                data-cursadas='{{ profesor.participaciones | tojson }}'>
-                {{ profesor.participaciones | length }} cursada{% if profesor.participaciones | length != 1 %}s{% endif %}
-              </button>
-            {% else %}
-              <span class="text-muted">—</span>
-            {% endif %}
-          </td>
-          <td>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="6">
-            <div class="tabla-vacia" style="padding:2.5rem;text-align:center">
-              <span class="material-symbols-rounded"
-                    style="font-size:3rem;color:var(--color-text-tertiary,#aaa);display:block;margin-bottom:.75rem">co_present</span>
-              <p class="text-muted" style="margin:0 0 1rem">Todavía no hay profesores cargados.</p>
-              <a href="{{ url_for('profesores.listar_profesores', accion='nueva') }}" class="btn btn-primary">
-                Crear primer profesor
-              </a>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  {% include "admin/profesores/components/_tabla.html" %}
 
 </section>
 
-
-{# ── Modal: Cursadas de un profesor ── #}
-<div class="modal-overlay" id="modal-cursadas-prof" style="display:none">
-  <div class="modal modal--sm">
-    <div class="modal__header">
-      <div>
-        <h2 class="modal__title" id="modal-cursadas-prof-titulo">Cursadas</h2>
-      </div>
-      <button type="button" class="modal__close" id="btn-cerrar-modal-cursadas-prof">×</button>
-    </div>
-    <div class="modal__body" id="modal-cursadas-prof-body" style="padding:0;max-height:55vh;overflow-y:auto">
-    </div>
-  </div>
-</div>
-
-
-{# ── Modal: Nuevo profesor ── #}
-{% if mostrar_modal %}
-<div class="modal-overlay" style="display:flex">
-  <div class="modal">
-    <div class="modal__header">
-      <div>
-        <h2 class="modal__title">Nuevo profesor</h2>
-        <p class="modal__subtitle">Se le enviará un email para finalizar su registración y definir su contraseña</p>
-      </div>
-      <a href="{{ url_for('profesores.listar_profesores') }}" class="modal__close">×</a>
-    </div>
-
-    <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('profesores.crear_profesor') }}" method="post">
-        <div class="form-group">
-          <label for="nombre" class="form-group__label">Nombre</label>
-          <input type="text" id="nombre" name="nombre" class="form-control" required
-                 value="{{ form_data.get('nombre') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="apellido" class="form-group__label">Apellido</label>
-          <input type="text" id="apellido" name="apellido" class="form-control" required
-                 value="{{ form_data.get('apellido') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="email" class="form-group__label">Email</label>
-          <input type="email" id="email" name="email" class="form-control" required
-                 value="{{ form_data.get('email') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="dni" class="form-group__label">DNI</label>
-          <input type="text" id="dni" name="dni" class="form-control" inputmode="numeric" required
-                 placeholder="12345678" value="{{ form_data.get('dni') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="legajo" class="form-group__label">Legajo</label>
-          <input type="text" id="legajo" name="legajo" class="form-control" inputmode="numeric" required
-                 value="{{ form_data.get('legajo') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="titulo" class="form-group__label">Título</label>
-          <input type="text" id="titulo" name="titulo" class="form-control" required
-                 value="{{ form_data.get('titulo') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="departamento" class="form-group__label">Departamento</label>
-          <input type="text" id="departamento" name="departamento" class="form-control" required
-                 value="{{ form_data.get('departamento') or '' }}">
-        </div>
-        <div class="form-group">
-          <label for="fecha_ingreso" class="form-group__label">Fecha de ingreso</label>
-          <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="form-control" required
-                 value="{{ form_data.get('fecha_ingreso') or '' }}">
-        </div>
-
-        <div class="form-actions" style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">
-          <a href="{{ url_for('profesores.listar_profesores') }}" class="btn btn-outline">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Crear profesor</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-{% endif %}
+{% include "admin/profesores/components/_modal_cursadas.html" %}
+{% include "admin/profesores/components/_modal_nuevo_profesor.html" %}
 
 {% endblock %}
 
 {% block extra_js %}
-<script type="module">
-var ROL_LABELS = { titular: "Titular", jefe_tp: "Jefe TP", ayudante: "Ayudante", colaborador: "Colaborador" };
-var overlay = document.getElementById("modal-cursadas-prof");
-var titulo  = document.getElementById("modal-cursadas-prof-titulo");
-var body    = document.getElementById("modal-cursadas-prof-body");
-var btnCerrar = document.getElementById("btn-cerrar-modal-cursadas-prof");
-
-function abrir(nombre, cursadas) {
-  titulo.textContent = nombre;
-  var filas = cursadas.map(function(c) {
-    var estado = c.activa ? '<span class="badge badge--success badge--pill">Activa</span>' : '';
-    var rolLabel = c.rol ? (ROL_LABELS[c.rol] || c.rol) : "";
-    return '<tr>' +
-      '<td class="text-bold">' + (c.anio || "") + ' · ' + (c.cuatrimestre || "") + '°C</td>' +
-      '<td>' + (c.curso_nombre || "") + estado + '</td>' +
-      '<td>' + rolLabel + '</td>' +
-    '</tr>';
-  }).join("");
-  body.innerHTML = '<table class="table"><thead><tr><th>Período</th><th>Cursada</th><th>Rol</th></tr></thead><tbody>' + filas + '</tbody></table>';
-  overlay.style.display = "flex";
-  document.body.style.overflow = "hidden";
-}
-
-function cerrar() { overlay.style.display = "none"; document.body.style.overflow = ""; }
-
-document.querySelectorAll(".btn-cursadas-prof").forEach(function(btn) {
-  btn.addEventListener("click", function() {
-    abrir(btn.dataset.nombre, JSON.parse(btn.dataset.cursadas));
-  });
-});
-
-if (btnCerrar) btnCerrar.addEventListener("click", cerrar);
-if (overlay) overlay.addEventListener("click", function(e) { if (e.target === overlay) cerrar(); });
-document.addEventListener("keydown", function(e) { if (e.key === "Escape" && overlay && overlay.style.display !== "none") cerrar(); });
-</script>
+  <script type="module" src="{{ url_for('static', filename='js/modal_cursadas.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,60 @@
+{# Card "Estado de la cursada": stepper + acciones de transición/activación.
+   Local de la pantalla gestion. Comparte el contexto del index. #}
+{% import "components/estado_badge.html" as badges with context %}
+
+{% set estado_keys = estados | map(attribute='key') | list %}
+{% set actual_idx = estado_keys.index(curso.estado) if curso.estado in estado_keys else 0 %}
+{% macro transicion(estado_destino, etiqueta, confirmacion, clase='btn btn-primary') %}
+  <form action="{{ url_for('gestion.cambiar_estado', curso_id=curso_id) }}" method="post" style="display:inline">
+    <input type="hidden" name="estado" value="{{ estado_destino }}">
+    <button type="submit" class="{{ clase }}" onclick="return confirm('{{ confirmacion }}')">{{ etiqueta }}</button>
+  </form>
+{% endmacro %}
+
+<div class="gestion-card" id="estado">
+  <div class="gestion-card__head"><h2>Estado de la cursada</h2></div>
+  <div class="gestion-card__body">
+    <div class="stepper">
+      {% for e in estados %}
+        {% set i = loop.index0 %}
+        <div class="stepper__step {% if i == actual_idx %}stepper__step--current{% elif i < actual_idx %}stepper__step--done{% endif %}">
+          <span class="material-symbols-rounded">
+            {% if i < actual_idx %}check_circle{% elif i == actual_idx %}radio_button_checked{% else %}radio_button_unchecked{% endif %}
+          </span>
+          {{ e.label }}
+        </div>
+        {% if not loop.last %}<span class="stepper__sep material-symbols-rounded">chevron_right</span>{% endif %}
+      {% endfor %}
+    </div>
+
+    {# Reabrir (retroceder) solo en la cursada activa; crear siguiente solo cuando está finalizada. #}
+    <div class="gestion-actions">
+      {% if curso.activa %}
+        {{ badges.badge_activa(curso.activa, texto_activa='Cursada activa') }}
+      {% endif %}
+      <div class="gestion-actions__right">
+        {% for t in transiciones %}
+          {{ transicion(t.destino, t.etiqueta, t.confirmacion, t.clase) }}
+        {% endfor %}
+
+        {% if curso.activa and curso.estado == 'finalizada' %}
+          <form action="{{ url_for('gestion.crear_siguiente', curso_id=curso_id) }}" method="post" style="display:inline">
+            <button type="submit" class="btn btn-primary"
+                    onclick="return confirm('¿Crear la siguiente cursada? La nueva pasa a ser la activa.')">
+              <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">add</span>
+              Crear siguiente cursada
+            </button>
+          </form>
+        {% elif not curso.activa and curso.estado != 'finalizada' %}
+          <form action="{{ url_for('gestion.activar', curso_id=curso_id) }}" method="post" style="display:inline">
+            <input type="hidden" name="cursada_id" value="{{ curso_id }}">
+            <button type="submit" class="btn btn-outline"
+                    onclick="return confirm('¿Activar esta cursada? La cursada activa actual quedará finalizada.')">
+              Activar esta cursada
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

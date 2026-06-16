@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
 
 {% block extra_head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
@@ -7,9 +8,7 @@
 
 {% block content %}
 <section>
-  <div class="page-header">
-    <h1>{{ title }}</h1>
-
+  {% call ph.page_header(title) %}
     {% if tab_actual == 'alumnos' %}
       <button type="submit" form="form-filtros-alumnos" name="export" value="pdf" class="btn btn-primary">
         <span>📥</span> Exportar PDF
@@ -19,7 +18,7 @@
         <span>📥</span> Exportar PDF
       </a>
     {% endif %}
-  </div>
+  {% endcall %}
 
   {# Navegación de Tabs #}
   <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
@@ -48,7 +47,7 @@
 {% block extra_js %}
   {% if tab_actual == 'estadisticas' %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script> 
-    <script src="{{ url_for('static', filename='js/reportes.js') }}" defer></script>
+    <script type="module" src="{{ url_for('static', filename='js/reportes.js') }}"></script>
   {% endif %}
 {% endblock %}
 

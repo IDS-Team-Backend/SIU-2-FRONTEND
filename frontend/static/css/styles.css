@@ -25,6 +25,12 @@
   --radius-md: 12px;
   --radius-sm: 4px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Superficies secundarias y estados (centralizan literales antes repetidos) */
+  --surface-alt: #f8fafc;
+  --surface-hover: #f1f5f9;
+  --primary-soft: rgba(59, 130, 246, 0.12);
+  --danger-dark: #b91c1c;
+  --success-dark: #15803d;
 }
 
 body {
@@ -808,7 +814,6 @@ h1 {
 
 .modal--sm { max-width: 500px; }
 .modal--md { max-width: 720px; }
-.modal--lg { max-width: 860px; }
 .modal--lg { max-width: 800px; }
 
 .modal__header {
@@ -1203,23 +1208,53 @@ h1 {
   font-style: italic;
 }
 
-/* Tarjeta contenedora del Gráfico */
+/* Estado vacío reutilizable (partial components/empty_state.html) */
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-soft);
+}
+
+.empty-state__icon {
+  font-size: 2.5rem;
+  color: var(--text-soft);
+  display: block;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.empty-state__text {
+  margin: 0 0 1rem;
+  color: var(--text-soft);
+}
+
+.empty-state__action {
+  margin-top: 0.5rem;
+}
+
+/* Tarjeta contenedora del Gráfico (definición única; antes estaba duplicada). */
 .chart-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 24px;
-  box-shadow: var(--shadow-md);
+  min-height: 450px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   max-width: 800px;
   margin: 0 auto 32px auto;
 }
 
 .chart-card h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text);
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 350px !important;
 }
 
 /* Modificadores de texto de utilidad */
@@ -1516,25 +1551,6 @@ h1 {
 
 .chart-full {
     grid-column: 1 / -1;
-}
-
-.chart-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    min-height: 450px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
-}
-
-.chart-card h3 {
-    margin-bottom: 15px;
-    font-size: 1rem;
-}
-
-.chart-card canvas {
-    width: 100% !important;
-    height: 350px !important;
 }
 
 

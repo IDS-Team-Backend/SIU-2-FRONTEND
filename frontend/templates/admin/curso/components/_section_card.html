@@ -1,0 +1,10 @@
+{# Tarjeta de acceso rápido (icono + título + descripción) enlazada. Local de curso. #}
+{% macro section_card(href, icono, titulo, desc) %}
+<a class="section-card" href="{{ href }}">
+  <span class="material-symbols-rounded">{{ icono }}</span>
+  <div>
+    <div class="section-card-title">{{ titulo }}</div>
+    <div class="section-card-desc">{{ desc }}</div>
+  </div>
+</a>
+{% endmacro %}
