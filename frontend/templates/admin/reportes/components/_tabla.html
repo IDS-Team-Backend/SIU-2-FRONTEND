@@ -1,0 +1,48 @@
+{# Tabla de resultados del reporte de alumnos + paginador compartido #}
+{% import "admin/components/paginador.html" as pag with context %}
+
+<table class="tabla-reporte-alumnos">
+  <thead>
+    <tr>
+      <th>Padrón</th>
+      <th>Nombre Completo</th>
+      <th>Email</th>
+      <th>Carrera</th>
+      <th>Año Ingreso</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for alumno in alumnos %}
+    <tr>
+      <td>{{ alumno.padron }}</td>
+      <td>{{ alumno.apellido }} {{ alumno.nombre }}</td>
+      <td>{{ alumno.email }}</td>
+      <td>{{ alumno.carrera }}</td>
+      <td>{{ alumno.anio_ingreso }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5" class="tabla-reporte-vacía">No se encontraron alumnos con los filtros seleccionados.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# ── Paginador compartido (única fuente de verdad) ── #}
+{%- macro page_url(n) -%}
+  {{ url_for(
+      'reportes.listar_reportes',
+      curso_id=curso_id,
+      tab='alumnos',
+      page=n,
+      carrera=carrera_filtro,
+      condicion=condicion_filtro,
+      anio_ingreso=anio_ingreso_filtro,
+      nombre_completo=nombre_filtro,
+      padron=padron_filtro,
+      evaluacion_id=evaluacion_filtro,
+      nota_mayor_a=nota_filtro
+  ) }}
+{%- endmacro -%}
+
+{{ pag.paginador(paginacion, page_url, unidad='alumnos') }}
