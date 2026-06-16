@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 
 def _parse_nota(valor):
@@ -10,8 +10,7 @@ def _parse_nota(valor):
 
 def _notas_por(evaluacion_id, clave):
     """Devuelve {valor_de_clave: nota} para las notas de la evaluación."""
-    ok, data = api_request(
-        "GET",
+    ok, data = api.get(
         "/notas/",
         params={"evaluacion_id": evaluacion_id}
     )
@@ -64,10 +63,9 @@ def crear_nota(evaluacion_id, nota, observaciones=None, equipo_id=None, alumno_i
     if observaciones and observaciones.strip():
         parametros["observaciones"] = observaciones.strip()
 
-    ok, data = api_request(
-        "POST",
+    ok, data = api.post(
         "/notas/",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -91,10 +89,9 @@ def actualizar_nota(nota_id, nota, observaciones=None):
     if observaciones is not None:
         parametros["observaciones"] = observaciones.strip() or None
 
-    ok, data = api_request(
-        "PATCH",
+    ok, data = api.patch(
         f"/notas/{nota_id}",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -111,8 +108,7 @@ def eliminar_nota(nota_id):
     if not nota_id:
         return False, "Falta el ID de la nota."
 
-    ok, data = api_request(
-        "DELETE",
+    ok, data = api.delete(
         f"/notas/{nota_id}"
     )
 

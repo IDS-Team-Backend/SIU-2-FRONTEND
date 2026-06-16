@@ -11,7 +11,7 @@ from services.auth_service import (
 )
 from services.decorators import login_required
 from services.cursos_service import obtener_curso_activo_id
-from utils.api_client import api_request
+from utils import api_client as api
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -58,10 +58,9 @@ def finalizar_registracion():
     email = (request.values.get("email") or "").strip()
 
     if request.method == "POST":
-        ok, data = api_request(
-            "POST",
+        ok, data = api.post(
             "/auth/finalizar-registro",
-            json_body={
+            json={
                 "email":              email,
                 "codigo":             (request.form.get("codigo") or "").strip(),
                 "nueva_password":     request.form.get("nueva_password") or "",

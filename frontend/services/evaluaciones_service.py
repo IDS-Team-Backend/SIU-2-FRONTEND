@@ -1,8 +1,8 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 
 def obtener_evaluaciones_del_curso(curso_id):
-    ok, data = api_request("GET", "/evaluaciones/", params={"curso_id": curso_id})
+    ok, data = api.get("/evaluaciones/", params={"curso_id": curso_id})
 
     if not ok:
         error_msg = data.get("error", "Error al obtener evaluaciones.") if data else "Error de conexión."
@@ -34,7 +34,7 @@ def crear_evaluacion(titulo, tipo_evaluacion_id, fecha, descripcion, curso_id):
     if descripcion and descripcion.strip():
         parametros["descripcion"] = descripcion.strip()
 
-    ok, data = api_request("POST", "/evaluaciones", json_body=parametros)
+    ok, data = api.post("/evaluaciones", json=parametros)
 
     if not ok:
         error_msg = data.get("error", "Error al crear evaluación.") if data else "Error de conexión."
@@ -62,7 +62,7 @@ def actualizar_evaluacion(evaluacion_id, titulo, tipo_evaluacion_id, fecha, desc
     if descripcion and descripcion.strip():
         parametros["descripcion"] = descripcion.strip()
 
-    ok, data = api_request("PUT", f"/evaluaciones/{evaluacion_id}", json_body=parametros)
+    ok, data = api.put(f"/evaluaciones/{evaluacion_id}", json=parametros)
 
     if not ok:
         error_msg = data.get("error", "Error al actualizar evaluación.") if data else "Error de conexión."
@@ -74,7 +74,7 @@ def eliminar_evaluacion(evaluacion_id):
     if not evaluacion_id:
         return False, "Falta el ID de la evaluación."
 
-    ok, data = api_request("DELETE", f"/evaluaciones/{evaluacion_id}")
+    ok, data = api.delete(f"/evaluaciones/{evaluacion_id}")
 
     if not ok:
         if data and data.get("status_code") == 404:

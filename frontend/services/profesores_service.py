@@ -1,9 +1,9 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 
 def obtener_profesores(page=1, page_size=20):
     """Retorna (ok, profesores, paginacion)."""
-    ok, data = api_request("GET", "/profesores/", params={"page": page, "page_size": page_size})
+    ok, data = api.get("/profesores/", params={"page": page, "page_size": page_size})
     if not ok:
         return False, data.get("error", "Error al obtener profesores.") if data else "Error de conexión.", {}
 
@@ -27,8 +27,7 @@ def obtener_participaciones(docente_ids):
     if not ids:
         return {}
 
-    ok, data = api_request(
-        "GET", "/curso_docentes/participaciones",
+    ok, data = api.get("/curso_docentes/participaciones",
         params={"docente_ids": ",".join(ids)},
     )
     if not ok or not data:
@@ -42,7 +41,7 @@ def obtener_participaciones(docente_ids):
 
 def registrar_profesor(datos):
     """datos: nombre, apellido, email, dni, legajo, titulo, departamento, fecha_ingreso."""
-    ok, data = api_request("POST", "/profesores/registro", json_body=datos)
+    ok, data = api.post("/profesores/registro", json=datos)
     if not ok:
         return False, data.get("error", "Error al crear el profesor.") if data else "Error de conexión."
     return True, data
@@ -56,7 +55,7 @@ def buscar_profesor_por_legajo(legajo):
     if not legajo.isdigit():
         return False, "El legajo debe contener solo números."
 
-    ok, data = api_request("GET", f"/profesores/legajo/{legajo}")
+    ok, data = api.get(f"/profesores/legajo/{legajo}")
     if not ok:
         if data and data.get("status_code") == 404:
             return False, f"No se encontró ningún profesor con legajo {legajo}."

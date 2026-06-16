@@ -1,6 +1,7 @@
 from flask import g, request
 
-from utils.api_client import api_request, TOKEN_COOKIE_NAME
+from utils import api_client as api
+from utils.api_client import TOKEN_COOKIE_NAME
 
 
 def validar_formulario_login(form):
@@ -26,10 +27,9 @@ def validar_formulario_login(form):
 
 
 def login_backend(dni, password):
-    ok, data = api_request(
-        "POST",
+    ok, data = api.post(
         "/auth/login",
-        json_body={
+        json={
             "dni": dni,
             "password": password,
         },

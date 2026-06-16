@@ -1,5 +1,6 @@
 from flask import g, request
-from utils.api_client import api_request, TOKEN_COOKIE_NAME
+from utils import api_client as api
+from utils.api_client import TOKEN_COOKIE_NAME
 
 def crear_contexto_usuario(app):
     """Carga datos del usuario logueado en g.usuario y g.perfiles antes de cada request."""
@@ -10,7 +11,7 @@ def crear_contexto_usuario(app):
         if not request.cookies.get(TOKEN_COOKIE_NAME):
             return
 
-        ok, respuesta = api_request("GET", "/auth/me")
+        ok, respuesta = api.get("/auth/me")
         if ok and respuesta:
             g.usuario = respuesta.get("usuario", {})
             g.perfiles = respuesta.get("perfiles", [])
@@ -45,7 +46,7 @@ def get_perfiles():
     if hasattr(g, "perfiles") and g.perfiles is not None: # si los perfiles estan guardados en el contexto de usuario, los devuelve sin hacer la consulta al backend
         return g.perfiles
 
-    ok, data = api_request("GET", "/auth/me/perfiles")
+    ok, data = api.get("/auth/me/perfiles")
 
     if not ok:
         return []

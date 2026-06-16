@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 ROL_LABELS = {"titular": "Titular", "jefe_tp": "Jefe de TP", "ayudante": "Ayudante"}
 
@@ -70,7 +70,7 @@ def _normalizar_curso(data):
 def obtener_curso_para_vista(curso_id):
     """(ok, curso_dict) con el shape que esperan los templates de curso (admin y público).
     Lee del endpoint público enriquecido (no requiere login)."""
-    ok, data = api_request("GET", f"/cursos-publico/{curso_id}", auth=False)
+    ok, data = api.get(f"/cursos-publico/{curso_id}", auth=False)
     if not ok or not data:
         msg = data.get("error", "No se pudo obtener el curso.") if isinstance(data, dict) else "No se pudo obtener el curso."
         return False, msg
@@ -79,7 +79,7 @@ def obtener_curso_para_vista(curso_id):
 
 def obtener_curso_activo():
     """(ok, curso_dict) de la cursada activa del sistema (endpoint público, sin login)."""
-    ok, data = api_request("GET", "/cursos-publico/activa", auth=False)
+    ok, data = api.get("/cursos-publico/activa", auth=False)
     if not ok or not data:
         return False, "No se pudo obtener la cursada activa."
     return True, _normalizar_curso(data)
@@ -95,14 +95,14 @@ def obtener_curso_activo_id():
 
 def listar_cursadas():
     """Lista de todas las cursadas (para el panel de gestión)."""
-    ok, data = api_request("GET", "/cursos/", params={"page_size": 100})
+    ok, data = api.get("/cursos/", params={"page_size": 100})
     if not ok or not data:
         return []
     return data.get("cursos", [])
 
 
 def activar_cursada(curso_id):
-    ok, data = api_request("POST", f"/cursos/{curso_id}/activar")
+    ok, data = api.post(f"/cursos/{curso_id}/activar")
     if not ok:
         return False, data.get("error", "Error al activar la cursada.") if data else "Error de conexión."
     return True, data
@@ -110,29 +110,29 @@ def activar_cursada(curso_id):
 
 def crear_siguiente_cursada():
     """(ok, data|error). data trae {message, curso} con la cursada nueva."""
-    ok, data = api_request("POST", "/cursos/siguiente")
+    ok, data = api.post("/cursos/siguiente")
     if not ok:
         return False, data.get("error", "Error al crear la siguiente cursada.") if data else "Error de conexión."
     return True, data
 
 
 def actualizar_curso(curso_id, datos):
-    ok, data = api_request("PUT", f"/cursos/{curso_id}", json_body=datos)
+    ok, data = api.put(f"/cursos/{curso_id}", json=datos)
     if not ok:
         return False, data.get("error", "Error al actualizar el curso.") if data else "Error de conexión."
     return True, data
 
 
 def cambiar_estado_curso(curso_id, nuevo_estado):
-    ok, data = api_request("PATCH", f"/cursos/{curso_id}/estado",
-                           json_body={"estado": nuevo_estado})
+    ok, data = api.patch(f"/cursos/{curso_id}/estado",
+                           json={"estado": nuevo_estado})
     if not ok:
         return False, data.get("error", "Error al cambiar el estado.") if data else "Error de conexión."
     return True, data
 
 
 def obtener_materias():
-    ok, data = api_request("GET", "/materias/", params={"page_size": 100})
+    ok, data = api.get("/materias/", params={"page_size": 100})
     if not ok or not data:
         return []
     return data.get("materias", [])

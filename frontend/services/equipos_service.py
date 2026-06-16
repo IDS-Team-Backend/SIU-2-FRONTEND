@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 from utils.importador import importar_lote_csv
 
 
@@ -8,8 +8,7 @@ def obtener_equipos(curso_id, evaluacion_id=None):
     if evaluacion_id:
         params["evaluacion_id"] = evaluacion_id
 
-    ok, data = api_request(
-        "GET",
+    ok, data = api.get(
         "/equipos",
         params=params
     )
@@ -43,10 +42,9 @@ def crear_equipo(curso_id, evaluacion_id, nombre):
         
     }
 
-    ok, data = api_request(
-        "POST",
+    ok, data = api.post(
         "/equipos",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -82,8 +80,7 @@ def actualizar_equipo(curso_id, equipo_id, evaluacion_id, nombre, activo):
 
     }
 
-    ok, data = api_request("PUT", f"/equipos/{equipo_id}",json_body=parametros
-    )
+    ok, data = api.put(f"/equipos/{equipo_id}", json=parametros)
 
     if not ok:
         error_msg = (
@@ -100,8 +97,7 @@ def eliminar_equipo(equipo_id):
     if not equipo_id:
         return False, "Falta el ID del equipo."
 
-    ok, data = api_request(
-        "DELETE",
+    ok, data = api.delete(
         f"/equipos/{equipo_id}"
     )
 

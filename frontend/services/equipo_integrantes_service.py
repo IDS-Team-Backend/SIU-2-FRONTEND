@@ -1,9 +1,8 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 
 def obtener_integrantes(equipo_id):
-    ok, data = api_request(
-        "GET",
+    ok, data = api.get(
         "/equipo_integrantes",
         params={"equipo_id": equipo_id}
     )
@@ -27,10 +26,9 @@ def agregar_integrante(equipo_id, estudiante_id):
         "alumno_id": estudiante_id,
     }
 
-    ok, data = api_request(
-        "POST",
+    ok, data = api.post(
         "/equipo_integrantes",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -43,8 +41,7 @@ def agregar_integrante(equipo_id, estudiante_id):
     return True, data
 
 def eliminar_integrante(equipo_id, estudiante_id):
-    ok, data = api_request(
-        "DELETE",
+    ok, data = api.delete(
         f"/equipo_integrantes/{equipo_id}/{estudiante_id}"
     )
 

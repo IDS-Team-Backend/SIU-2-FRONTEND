@@ -1,8 +1,8 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 
 def obtener_tipos_evaluacion(curso_id):
-    ok, data = api_request("GET", "/tipos_evaluacion/", params={"curso_id": curso_id})
+    ok, data = api.get("/tipos_evaluacion/", params={"curso_id": curso_id})
 
     if not ok:
         error_msg = data.get("error", "Error al obtener tipos de evaluaciones.") if data else "Error de conexión."
@@ -24,10 +24,9 @@ def crear_tipo_evaluacion(nombre, es_grupal, curso_id):
         "curso_id": int(curso_id),
     }
 
-    ok, data = api_request(
-        "POST",
+    ok, data = api.post(
         "/tipos_evaluacion",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -55,10 +54,9 @@ def actualizar_tipo_evaluacion(tipo_evaluacion_id,nombre,es_grupal,curso_id):
         "curso_id": int(curso_id),
     }
 
-    ok, data = api_request(
-        "PUT",
+    ok, data = api.put(
         f"/tipos_evaluacion/{tipo_evaluacion_id}",
-        json_body=parametros
+        json=parametros
     )
 
     if not ok:
@@ -75,7 +73,7 @@ def eliminar_tipo_evaluacion(tipo_evaluacion_id):
     if not tipo_evaluacion_id:
         return False, "Falta el ID del tipo de evaluación."
 
-    ok, data = api_request("DELETE", f"/tipos_evaluacion/{tipo_evaluacion_id}")
+    ok, data = api.delete(f"/tipos_evaluacion/{tipo_evaluacion_id}")
 
     if not ok:
         if data and data.get("status_code") == 404:

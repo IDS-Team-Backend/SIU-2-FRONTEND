@@ -1,4 +1,4 @@
-from utils.api_client import api_request
+from utils import api_client as api
 
 ESTADOS_ASISTENCIA = ["presente", "ausente", "justificada", "tarde"]
 
@@ -79,7 +79,7 @@ def obtener_asistencia_clase(clase_id):
     if not clase_id:
         return False, "Falta el ID de la clase."
 
-    ok, data = api_request("GET", f"/asistencia/clases/{clase_id}")
+    ok, data = api.get(f"/asistencia/clases/{clase_id}")
 
     if not ok:
         error_msg = data.get("error", "Error al obtener asistencia.") if data else "Error de conexión."
@@ -100,7 +100,7 @@ def generar_qrs_clase(clase_id):
     if not clase_id:
         return False, "Falta el ID de la clase."
 
-    ok, data = api_request("POST", f"/asistencia/clases/{clase_id}/generar-qrs")
+    ok, data = api.post(f"/asistencia/clases/{clase_id}/generar-qrs")
 
     if not ok:
         error_msg = data.get("error", "Error al generar QRs.") if data else "Error de conexión."
@@ -116,10 +116,9 @@ def actualizar_planilla_asistencia(clase_id, asistencias):
     if asistencias is None:
         return False, "No hay datos de asistencia para actualizar."
 
-    ok, data = api_request(
-        "PUT",
+    ok, data = api.put(
         f"/asistencia/clases/{clase_id}",
-        json_body={"asistencias": asistencias},
+        json={"asistencias": asistencias},
     )
 
     if not ok:
