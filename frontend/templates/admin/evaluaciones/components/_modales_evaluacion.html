@@ -1,0 +1,48 @@
+{# Modales compartidos por las vistas grupal e individual: editar nota (por
+   nota_id) y editar evaluación. Usan la macro modal compartida. Requiere en
+   contexto: curso_id, evaluacion, nota_actual, page, page_size,
+   tipos_evaluacion y la macro nota_fields de detalle.html. #}
+{% import "components/modal.html" as modal with context %}
+
+{# ── Editar nota (compartido equipo/alumno, por nota_id) ── #}
+{% if request.args.get('accion') == 'editar_nota' and nota_actual %}
+  {% call modal.modal('Editar nota',
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=page, page_size=page_size)) %}
+    <form action="{{ url_for('evaluaciones.editar_nota', curso_id=curso_id, evaluacion_id=evaluacion.id, nota_id=nota_actual.id) }}" method="POST">
+      <input type="hidden" name="page" value="{{ page or '' }}">
+      <input type="hidden" name="page_size" value="{{ page_size or '' }}">
+      {{ nota_fields(nota_actual) }}
+      <div class="form-actions modal-actions-spacing">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=page, page_size=page_size) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
+
+{# ── Editar evaluación (grupales e individuales) ── #}
+{% if request.args.get('accion') == 'editar_evaluacion' %}
+  {% call modal.modal('Editar Evaluación',
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id)) %}
+    <form action="{{ url_for('evaluaciones.actualizar', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" method="POST">
+      <div class="form-group">
+        <label for="titulo_edit">Título *</label>
+        <input type="text" id="titulo_edit" name="titulo" required class="form-control" value="{{ evaluacion.titulo }}">
+      </div>
+      {% set seleccion = evaluacion.tipo_evaluacion_id %}
+      {% include "admin/evaluaciones/components/tipos_input.html" %}
+      <div class="form-group">
+        <label for="fecha_edit">Fecha *</label>
+        <input type="date" id="fecha_edit" name="fecha" required class="form-control" value="{{ evaluacion.fecha|fecha_input }}">
+      </div>
+      <div class="form-group">
+        <label for="descripcion_edit">Descripción</label>
+        <textarea id="descripcion_edit" name="descripcion" rows="3" class="form-control">{{ evaluacion.descripcion or '' }}</textarea>
+      </div>
+      <div class="form-actions modal-actions-spacing">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}

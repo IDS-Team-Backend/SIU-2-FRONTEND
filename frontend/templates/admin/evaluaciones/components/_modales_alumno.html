@@ -1,0 +1,35 @@
+{# Modales de la vista individual: registrar entrega y cargar nota por alumno.
+   Usan la macro modal compartida. Requiere en contexto: curso_id, evaluacion,
+   alumno_actual, estados_entrega, page, page_size y las macros entrega_fields /
+   nota_fields de detalle.html. #}
+{% import "components/modal.html" as modal with context %}
+
+{% if request.args.get('accion') == 'entrega_alumno' and alumno_actual %}
+  {% call modal.modal('Registrar entrega — ' ~ alumno_actual.apellido ~ ', ' ~ alumno_actual.nombre,
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=page, page_size=page_size)) %}
+    <form action="{{ url_for('evaluaciones.registrar_entrega_alumno', curso_id=curso_id, evaluacion_id=evaluacion.id, alumno_id=alumno_actual.id) }}" method="POST">
+      <input type="hidden" name="page" value="{{ page or '' }}">
+      <input type="hidden" name="page_size" value="{{ page_size or '' }}">
+      {{ entrega_fields(estados_entrega) }}
+      <div class="form-actions modal-actions-spacing">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=page, page_size=page_size) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Registrar entrega</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
+
+{% if request.args.get('accion') == 'cargar_nota_alumno' and alumno_actual %}
+  {% call modal.modal('Cargar nota — ' ~ alumno_actual.apellido ~ ', ' ~ alumno_actual.nombre,
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=page, page_size=page_size)) %}
+    <form action="{{ url_for('evaluaciones.cargar_nota_alumno', curso_id=curso_id, evaluacion_id=evaluacion.id, alumno_id=alumno_actual.id) }}" method="POST">
+      <input type="hidden" name="page" value="{{ page or '' }}">
+      <input type="hidden" name="page_size" value="{{ page_size or '' }}">
+      {{ nota_fields(none) }}
+      <div class="form-actions modal-actions-spacing">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=page, page_size=page_size) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Cargar nota</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}

@@ -1,0 +1,28 @@
+{# Encabezado de la pantalla de detalle: volver + título + meta + acciones.
+   No usa la macro page_header compartida porque tiene markup propio
+   (enlace «volver», meta con varios spans en class eval-meta) que hay que
+   preservar tal cual. Requiere en contexto: curso_id, evaluacion. #}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id) }}" class="eval-volver">
+      <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">arrow_back</span>
+      Volver a evaluaciones
+    </a>
+    <h1>{{ evaluacion.titulo }}</h1>
+    <p class="eval-meta">
+      <span><strong>Fecha:</strong> {{ evaluacion.fecha|formatear_fecha }}</span>
+      {% if evaluacion.descripcion %}<span><strong>Descripción:</strong> {{ evaluacion.descripcion }}</span>{% endif %}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, accion='editar_evaluacion') }}"
+       class="btn btn-outline">
+      <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">edit</span> Editar evaluación
+    </a>
+    <form action="{{ url_for('evaluaciones.eliminar', curso_id=curso_id, evaluacion_id=evaluacion.id) }}"
+          method="POST" style="display:inline"
+          onsubmit="return confirm('¿Eliminar la evaluación «{{ evaluacion.titulo }}»? Se borran también sus equipos, entregas y notas.');">
+      <button type="submit" class="btn btn-outline" style="color:var(--text-danger)">Eliminar</button>
+    </form>
+  </div>
+</div>

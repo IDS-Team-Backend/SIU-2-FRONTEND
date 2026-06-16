@@ -1,0 +1,105 @@
+{# Modales de la vista grupal: nuevo equipo, editar equipo + integrantes,
+   registrar entrega y cargar nota (por equipo). Usan la macro modal compartida.
+   Requiere en contexto: curso_id, evaluacion, equipo_actual, estados_entrega y
+   las macros entrega_fields / nota_fields de detalle.html. #}
+{% import "components/modal.html" as modal with context %}
+
+{% if request.args.get('accion') == 'nuevo_equipo' %}
+  {% call modal.modal('Nuevo equipo',
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id)) %}
+    <form action="{{ url_for('evaluaciones.crear_equipo_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" method="POST">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required class="form-control">
+      </div>
+      <div class="form-actions">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
+
+{% if request.args.get('accion') == 'editar_equipo' and equipo_actual %}
+  {% call modal.modal('Editar equipo — ' ~ equipo_actual.nombre, size='md',
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id),
+                      subtitulo='Datos del equipo e integrantes') %}
+
+    {# Datos del equipo #}
+    <form action="{{ url_for('evaluaciones.editar_equipo_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, equipo_id=equipo_actual.id) }}" method="POST">
+      <div class="form-group">
+        <label for="nombre_edit">Nombre</label>
+        <input type="text" id="nombre_edit" name="nombre" required class="form-control" value="{{ equipo_actual.nombre }}">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+
+    <hr class="eval-modal-sep">
+
+    {# Integrantes #}
+    <h3 class="eval-modal-subtitulo">Integrantes</h3>
+    <form action="{{ url_for('evaluaciones.agregar_integrante_equipo', curso_id=curso_id, evaluacion_id=evaluacion.id, equipo_id=equipo_actual.id) }}" method="POST">
+      <div class="form-group">
+        <label for="padron">Agregar por padrón</label>
+        <div class="inline-search">
+          <input type="number" id="padron" name="padron" required class="inline-search__input" placeholder="Ej: 100002">
+          <button type="submit" class="btn btn-primary">Agregar</button>
+        </div>
+      </div>
+    </form>
+
+    {% if equipo_actual.integrantes %}
+      <table class="table">
+        <thead>
+          <tr><th>Padrón</th><th>Apellido y Nombre</th><th>Email</th><th class="th--center">Quitar</th></tr>
+        </thead>
+        <tbody>
+          {% for i in equipo_actual.integrantes %}
+            <tr>
+              <td>{{ i.padron }}</td>
+              <td>{{ i.apellido }}, {{ i.nombre }}</td>
+              <td>{{ i.email }}</td>
+              <td class="td--center">
+                <form action="{{ url_for('evaluaciones.quitar_integrante_equipo', curso_id=curso_id, evaluacion_id=evaluacion.id, equipo_id=equipo_actual.id, alumno_id=i.alumno_id) }}"
+                      method="POST" style="display:inline"
+                      onsubmit="return confirm('¿Quitar a {{ i.nombre }} {{ i.apellido }}?');">
+                  <button type="submit" class="btn-icon btn-icon--danger">Quitar</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted" style="margin:0">Este equipo todavía no tiene integrantes.</p>
+    {% endif %}
+  {% endcall %}
+{% endif %}
+
+{% if request.args.get('accion') == 'entrega' and equipo_actual %}
+  {% call modal.modal('Registrar entrega — ' ~ equipo_actual.nombre,
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id)) %}
+    <form action="{{ url_for('evaluaciones.registrar_entrega_equipo', curso_id=curso_id, evaluacion_id=evaluacion.id, equipo_id=equipo_actual.id) }}" method="POST">
+      {{ entrega_fields(estados_entrega) }}
+      <div class="form-actions modal-actions-spacing">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Registrar entrega</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
+
+{% if request.args.get('accion') == 'cargar_nota' and equipo_actual %}
+  {% call modal.modal('Cargar nota — ' ~ equipo_actual.nombre,
+                      cerrar_url=url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id)) %}
+    <form action="{{ url_for('evaluaciones.cargar_nota_equipo', curso_id=curso_id, evaluacion_id=evaluacion.id, equipo_id=equipo_actual.id) }}" method="POST">
+      {{ nota_fields(none) }}
+      <div class="form-actions modal-actions-spacing">
+        <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Cargar nota</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}

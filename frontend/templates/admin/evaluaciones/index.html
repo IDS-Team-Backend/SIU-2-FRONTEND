@@ -6,14 +6,15 @@
 {% endblock %}
 
 {% block content %}
+{% import "components/page_header.html" as ph with context %}
+{% import "components/modal.html" as modal with context %}
 <section>
-  <div class="page-header">
-    <h1>{{ title }}</h1>
+  {% call ph.page_header(title) %}
     <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}"
        class="btn btn-primary">
       <span>+</span> Nueva Evaluación
     </a>
-  </div>
+  {% endcall %}
 
   {# ── Toolbar del calendario ── #}
   <div class="cal-toolbar">
@@ -66,38 +67,31 @@
 
 {# ── Modal: nueva evaluación ── #}
 {% if request.args.get('accion') == 'nueva' %}
-<div class="modal-overlay">
-  <div class="modal modal--sm">
-    <div class="modal__header">
-      <h2 class="modal__title">Nueva Evaluación</h2>
-      <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes) }}" class="modal__close modal-close-btn">x</a>
-    </div>
-    <div class="modal__body modal__body--padded">
-      <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion', curso_id=curso_id) }}" method="POST">
-        <div class="form-group">
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" name="titulo" required class="form-control">
-        </div>
-        {% set seleccion = request.args.get('tipo_evaluacion_id', type=int) %}
-        {% include "admin/evaluaciones/components/tipos_input.html" %}
+  {% call modal.modal('Nueva Evaluación',
+                      cerrar_url=url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes)) %}
+    <form action="{{ url_for('evaluaciones.crear_nueva_evaluacion', curso_id=curso_id) }}" method="POST">
+      <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" name="titulo" required class="form-control">
+      </div>
+      {% set seleccion = request.args.get('tipo_evaluacion_id', type=int) %}
+      {% include "admin/evaluaciones/components/tipos_input.html" %}
 
-        <div class="form-group">
-          <label for="fecha">Fecha</label>
-          <input type="date" id="fecha" name="fecha" required class="form-control"
-                 value="{{ request.args.get('fecha') or hoy.isoformat() }}">
-        </div>
-        <div class="form-group">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
-        </div>
-        <div class="form-actions">
-          <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes) }}" class="btn btn-outline">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+      <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" required class="form-control"
+               value="{{ request.args.get('fecha') or hoy.isoformat() }}">
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
+      </div>
+      <div class="form-actions">
+        <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  {% endcall %}
 {% endif %}
 
 {% endblock %}
