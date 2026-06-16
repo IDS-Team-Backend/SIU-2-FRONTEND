@@ -1,0 +1,76 @@
+{# Modal "Agregar integrante": busca un profesor por legajo y lo suma al curso.
+   Local de la pantalla gestion. Usa la macro modal compartida. #}
+{% import "components/modal.html" as modal with context %}
+
+{% if mostrar_modal %}
+{% call modal.modal('Agregar integrante',
+                    cerrar_url=url_for('gestion.gestionar', curso_id=curso_id),
+                    subtitulo='Buscá un profesor por legajo y asignale su tipo de participación',
+                    size='md') %}
+  <form method="get" action="{{ url_for('gestion.gestionar', curso_id=curso_id) }}">
+    <input type="hidden" name="modal" value="agregar">
+    <div class="form-group">
+      <label for="legajo" class="form-group__label">Legajo del profesor</label>
+      <div class="inline-search">
+        <input type="text" id="legajo" name="legajo"
+               value="{{ legajo_buscado }}"
+               placeholder="Ej: 500001"
+               class="inline-search__input"
+               inputmode="numeric"
+               autofocus>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </div>
+      {% if buscar_error %}
+        <p class="text-danger" style="margin-top:.5rem;font-size:.875rem">
+          <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle">error</span>
+          {{ buscar_error }}
+        </p>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if profesor_encontrado %}
+  <div class="result-card">
+    <div class="result-card__header"><h3>Profesor encontrado</h3></div>
+    <div class="result-card__body">
+      <div class="result-card__grid">
+        <div><span class="result-card__field-label">Nombre</span>
+             <strong class="result-card__field-value">{{ profesor_encontrado.nombre }}</strong></div>
+        <div><span class="result-card__field-label">Apellido</span>
+             <strong class="result-card__field-value">{{ profesor_encontrado.apellido }}</strong></div>
+        <div><span class="result-card__field-label">Email</span>
+             <strong class="result-card__field-value">{{ profesor_encontrado.email }}</strong></div>
+        <div><span class="result-card__field-label">Legajo</span>
+             <strong class="result-card__field-value">{{ profesor_encontrado.legajo }}</strong></div>
+        <div><span class="result-card__field-label">Departamento</span>
+             <strong class="result-card__field-value">{{ profesor_encontrado.departamento }}</strong></div>
+      </div>
+    </div>
+    <div class="result-card__footer">
+      <form action="{{ url_for('gestion.agregar_docente_curso', curso_id=curso_id) }}" method="post"
+            style="display:flex;gap:.5rem;align-items:center">
+        <input type="hidden" name="docente_id" value="{{ profesor_encontrado.id }}">
+        <select name="rol" class="filter-bar__select" required>
+          {% for rol in roles %}
+            <option value="{{ rol }}">{{ rol_labels.get(rol, rol) }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
+          Agregar al curso
+        </button>
+      </form>
+      <a href="{{ url_for('gestion.gestionar', curso_id=curso_id, modal='agregar') }}" class="btn btn-outline">
+        Buscar otro
+      </a>
+    </div>
+  </div>
+
+  {% elif not buscar_error %}
+  <div class="result-card__empty" style="text-align:center;padding:1.5rem;color:var(--text-soft)">
+    <span class="material-symbols-rounded" style="font-size:2.5rem;display:block;margin-bottom:.5rem;opacity:.4">manage_search</span>
+    <p style="margin:0;font-size:.875rem">Ingresá el legajo y hacé clic en <strong>Buscar</strong></p>
+  </div>
+  {% endif %}
+{% endcall %}
+{% endif %}

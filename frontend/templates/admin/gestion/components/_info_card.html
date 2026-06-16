@@ -1,0 +1,57 @@
+{# Card "Información de la cursada": formulario de datos del curso.
+   Local de la pantalla gestion. Comparte el contexto del index. #}
+<div class="gestion-card">
+  <div class="gestion-card__head"><h2>Información de la cursada</h2></div>
+  <div class="gestion-card__body">
+    <form class="gestion-form" action="{{ url_for('gestion.actualizar_info', curso_id=curso_id) }}" method="post">
+      <div class="form-group col-full">
+        <label for="nombre">Nombre del curso</label>
+        <input type="text" id="nombre" name="nombre" class="form-control" required value="{{ curso.nombre or '' }}">
+      </div>
+      <div class="form-group col-full">
+        <label for="materia_id">Materia</label>
+        <select id="materia_id" name="materia_id" class="form-control" required>
+          {% for m in materias %}
+            <option value="{{ m.id }}" {% if curso.materia_id == m.id %}selected{% endif %}>
+              {{ m.nombre }}{% if m.codigo %} ({{ m.codigo }}){% endif %}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-full trio">
+        <div>
+          <label for="anio">Año</label>
+          <input type="number" id="anio" name="anio" class="form-control" required min="2000" value="{{ curso.anio or '' }}">
+        </div>
+        <div>
+          <label for="cuatrimestre">Cuatrimestre</label>
+          <select id="cuatrimestre" name="cuatrimestre" class="form-control" required>
+            <option value="1" {% if curso.cuatrimestre == 1 %}selected{% endif %}>1°</option>
+            <option value="2" {% if curso.cuatrimestre == 2 %}selected{% endif %}>2°</option>
+          </select>
+        </div>
+        <div>
+          <label for="horas_semanales">Horas / semana</label>
+          <input type="number" id="horas_semanales" name="horas_semanales" class="form-control" min="0"
+                 value="{{ curso.horas_semanales if curso.horas_semanales is not none else '' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="carrera">Carrera</label>
+        <input type="text" id="carrera" name="carrera" class="form-control" maxlength="150" value="{{ curso.carrera or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="modalidad">Modalidad</label>
+        <input type="text" id="modalidad" name="modalidad" class="form-control" maxlength="50"
+               placeholder="Ej: Virtual con presenciales" value="{{ curso.modalidad or '' }}">
+      </div>
+      <div class="form-group col-full">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" class="form-control" rows="3">{{ curso.descripcion or '' }}</textarea>
+      </div>
+      <div class="col-full" style="display:flex;justify-content:flex-end">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
