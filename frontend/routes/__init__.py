@@ -3,6 +3,7 @@ from routes.auth_routes import auth_bp
 from routes.private_routes import private_bp
 from routes.perfil_routes import perfil_bp
 from routes.alumnos_routes import alumnos_bp
+from routes.estudiantes_routes import estudiantes_bp
 from routes.evaluaciones import evaluaciones_bp
 from routes.tipos_evaluaciones_routes import tipo_evaluaciones_bp
 from routes.reportes_routes import reportes_bp
@@ -28,6 +29,7 @@ BLUEPRINTS_BACKOFFICE = (
     private_bp,             # curso, materias, 
     perfil_bp,             # perfil del usuario
     alumnos_bp,
+    estudiantes_bp,        # ABM de estudiantes (catálogo global)
     gestion_bp,            # gestión de la cursada (info del curso + equipo docente)
     profesores_bp,         # alta de profesores (global)
     evaluaciones_bp,
