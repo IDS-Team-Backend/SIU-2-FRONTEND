@@ -1,0 +1,31 @@
+{# Barra de filtros: búsqueda por texto. #}
+<form method="get" action="{{ url_for('estudiantes.listar_estudiantes') }}" class="filter-bar">
+  {% if sort_col != "apellido" %}<input type="hidden" name="sort" value="{{ sort_col }}">{% endif %}
+  {% if sort_dir != "asc"     %}<input type="hidden" name="dir"  value="{{ sort_dir }}">{% endif %}
+  {% if form_activo           %}<input type="hidden" name="form" value="{{ form_activo }}">{% endif %}
+  {% if estudiante_editar     %}<input type="hidden" name="estudiante_id" value="{{ estudiante_editar.id }}">{% endif %}
+
+  <div class="filter-bar__search">
+    <span class="material-symbols-rounded filter-bar__icon">search</span>
+    <input type="text" name="q" value="{{ q }}"
+           placeholder="Nombre, apellido, padrón, email…"
+           class="filter-bar__input">
+    {% if q %}
+      <button type="button" class="filter-bar__clear-btn"
+              onclick="this.previousElementSibling.value='';this.closest('form').submit()">×</button>
+    {% endif %}
+  </div>
+
+  <select name="eliminados" class="filter-bar__select" onchange="this.form.submit()">
+    <option value=""  {% if not eliminados %}selected{% endif %}>Activos</option>
+    <option value="1" {% if eliminados     %}selected{% endif %}>Eliminados</option>
+  </select>
+
+  <button type="submit" class="btn btn-outline">Buscar</button>
+
+  {% if q or eliminados %}
+    <a href="{{ url_for('estudiantes.listar_estudiantes') }}" class="btn btn-ghost">
+      <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">filter_list_off</span>
+    </a>
+  {% endif %}
+</form>

@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/paginador.css') }}">
+{% endblock %}
+
+{% block content %}
+{% import "admin/components/_importar_csv.html" as imp with context %}
+{% import "components/page_header.html" as ph with context %}
+<section>
+
+  {# ── Encabezado ── #}
+  {% set _total = paginacion.total if paginacion else (estudiantes | length) %}
+  {% set _plural = 's' if _total != 1 else '' %}
+  {% set _subtitulo = _total ~ ' estudiante' ~ _plural ~
+                      (' eliminado' ~ _plural if eliminados
+                       else ' encontrado' ~ _plural if q
+                       else ' registrado' ~ _plural) %}
+  {% call ph.page_header('Estudiantes', _subtitulo) %}
+    {{ imp.boton_importar_csv(url_con_filtros('estudiantes.importar'), label='Importar estudiantes') }}
+
+    <a href="{{ url_con_filtros('estudiantes.listar_estudiantes', form='alta') }}"
+       class="btn {% if form_activo == 'alta' %}btn-primary{% else %}btn-outline{% endif %}">
+      <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
+      Nuevo estudiante
+    </a>
+  {% endcall %}
+
+  {# ── Layout: tabla + panel de formulario ── #}
+  <div class="alumnos-layout {% if form_activo in ('alta','editar') %}alumnos-layout--with-form{% endif %}">
+
+    {# ══ COLUMNA IZQUIERDA: filtros + tabla ══ #}
+    <div class="alumnos-layout__table">
+
+      {% include "admin/estudiantes/components/_filtros.html" %}
+
+      {% include "admin/estudiantes/components/_tabla.html" %}
+
+      {% import "admin/components/paginador.html" as pg with context %}
+      {% macro url_pag(n) %}{{ url_con_filtros('estudiantes.listar_estudiantes', page=n, page_size=page_size) }}{% endmacro %}
+      {{ pg.paginador(
+           paginacion, url_pag,
+           'estudiante' if (paginacion and paginacion.total == 1) else 'estudiantes',
+           url_for('estudiantes.listar_estudiantes'),
+           page_size,
+           {'q': q, 'eliminados': '1' if eliminados else '', 'sort': sort_col, 'dir': sort_dir}
+      ) }}
+
+    </div>{# /alumnos-layout__table #}
+
+    {# ══ COLUMNA DERECHA: formulario activo ══ #}
+    {% if form_activo in ('alta', 'editar') %}
+    <div class="alumnos-layout__form">
+      {% include "admin/estudiantes/components/_form_estudiante.html" %}
+    </div>
+    {% endif %}{# /form_activo #}
+
+  </div>{# /alumnos-layout #}
+
+</section>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/row_actions.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/seleccion_masiva.js') }}"></script>
+{% endblock %}

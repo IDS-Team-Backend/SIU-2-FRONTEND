@@ -1,0 +1,130 @@
+{# Tabla de estudiantes: encabezados ordenables, filas con menú de acciones y estado vacío. #}
+{% import "components/empty_state.html" as es with context %}
+{% import "components/estado_badge.html" as badges with context %}
+
+{% macro sort_url(col) -%}
+  {{ url_con_filtros('estudiantes.listar_estudiantes', page=1,
+                     sort=col, dir='desc' if sort_col==col and sort_dir=='asc' else 'asc') }}
+{%- endmacro %}
+
+{% macro sort_icon(col) %}
+  {% if sort_col == col %}
+    <span class="material-symbols-rounded sort-icon sort-icon--active" style="font-size:13px;vertical-align:middle">
+      {% if sort_dir == 'asc' %}arrow_upward{% else %}arrow_downward{% endif %}
+    </span>
+  {% else %}
+    <span class="material-symbols-rounded sort-icon" style="font-size:13px;vertical-align:middle;opacity:.3">unfold_more</span>
+  {% endif %}
+{% endmacro %}
+
+{# Barra de acción masiva: el form vacío asocia los checkboxes por id (atributo form="" de HTML5).
+   En la vista de eliminados reactiva en lote; si no, da de baja en lote. #}
+{% set _accion_masiva   = 'estudiantes.reactivar_masivo' if eliminados else 'estudiantes.eliminar_masivo' %}
+{% set _label_masiva    = 'Reactivar seleccionados' if eliminados else 'Eliminar seleccionados' %}
+{% set _icon_masiva     = 'person_check' if eliminados else 'person_remove' %}
+{% set _confirm_masiva  = '¿Reactivar los estudiantes seleccionados?' if eliminados
+                          else '¿Eliminar los estudiantes seleccionados? Esta acción no se puede deshacer.' %}
+{% set _btn_clase_masiva = 'btn-primary' if eliminados else 'btn-danger' %}
+
+<form method="post" id="form-masivo"
+      action="{{ url_con_filtros(_accion_masiva) }}"></form>
+
+<div id="barra-masiva" class="barra-masiva" style="display:none">
+  <span id="contador-seleccion" class="barra-masiva__contador">0 seleccionados</span>
+  <button type="submit" form="form-masivo" class="btn {{ _btn_clase_masiva }} btn-sm"
+          onclick="return confirm('{{ _confirm_masiva }}')">
+    <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">{{ _icon_masiva }}</span>
+    {{ _label_masiva }}
+  </button>
+</div>
+
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width:36px"><input type="checkbox" id="check-todos" title="Seleccionar todos"></th>
+        <th><a href="{{ sort_url('padron') }}"   class="sort-header">Padrón {{ sort_icon('padron') }}</a></th>
+        <th><a href="{{ sort_url('apellido') }}" class="sort-header">Apellido y Nombre {{ sort_icon('apellido') }}</a></th>
+        {% if form_activo not in ('alta','editar') %}
+        <th><a href="{{ sort_url('email') }}"        class="sort-header">Email {{ sort_icon('email') }}</a></th>
+        <th><a href="{{ sort_url('dni') }}"           class="sort-header">DNI {{ sort_icon('dni') }}</a></th>
+        <th><a href="{{ sort_url('carrera') }}"       class="sort-header">Carrera {{ sort_icon('carrera') }}</a></th>
+        <th><a href="{{ sort_url('anio_ingreso') }}"  class="sort-header">Año ingreso {{ sort_icon('anio_ingreso') }}</a></th>
+        {% endif %}
+        <th>Estado</th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for estudiante in estudiantes %}
+      <tr {% if estudiante_editar and estudiante.id == estudiante_editar.id %}
+            class="row--editing"{% endif %}>
+        <td>
+          <input type="checkbox" class="check-fila" name="seleccionados"
+                 value="{{ estudiante.id }}" form="form-masivo">
+        </td>
+        <td class="text-bold">{{ estudiante.padron }}</td>
+        <td>{{ estudiante.apellido }}, {{ estudiante.nombre }}</td>
+        {% if form_activo not in ('alta','editar') %}
+        <td>{{ estudiante.email }}</td>
+        <td>{{ estudiante.dni }}</td>
+        <td>{{ estudiante.carrera }}</td>
+        <td>{{ estudiante.anio_ingreso }}</td>
+        {% endif %}
+        <td>{{ badges.badge_activa(not eliminados, 'Activo', 'Eliminado') }}</td>
+        <td class="td--center">
+          <details class="row-actions">
+            <summary title="Acciones">
+              <span class="material-symbols-rounded" style="font-size:18px">more_vert</span>
+            </summary>
+            <div class="row-actions__menu">
+              {% if eliminados %}
+
+              <form action="{{ url_for('estudiantes.reactivar', estudiante_id=estudiante.id) }}" method="post">
+                <button type="submit">
+                  <span class="material-symbols-rounded" style="font-size:16px">person_check</span>
+                  Reactivar
+                </button>
+              </form>
+
+              {% else %}
+
+              <a href="{{ url_con_filtros('estudiantes.listar_estudiantes',
+                           form='editar', estudiante_id=estudiante.id) }}">
+                <span class="material-symbols-rounded" style="font-size:16px">edit</span>
+                Editar
+              </a>
+
+              <div class="row-actions__divider"></div>
+
+              <form action="{{ url_for('estudiantes.eliminar', estudiante_id=estudiante.id) }}" method="post">
+                <button type="submit" class="action--danger"
+                        onclick="return confirm('¿Eliminar a {{ estudiante.nombre }} {{ estudiante.apellido }}? Esta acción no se puede deshacer.')">
+                  <span class="material-symbols-rounded" style="font-size:16px">person_remove</span>
+                  Eliminar
+                </button>
+              </form>
+
+              {% endif %}
+            </div>
+          </details>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="9">
+          {% if q %}
+            {% call es.empty_state('search_off') %}
+              Sin resultados. <a href="{{ url_for('estudiantes.listar_estudiantes') }}">Ver todos</a>
+            {% endcall %}
+          {% elif eliminados %}
+            {{ es.empty_state('person_check', 'No hay estudiantes eliminados.') }}
+          {% else %}
+            {{ es.empty_state('group', 'No hay estudiantes registrados todavía.') }}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
