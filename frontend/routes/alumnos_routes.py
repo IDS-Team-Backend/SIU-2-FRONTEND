@@ -33,7 +33,7 @@ def listar_alumnos(curso_id):
     page_size     = max(1, min(page_size, 100))
 
     ok, alumnos, paginacion = obtener_alumnos_del_curso(
-        curso_id, page=page, page_size=page_size, estado=estado_filtro or None,
+        curso_id, page=page, page_size=page_size, estado=estado_filtro or None, q=q or None,
     )
     if not ok:
         flash(alumnos, "danger")
@@ -63,18 +63,8 @@ def listar_alumnos(curso_id):
         else:
             buscar_error = resultado
 
-    # ── Filtros client-side ───────────────────────────────────────────────
-    if q:
-        q_lower = q.lower()
-        alumnos = [
-            a for a in alumnos
-            if q_lower in str(a.get("padron",   "")).lower()
-            or q_lower in str(a.get("nombre",   "")).lower()
-            or q_lower in str(a.get("apellido", "")).lower()
-            or q_lower in str(a.get("email",    "")).lower()
-            or q_lower in str(a.get("dni",      "")).lower()
-        ]
-
+    # La búsqueda (q) ya se aplicó en el backend sobre toda la inscripción
+    # del curso; acá solo se ordena la página recibida.
     alumnos = sorted(
         alumnos,
         key=lambda a: str(a.get(sort_col) or "").lower(),
