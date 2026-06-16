@@ -16,7 +16,7 @@ def index():
         flash("Error al obtener perfiles del usuario.", "danger")
         return redirect(url_for("public.index"))
     if es_alumno(perfiles):
-        return redirect(url_for("perfil.perfil_estudiante"))
+        return redirect(url_for("perfil.estudiante"))
     elif es_staff(perfiles):
         return redirect(url_for("perfil.perfil_profesor"))
     else:
