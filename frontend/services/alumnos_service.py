@@ -11,11 +11,15 @@ def _password_inutilizable():
     return ''.join(secrets.choice(string.ascii_letters + string.digits + "!@#$") 
                    for _ in range(64))
 
-def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
-    """Retorna (ok, alumnos, paginacion) donde paginacion es un dict con page/total_paginas/total."""
+def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None, q=None):
+    """Retorna (ok, alumnos, paginacion) donde paginacion es un dict con page/total_paginas/total.
+    `q` busca por nombre, apellido, email, dni o padrón en toda la inscripción
+    del curso (no solo la página actual)."""
     params = {"curso_id": curso_id, "page": page, "page_size": page_size}
     if estado:
         params["estado"] = estado
+    if q:
+        params["q"] = q
 
     ok_cu, data_cu = api.get("/estudiante_curso/", params=params)
     if not ok_cu:
@@ -52,6 +56,82 @@ def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
     ]
 
     return True, resultado, paginacion
+
+
+def obtener_estudiantes(page=1, page_size=8, q=None, eliminados=False):
+    params = {"page": page, "page_size": page_size}
+    if q:
+        params["q"] = q
+    if eliminados:
+        params["eliminados"] = "true"
+    ok, data = api.get("/estudiantes/", params=params)
+    if not ok:
+        return False, data.get("error", "Error al obtener estudiantes.") if data else "Error de conexión.", {}
+
+    if not data:
+        return True, [], {"page": 1, "page_size": page_size, "total": 0, "total_paginas": 1}
+
+    paginacion = {
+        "page":          data.get("page",          1),
+        "page_size":     data.get("page_size",     page_size),
+        "total":         data.get("total",         0),
+        "total_paginas": data.get("total_paginas", 1),
+    }
+    return True, data.get("estudiantes", []), paginacion
+
+
+def eliminar_estudiante(estudiante_id):
+    ok, data = api.delete(f"/estudiantes/{estudiante_id}")
+    if not ok:
+        if data and data.get("status_code") == 404:
+            return False, "El estudiante no existe o ya fue eliminado."
+        return False, data.get("error", "Error al eliminar el estudiante.") if data else "Error de conexión."
+    return True, None
+
+
+def reactivar_estudiante(estudiante_id):
+    ok, data = api.post(f"/estudiantes/{estudiante_id}/reactivar")
+    if not ok:
+        if data and data.get("status_code") == 404:
+            return False, "El estudiante no existe o no está eliminado."
+        return False, data.get("error", "Error al reactivar el estudiante.") if data else "Error de conexión."
+    return True, None
+
+
+def eliminar_estudiantes_masivo(estudiante_ids):
+    if not estudiante_ids:
+        return False, "No se seleccionó ningún estudiante."
+
+    ok, data = api.post("/estudiantes/eliminar-lote", json={
+        "estudiante_ids": estudiante_ids,
+    })
+    if not ok:
+        return False, data.get("error", "Error al eliminar los estudiantes.") if data else "Error de conexión."
+
+    resultado = data.get("resultado", {}) if data else {}
+    return True, {
+        "eliminados": resultado.get("procesados_exito",     0),
+        "errores":    resultado.get("errores_encontrados",  0),
+        "detalles":   resultado.get("detalles_errores",     []),
+    }
+
+
+def reactivar_estudiantes_masivo(estudiante_ids):
+    if not estudiante_ids:
+        return False, "No se seleccionó ningún estudiante."
+
+    ok, data = api.post("/estudiantes/reactivar-lote", json={
+        "estudiante_ids": estudiante_ids,
+    })
+    if not ok:
+        return False, data.get("error", "Error al reactivar los estudiantes.") if data else "Error de conexión."
+
+    resultado = data.get("resultado", {}) if data else {}
+    return True, {
+        "reactivados": resultado.get("procesados_exito",     0),
+        "errores":     resultado.get("errores_encontrados",  0),
+        "detalles":    resultado.get("detalles_errores",     []),
+    }
 
 
 def crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso):
@@ -237,7 +317,7 @@ def vincular_alumnos_masivo(estudiante_ids, curso_id):
     if not curso_id:
         return False, "Faltó el ID del curso."
  
-    ok, data = api_request("POST", "/estudiante_curso/inscribir-lote", json_body={
+    ok, data = api.post("/estudiante_curso/inscribir-lote", json={
         "curso_id":       curso_id,
         "estudiante_ids": estudiante_ids,
         "estado":         "activo",
@@ -268,7 +348,7 @@ def desvincular_alumnos_masivo(estudiante_ids, curso_id):
     if not estudiante_ids:
         return False, "No se seleccionó ningún alumno."
 
-    ok, data = api_request("POST", "/estudiante_curso/desvincular-lote", json_body={
+    ok, data = api.post("/estudiante_curso/desvincular-lote", json={
         "curso_id":       curso_id,
         "estudiante_ids": estudiante_ids,
     })
