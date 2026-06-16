@@ -1,0 +1,20 @@
+{# Modal client-side "Cursadas de un profesor".
+   Vive permanentemente en el DOM, oculto, y lo abre/llena static/js/modal_cursadas.js
+   con los datos de los data-attributes del botón .btn-cursadas-prof.
+
+   No usa la macro modal compartida porque necesita ids propios que el JS referencia
+   (#modal-cursadas-prof-titulo, #modal-cursadas-prof-body), un botón de cierre con id
+   (no un enlace server-side) y arrancar oculto: la macro sólo cubre modales
+   server-side con display:flex fijo y "×" como enlace. Se preserva su markup exacto. #}
+<div class="modal-overlay" id="modal-cursadas-prof" style="display:none">
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <div>
+        <h2 class="modal__title" id="modal-cursadas-prof-titulo">Cursadas</h2>
+      </div>
+      <button type="button" class="modal__close" id="btn-cerrar-modal-cursadas-prof">×</button>
+    </div>
+    <div class="modal__body" id="modal-cursadas-prof-body" style="padding:0;max-height:55vh;overflow-y:auto">
+    </div>
+  </div>
+</div>
