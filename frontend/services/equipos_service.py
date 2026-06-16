@@ -58,7 +58,7 @@ def crear_equipo(curso_id, evaluacion_id, nombre):
     return True, data
 
 
-def actualizar_equipo(curso_id, equipo_id, evaluacion_id, nombre, activo):
+def actualizar_equipo(curso_id, equipo_id, evaluacion_id, nombre):
     if not equipo_id:
         return False, "Falta el ID del equipo."
 
@@ -75,7 +75,6 @@ def actualizar_equipo(curso_id, equipo_id, evaluacion_id, nombre, activo):
     parametros = {
         "curso_id": int(curso_id),
         "nombre": nombre.strip(),
-        "activo": bool(activo),
         "evaluacion_id": int(evaluacion_id),
 
     }
