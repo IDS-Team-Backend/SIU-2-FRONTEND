@@ -3,9 +3,18 @@ from datetime import date, datetime, timezone
 # Formato en el que el backend serializa las fechas (RFC 1123).
 FORMATO_BACKEND = "%a, %d %b %Y %H:%M:%S %Z"
 
+# Formatos que puede enviar el navegador (<input type="datetime-local"> no incluye segundos).
+FORMATOS_ENTRADA = (
+    FORMATO_BACKEND,
+    "%Y-%m-%dT%H:%M:%S",
+    "%Y-%m-%dT%H:%M",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M",
+)
+
 
 def parsear_fecha_hora(valor):
-    """Convierte strings DEL BACKEND (RFC 1123) o instancias de fecha a datetime."""
+    """Convierte strings del backend (RFC 1123) o del formulario a datetime."""
     if not valor:
         return None
 
@@ -15,10 +24,13 @@ def parsear_fecha_hora(valor):
     if isinstance(valor, date):
         return datetime.combine(valor, datetime.min.time())
 
-    try:
-        return datetime.strptime(str(valor).strip(), FORMATO_BACKEND)
-    except (ValueError, TypeError):
-        return None
+    texto = str(valor).strip()
+    for formato in FORMATOS_ENTRADA:
+        try:
+            return datetime.strptime(texto, formato)
+        except (ValueError, TypeError):
+            continue
+    return None
 
 
 def fecha_a_date(valor):

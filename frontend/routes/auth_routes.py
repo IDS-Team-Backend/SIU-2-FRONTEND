@@ -72,7 +72,7 @@ def finalizar_registracion():
 
         if ok:
             flash("Registración finalizada. Ya podés iniciar sesión.", "success")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("public.index"))
 
         error = data.get("error", "No se pudo finalizar la registración.") if isinstance(data, dict) else "Error inesperado."
         return render_template("auth/finalizar_registracion.html", email=email, error=error)
