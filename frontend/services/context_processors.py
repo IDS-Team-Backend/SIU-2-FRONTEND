@@ -1,6 +1,7 @@
 import re as _re
 from flask import request as _request
 from services.auth_service import usuario_esta_logueado
+from services.cursos_service import obtener_curso_para_vista
 from utils.api_client import api_request
 import utils.user_context as UserContext
 
@@ -20,13 +21,28 @@ def registrar_context_processors(app):
         # La cursada activa es un dato del sistema (endpoint público); el sidebar
         # del backoffice la usa para armar la navegación y el bloque de contexto.
         if not usuario_esta_logueado():
-            return {"curso_activo": _CURSO_FALLBACK, "curso_id_contexto": _CURSO_FALLBACK["id"]}
+            return {
+                "curso_activo": _CURSO_FALLBACK,
+                "curso_id_contexto": _CURSO_FALLBACK["id"],
+                "curso_contexto": _CURSO_FALLBACK,
+            }
         ok, data = api_request("GET", "/cursos-publico/activa", auth=False)
         curso_activo = data if (ok and data) else _CURSO_FALLBACK
         # curso_id_contexto: el id de la cursada que se está viendo ahora (puede ser
         # distinto a la activa cuando el admin navega una cursada histórica).
         curso_id_contexto = _curso_id_del_path() or curso_activo.get("id") or _CURSO_FALLBACK["id"]
-        return {"curso_activo": curso_activo, "curso_id_contexto": curso_id_contexto}
+        # curso_contexto: datos completos de la cursada que se está navegando. Si es la
+        # activa, reutilizamos el objeto ya cargado; si es otra, la traemos por id.
+        if curso_id_contexto == curso_activo.get("id"):
+            curso_contexto = curso_activo
+        else:
+            ok_ctx, ctx = obtener_curso_para_vista(curso_id_contexto)
+            curso_contexto = ctx if ok_ctx else curso_activo
+        return {
+            "curso_activo": curso_activo,
+            "curso_id_contexto": curso_id_contexto,
+            "curso_contexto": curso_contexto,
+        }
 
     @app.context_processor
     def inject_usuario_actual():

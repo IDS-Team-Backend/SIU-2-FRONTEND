@@ -6,8 +6,7 @@
   </div>
 
   {# ── Contexto: cursada que se está navegando (nombre + período + estado) ── #}
-  {% set estado_badge = {'abierta': 'badge--success', 'finalizada': 'badge--danger', 'inscripcion_cerrada': 'badge--soft'} %}
-  {% set estado_texto = {'abierta': 'Abierta', 'finalizada': 'Finalizada', 'inscripcion_cerrada': 'Inscripción cerrada'} %}
+  {% import "components/estado_badge.html" as badges %}
   {% set ctx_titulo = curso_contexto.materia_nombre or curso_contexto.nombre %}
   <div class="sidebar-context">
     <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
@@ -17,7 +16,7 @@
       <span class="sidebar-context__meta">
         {% if curso_contexto.anio %}{{ curso_contexto.anio }}{% if curso_contexto.cuatrimestre %} · {{ curso_contexto.cuatrimestre }}º cuat.{% endif %}{% endif %}
         {% if curso_contexto.estado %}
-          <span class="badge badge--pill {{ estado_badge.get(curso_contexto.estado, 'badge--soft') }}">{{ estado_texto.get(curso_contexto.estado, curso_contexto.estado) }}</span>
+          {{ badges.estado_curso_badge(curso_contexto.estado) }}
         {% endif %}
       </span>
       {% endif %}

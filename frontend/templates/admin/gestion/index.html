@@ -55,14 +55,9 @@
           <span class="badge badge--pill badge--success">Cursada activa</span>
         {% endif %}
         <div class="gestion-actions__right">
-          {% if curso.estado == 'abierta' %}
-            {{ transicion('inscripcion_cerrada', 'Cerrar inscripciones', '¿Cerrar las inscripciones de la cursada?') }}
-          {% elif curso.estado == 'inscripcion_cerrada' %}
-            {% if curso.activa %}{{ transicion('abierta', 'Reabrir inscripciones', '¿Reabrir las inscripciones?', 'btn btn-outline') }}{% endif %}
-            {{ transicion('finalizada', 'Cerrar cursada', '¿Cerrar (finalizar) la cursada?') }}
-          {% elif curso.estado == 'finalizada' and curso.activa %}
-            {{ transicion('inscripcion_cerrada', 'Reabrir cursada', '¿Reabrir la cursada?', 'btn btn-outline') }}
-          {% endif %}
+          {% for t in transiciones %}
+            {{ transicion(t.destino, t.etiqueta, t.confirmacion, t.clase) }}
+          {% endfor %}
 
           {% if curso.activa and curso.estado == 'finalizada' %}
             <form action="{{ url_for('gestion.crear_siguiente', curso_id=curso_id) }}" method="post" style="display:inline">

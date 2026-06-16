@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block content %}
+{% import "components/estado_badge.html" as badges %}
 <section>
   <div class="page-hero">
     <div class="page-hero-text">
       <span class="page-hero-eyebrow">{{ curso.codigo }} · {{ curso.carrera }}</span>
       <div style="margin:.35rem 0">
-        <span class="badge badge--pill {% if curso.estado == 'abierta' %}badge--success{% elif curso.estado == 'finalizada' %}badge--danger{% endif %}">{{ curso.estado_label }}</span>
+        {{ badges.estado_curso_badge(curso.estado) }}
       </div>
       <h1 class="page-hero-title">{{ curso.nombre }}</h1>
       <p class="page-hero-subtitle">{{ curso.descripcion }}</p>

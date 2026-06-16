@@ -9,6 +9,7 @@ from services.cursos_service import (
     listar_cursadas,
     activar_cursada,
     crear_siguiente_cursada,
+    transiciones_disponibles,
     ESTADO_LABELS,
 )
 from services.docentes_service import (
@@ -88,6 +89,7 @@ def gestionar(curso_id):
         integrantes=integrantes,
         roles=ROLES_PARTICIPACION,
         estados=estados,
+        transiciones=transiciones_disponibles(curso),
         cursadas=cursadas,
         estado_labels=ESTADO_LABELS,
         mostrar_modal=mostrar_modal,
