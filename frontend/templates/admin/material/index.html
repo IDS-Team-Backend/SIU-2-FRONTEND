@@ -1,15 +1,17 @@
 {% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
 
 {% block content %}
 <section>
-  <div class="page-header">
-  <h1>Materiales</h1>
-  {% if usuario_actual and ('docente' in usuario_actual.perfiles or 'admin' in usuario_actual.perfiles) %}
-  <button class="btn btn-primary" onclick="document.getElementById('modal-subir').style.display='flex'">
-    + Subir Material
-  </button>
-  {% endif %}
-</div>
+  {% set puede_gestionar = usuario_actual and ('docente' in usuario_actual.perfiles or 'admin' in usuario_actual.perfiles) %}
+
+  {% call ph.page_header('Materiales') %}
+    {% if puede_gestionar %}
+    <button class="btn btn-primary" data-modal-open="modal-subir">
+      + Subir Material
+    </button>
+    {% endif %}
+  {% endcall %}
 
   {# Mensajes flash #}
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -18,68 +20,14 @@
     {% endfor %}
   {% endwith %}
 
-  <div class="material-list">
-    {% if materiales %}
-      {% for material in materiales %}
-      <div class="material-item">
-        <div class="material-item__info">
-          <span class="material-item__icon">📄</span>
-          <div>
-            <span class="material-item__title">{{ material.titulo }}</span>
-            <div class="material-item__date">
-              Subido: {{ material.created_at if material.created_at else 'Fecha no disponible' }}
-            </div>
-          </div>
-        </div>
-        <div class="material-item__actions">
-  <a href="{{ material.archivo_url }}" target="_blank" class="btn-icon btn-icon--primary">
-    📥 Descargar
-  </a>
-  {% if usuario_actual and ('docente' in usuario_actual.perfiles or 'admin' in usuario_actual.perfiles) %}
-  <form method="POST" action="{{ url_for('private.borrar_material', curso_id=curso_id, material_id=material.id) }}"
-        onsubmit="return confirm('¿Eliminar este material?')">
-    <button type="submit" class="btn-icon btn-icon--danger">🗑️</button>
-  </form>
-  {% endif %}
-</div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="material-item__empty">No hay materiales disponibles</div>
-    {% endif %}
-  </div>
+  {% include "admin/material/components/_lista_materiales.html" %}
 </section>
 
-{# Modal: Subir Material #}
-<div id="modal-subir" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4);
-     align-items:center; justify-content:center; z-index:1000;">
-  <div style="background:white; border-radius:8px; padding:2rem; width:100%; max-width:480px;">
-    <h2 style="margin-bottom:1.5rem;">Subir Material</h2>
+{% if puede_gestionar %}
+  {% include "admin/material/components/_modal_subir.html" %}
+{% endif %}
+{% endblock %}
 
-    <form method="POST" action="{{ url_for('private.subir_material', curso_id=curso_id) }}">
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; margin-bottom:.4rem; font-weight:600;">Título</label>
-        <input type="text" name="titulo" required maxlength="255"
-               placeholder="Ej: Apunte Unidad 1"
-               style="width:100%; padding:.6rem; border:1px solid #ccc; border-radius:6px;">
-      </div>
-
-      <div style="margin-bottom:1.5rem;">
-        <label style="display:block; margin-bottom:.4rem; font-weight:600;">URL del archivo</label>
-        <input type="url" name="archivo_url" required maxlength="255"
-               placeholder="https://drive.google.com/..."
-               style="width:100%; padding:.6rem; border:1px solid #ccc; border-radius:6px;">
-        <small style="color:#666;">Pegá el link de Google Drive, Dropbox u otro servicio.</small>
-      </div>
-
-      <div style="display:flex; gap:1rem; justify-content:flex-end;">
-        <button type="button" class="btn"
-                onclick="document.getElementById('modal-subir').style.display='none'">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-primary">Subir</button>
-      </div>
-    </form>
-  </div>
-</div>
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/modal.js') }}"></script>
 {% endblock %}

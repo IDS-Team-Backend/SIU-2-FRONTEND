@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block content %}
-{% import "components/estado_badge.html" as badges %}
+{% import "admin/curso/components/_info_card.html" as info with context %}
+{% import "admin/curso/components/_section_card.html" as sections with context %}
 <section>
   <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
     <a href="{{ url_for('gestion.gestionar', curso_id=curso.id) }}" class="btn btn-primary">
@@ -13,37 +14,14 @@
       Gestionar cursada
     </a>
   </div>
-  <div class="page-hero">
-    <div class="page-hero-text">
-      <span class="page-hero-eyebrow">{{ curso.codigo }} · {{ curso.carrera }}</span>
-      <div style="margin:.35rem 0">
-        {{ badges.estado_curso_badge(curso.estado) }}
-      </div>
-      <h1 class="page-hero-title">{{ curso.nombre }}</h1>
-      <p class="page-hero-subtitle">{{ curso.descripcion }}</p>
-    </div>
-    <div class="page-hero-image">
-      <span class="material-symbols-rounded">school</span>
-    </div>
-  </div>
+
+  {% include "admin/curso/components/_page_hero.html" %}
 
   <div class="info-grid">
-    <div class="info-card">
-      <span class="info-card-label">Año / Cuatrimestre</span>
-      <span class="info-card-value">{{ curso.anio }} · {{ curso.cuatrimestre }}°C</span>
-    </div>
-    <div class="info-card">
-      <span class="info-card-label">Modalidad</span>
-      <span class="info-card-value">{{ curso.modalidad }}</span>
-    </div>
-    <div class="info-card">
-      <span class="info-card-label">Carga horaria</span>
-      <span class="info-card-value">{{ curso.horas_semanales or '—' }} hs/semana</span>
-    </div>
-    <div class="info-card">
-      <span class="info-card-label">Alumnos inscriptos</span>
-      <span class="info-card-value">{{ curso.stats.alumnos }}</span>
-    </div>
+    {{ info.info_card('Año / Cuatrimestre', curso.anio ~ ' · ' ~ curso.cuatrimestre ~ '°C') }}
+    {{ info.info_card('Modalidad', curso.modalidad) }}
+    {{ info.info_card('Carga horaria', (curso.horas_semanales or '—') ~ ' hs/semana') }}
+    {{ info.info_card('Alumnos inscriptos', curso.stats.alumnos) }}
   </div>
 
   <div class="curso-panels">
@@ -65,34 +43,10 @@
     <div class="panel">
       <h2 class="panel-title">Accesos rápidos</h2>
       <div class="section-cards">
-        <a class="section-card" href="{{ url_for('private.cronograma', curso_id=curso.id) }}">
-          <span class="material-symbols-rounded">calendar_month</span>
-          <div>
-            <div class="section-card-title">Cronograma</div>
-            <div class="section-card-desc">Fechas, temas y modalidad de cada clase</div>
-          </div>
-        </a>
-        <a class="section-card" href="{{ url_for('private.material', curso_id=curso.id) }}">
-          <span class="material-symbols-rounded">menu_book</span>
-          <div>
-            <div class="section-card-title">Materiales</div>
-            <div class="section-card-desc">{{ curso.stats.materiales }} recursos disponibles</div>
-          </div>
-        </a>
-        <a class="section-card" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso.id) }}">
-          <span class="material-symbols-rounded">group</span>
-          <div>
-            <div class="section-card-title">Alumnos</div>
-            <div class="section-card-desc">{{ curso.stats.alumnos }} inscriptos</div>
-          </div>
-        </a>
-        <a class="section-card" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso.id) }}">
-          <span class="material-symbols-rounded">assignment_turned_in</span>
-          <div>
-            <div class="section-card-title">Evaluaciones</div>
-            <div class="section-card-desc">{{ curso.stats.evaluaciones }} instancias programadas</div>
-          </div>
-        </a>
+        {{ sections.section_card(url_for('private.cronograma', curso_id=curso.id), 'calendar_month', 'Cronograma', 'Fechas, temas y modalidad de cada clase') }}
+        {{ sections.section_card(url_for('private.material', curso_id=curso.id), 'menu_book', 'Materiales', curso.stats.materiales ~ ' recursos disponibles') }}
+        {{ sections.section_card(url_for('alumnos.listar_alumnos', curso_id=curso.id), 'group', 'Alumnos', curso.stats.alumnos ~ ' inscriptos') }}
+        {{ sections.section_card(url_for('evaluaciones.listar_evaluaciones', curso_id=curso.id), 'assignment_turned_in', 'Evaluaciones', curso.stats.evaluaciones ~ ' instancias programadas') }}
       </div>
     </div>
   </div>

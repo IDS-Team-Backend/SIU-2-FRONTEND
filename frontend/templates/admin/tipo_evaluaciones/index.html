@@ -1,156 +1,19 @@
 {% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
 
 {% block content %}
 <section>
-    <div class="page-header">
-        <h1>{{ title }}</h1>
-
+    {% call ph.page_header(title) %}
         <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones', curso_id=curso_id, accion='nueva') }}"
            class="btn btn-primary">
             <span>+</span>
             Nuevo Tipo de Evaluación
         </a>
-    </div>
+    {% endcall %}
 
-    <div class="card-grid">
-        {% for tipo in tipo_evaluaciones %}
-            <article class="card">
-                <div class="card-content">
-                    <div class="card-info">
-                        
-                        <h2>{{ tipo.nombre }}</h2>
-                        <p><strong>Tipo ID: {{ tipo. id}}</strong></p>
-                        <p>
-                            <strong>Modalidad:</strong>
-                            {{ 'Grupal' if tipo.es_grupal else 'Individual' }}
-                        </p>
-                    </div>
-                    <div class="card-actions">
-                        <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
-                                            curso_id=curso_id,
-                                            accion='editar',
-                                            id=tipo.id) }}"
-                           title="Editar"
-                           class="btn-action btn-action--edit">
-                            ✎
-                        </a>
-                        <form action="{{ url_for('tipo_evaluaciones.eliminar',
-                                                 curso_id=curso_id,
-                                                 tipo_evaluacion_id=tipo.id) }}"
-                              method="POST"
-                              class="form-inline-block"
-                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar este tipo de evaluación?');">
-                            <button type="submit"
-                                    title="Eliminar"
-                                    class="btn-action btn-action--delete">
-                                ✕
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </article>
-        {% endfor %}
-    </div>
+    {% include "admin/tipo_evaluaciones/components/_lista.html" %}
 </section>
 
-{% if request.args.get('accion') == 'nueva' %}
-<div class="modal-overlay">
-    <div class="modal modal--sm">
-        <div class="modal__header">
-            <h2 class="modal__title">Nuevo Tipo de Evaluación</h2>
-            <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
-                                curso_id=curso_id) }}"
-               class="modal__close modal-close-btn">
-                x
-            </a>
-        </div>
-        <div class="modal__body modal__body--padded">
-            <form action="{{ url_for('tipo_evaluaciones.crear_nueva_evaluacion',curso_id=curso_id) }}" method="POST">
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input
-                        type="text"
-                        id="nombre"
-                        name="nombre"
-                        required
-                        class="form-control">
-                </div>
-                <div class="form-group">
-                    <label class="form-group-checkbox">
-                        <input type="checkbox" name="es_grupal">
-                        <strong>Evaluación grupal</strong>
-                    </label>
-                </div>
-                <div class="form-actions">
-                    <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
-                                        curso_id=curso_id) }}"
-                       class="btn btn-outline">
-                        Cancelar
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{% if request.args.get('accion') == 'editar' %}
-
-    {% set tipo_evaluacion_id = request.args.get('id')|int %}
-
-    <div class="modal-overlay">
-        <div class="modal modal--sm">
-            <div class="modal__header">
-                <h2 class="modal__title">Editar Tipo de Evaluación</h2>
-                <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
-                                    curso_id=curso_id) }}"
-                   class="modal__close modal-close-btn">
-                    x
-                </a>
-            </div>
-            <div class="modal__body modal__body--padded">
-                <form action="{{ url_for('tipo_evaluaciones.actualizar',curso_id=curso_id,tipo_evaluacion_id=tipo_evaluacion_id) }}" method="POST">
-                    <div class="form-group">
-                        <label for="nombre">Nombre</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            required
-                            class="form-control"
-                            value="{{ tipo_actual.nombre }}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-group-checkbox">
-                            <input
-                                type="checkbox"
-                                name="es_grupal"
-                                {% if tipo_actual.es_grupal %}checked{% endif %}>
-                            <strong>Evaluación grupal</strong>
-                        </label>
-                    </div>
-                    <div class="form-actions modal-actions-spacing">
-                        <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones',
-                                            curso_id=curso_id) }}"
-                           class="btn btn-outline">
-                            Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            Guardar Cambios
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-    </div>
-
-{% endif %}
+{% include "admin/tipo_evaluaciones/components/_modales.html" %}
 
 {% endblock %}
