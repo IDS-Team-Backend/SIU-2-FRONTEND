@@ -7,6 +7,7 @@ FILTROS_ALUMNOS = {
     "sort": "apellido",
     "dir": "asc",
     "q": "",
+    "eliminados": "",
 }
 
 

@@ -96,6 +96,9 @@
         <span class="material-symbols-rounded nav-group__chevron">expand_more</span>
       </button>
       <div class="nav-group__items">
+        <a class="{% if active_page == 'estudiantes' %}active{% endif %}" href="{{ url_for('estudiantes.listar_estudiantes') }}">
+          <span class="material-symbols-rounded">groups</span>Estudiantes
+        </a>
         <a class="{% if active_page == 'profesores' %}active{% endif %}" href="{{ url_for('profesores.listar_profesores') }}">
           <span class="material-symbols-rounded">badge</span>Profesores
         </a>
