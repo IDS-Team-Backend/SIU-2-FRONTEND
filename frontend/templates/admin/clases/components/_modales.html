@@ -1,0 +1,89 @@
+{# Modales de la pantalla de detalle de clase: editar clase y editar asistencia.
+   Usan la macro modal compartida. Comparte el contexto: curso_id, clase,
+   tipos_clase, modalidades_clase, estados_clase, planilla_asistencia,
+   estados_asistencia. #}
+{% import "components/modal.html" as modal with context %}
+
+{# ── Editar clase ── #}
+{% if request.args.get('accion') == 'editar_clase' %}
+  {% call modal.modal('Editar clase',
+                      cerrar_url=url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id)) %}
+    <form action="{{ url_for('clases.actualizar_clase_route', curso_id=curso_id, clase_id=clase.id) }}" method="POST">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required class="form-control" value="{{ clase.nombre }}">
+      </div>
+      <div class="form-group">
+        <label for="fecha_hora_inicio">Fecha y hora de inicio</label>
+        <input type="datetime-local" id="fecha_hora_inicio" name="fecha_hora_inicio" required class="form-control" value="{{ clase.fecha_hora_inicio|fecha_input_datetime }}">
+      </div>
+      <div class="form-group">
+        <label for="fecha_hora_fin">Fecha y hora de fin</label>
+        <input type="datetime-local" id="fecha_hora_fin" name="fecha_hora_fin" required class="form-control" value="{{ clase.fecha_hora_fin|fecha_input_datetime }}">
+      </div>
+      <div class="form-group">
+        <label for="tema">Tema</label>
+        <textarea id="tema" name="tema" rows="3" class="form-control">{{ clase.tema }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" name="tipo" class="form-control">
+          <option value="">Sin definir</option>
+          {% for tipo in tipos_clase %}
+            <option value="{{ tipo }}" {% if clase.tipo == tipo %}selected{% endif %}>{{ tipo|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="modalidad">Modalidad</label>
+        <select id="modalidad" name="modalidad" class="form-control">
+          <option value="">Sin definir</option>
+          {% for modalidad in modalidades_clase %}
+            <option value="{{ modalidad }}" {% if clase.modalidad == modalidad %}selected{% endif %}>{{ modalidad }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <input type="text" id="tags" name="tags" class="form-control" value="{{ clase.tags | join(', ') }}" placeholder="Obligatoria, Parcialito">
+      </div>
+      <div class="form-group">
+        <label for="status">Estado</label>
+        <select id="status" name="status" class="form-control">
+          {% for estado in estados_clase %}
+            <option value="{{ estado }}" {% if clase.status == estado %}selected{% endif %}>{{ estado|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-actions">
+        <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
+
+{# ── Editar asistencia ── #}
+{% if request.args.get('accion') == 'editar_asistencia' %}
+  {% call modal.modal('Editar asistencia',
+                      cerrar_url=url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id)) %}
+    <form action="{{ url_for('clases.actualizar_asistencia', curso_id=curso_id, clase_id=clase.id) }}" method="POST">
+      {% for asistencia in planilla_asistencia %}
+        <div class="form-group">
+          <label>{{ asistencia.apellido }}, {{ asistencia.nombre }}</label>
+          <select name="estado_{{ asistencia.alumno_id or asistencia.id }}" class="form-control">
+            {% for estado in estados_asistencia %}
+              <option value="{{ estado }}" {% if (asistencia.estado or '')|lower == estado %}selected{% endif %}>{{ estado|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% else %}
+        <p class="text-muted">No hay alumnos para actualizar.</p>
+      {% endfor %}
+      <div class="form-actions">
+        <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar asistencia</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
