@@ -4,13 +4,10 @@ from services.mocks_service import listar_materias
 from services.cursos_service import obtener_curso_para_vista
 from utils import api_client as api
 from services.materiales_service import obtener_materiales_del_curso
-import os
 from flask import request, flash, redirect
 from services.materiales_service import crear_material
 from services.materiales_service import eliminar_material
-
-
-CURSO_ACTIVO_ID = int(os.getenv("CURSO_ACTIVO_ID", "1"))
+from utils.config import CURSO_ACTIVO_ID
 
 # Router privado: navegación autenticada del curso (curso, materias, material,
 # cronograma). Se registra bajo ADMIN_PREFIX (/admin) junto al resto del
