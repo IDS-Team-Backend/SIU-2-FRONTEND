@@ -51,26 +51,20 @@
         <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('private.curso', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">dashboard</span>Resumen
         </a>
-        <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('private.cronograma', curso_id=curso_id_contexto) }}">
+        <a class="{% if active_page in ['clases', 'evaluaciones'] %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">calendar_month</span>Cronograma
         </a>
         <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">person</span>Alumnos
         </a>
-        <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id_contexto) }}">
-          <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
-        </a>
-<a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
+        <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">description</span>Material
         </a>
         <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">bar_chart</span>Reportes
         </a>
-        <a class="{% if active_page == 'clases' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
-          <span class="material-symbols-rounded">class</span>Clases
-        </a>
         {% if feature_asistencia %}
-        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('private.cronograma', curso_id=curso_id_contexto) }}">
+        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">how_to_reg</span>Asistencia
         </a>
         {% endif %}
