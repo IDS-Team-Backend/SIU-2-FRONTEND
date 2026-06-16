@@ -1,5 +1,6 @@
 {% extends "admin/base.html" %}
 {% import "components/page_header.html" as ph with context %}
+{% import "components/calendario_tabs.html" as tabs with context %}
 
 {% block extra_head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluaciones.css') }}">
@@ -8,11 +9,13 @@
 
 {% block content %}
 <section>
-  {% call ph.page_header(title, 'Calendario de clases con acceso al detalle y a la asistencia.') %}
+  {% call ph.page_header('Cronograma', 'Calendario de clases y evaluaciones de la cursada.') %}
     <a href="{{ url_for('clases.listar_clases', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}" class="btn btn-primary">
       <span>+</span> Nueva clase
     </a>
   {% endcall %}
+
+  {{ tabs.calendario_tabs(curso_id, 'clases', anio, mes) }}
 
   {% include "admin/clases/components/_calendario.html" %}
 </section>

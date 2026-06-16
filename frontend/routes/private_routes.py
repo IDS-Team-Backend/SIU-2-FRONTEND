@@ -2,16 +2,15 @@ from flask import Blueprint, abort, render_template, url_for
 from services.decorators import requiere_staff
 from services.mocks_service import listar_materias
 from services.cursos_service import obtener_curso_para_vista
-from utils import api_client as api
 from services.materiales_service import obtener_materiales_del_curso
 from flask import request, flash, redirect
 from services.materiales_service import crear_material
 from services.materiales_service import eliminar_material
 from utils.config import CURSO_ACTIVO_ID
 
-# Router privado: navegación autenticada del curso (curso, materias, material,
-# cronograma). Se registra bajo ADMIN_PREFIX (/admin) junto al resto del
-# backoffice; el gate global de proteger_rutas la cubre por no estar en RUTAS_PUBLICAS.
+# Router privado: navegación autenticada del curso (curso, materias, material).
+# Se registra bajo ADMIN_PREFIX (/admin) junto al resto del backoffice; el gate
+# global de proteger_rutas la cubre por no estar en RUTAS_PUBLICAS.
 private_bp = Blueprint("private", __name__)
 
 
@@ -70,17 +69,4 @@ def curso(curso_id):
         title=curso_data["nombre"],
         active_page="curso",
         curso=curso_data,
-    )
-
-
-@private_bp.route("/curso/<int:curso_id>/cronograma")
-def cronograma(curso_id):
-    ok, data = api.get(f"/cursos/{curso_id}/cronograma")
-    semanas = data.get("semanas", []) if ok and data else []
-    return render_template(
-        "admin/cronograma/index.html",
-        title="Cronograma",
-        active_page="cronograma",
-        curso_id=curso_id,
-        semanas=semanas,
     )
