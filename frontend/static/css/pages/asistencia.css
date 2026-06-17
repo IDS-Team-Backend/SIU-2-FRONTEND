@@ -205,3 +205,101 @@
 .eval-seccion {
     margin-top: 40px; 
 }
+
+
+
+
+.qr-scan__layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+.qr-scan__card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Estado del lector ── */
+.qr-scan__estado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.qr-scan__estado--esperando  { background: #f1f5f9; color: var(--text-soft); }
+.qr-scan__estado--procesando { background: #eff6ff; color: #1d4ed8; }
+.qr-scan__estado--ok         { background: #d1fae5; color: #047857; }
+.qr-scan__estado--error      { background: #fee2e2; color: #b91c1c; }
+
+/* ── Lista de registros ── */
+.qr-scan__registros {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qr-scan__registros-empty {
+  color: var(--text-soft);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.qr-scan__registro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  border: 1px solid var(--border);
+}
+
+.qr-scan__registro--error {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.qr-scan__registro-nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .qr-scan__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.qr-scan__registro--tarde {
+  background: #fef3c7;
+  color: #8d3211;
+}
+
+.qr-scan__registro--justificada {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.qr-scan__registro--presente {
+  background: #d1fae5;
+  color: #047857;
+}

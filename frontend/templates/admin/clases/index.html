@@ -8,11 +8,13 @@
 
 {% block content %}
 <section>
-  {% call ph.page_header(title, 'Calendario de clases con acceso al detalle y a la asistencia.') %}
-    <a href="{{ url_for('clases.listar_clases', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}" class="btn btn-primary">
-      <span>+</span> Nueva clase
-    </a>
-  {% endcall %}
+  {% if usuario_actual.es_staff %}
+    {% call ph.page_header(title, 'Calendario de clases con acceso al detalle y a la asistencia.') %}
+      <a href="{{ url_for('clases.listar_clases', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}" class="btn btn-primary">
+        <span>+</span> Nueva clase
+      </a>
+    {% endcall %}
+  {% endif %}
 
   {% include "admin/clases/components/_calendario.html" %}
 </section>
