@@ -1,5 +1,6 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 import utils.user_context as UserContext
+import utils.api_client as api
 
 from services.asistencia_service import (
     ESTADOS_ASISTENCIA,
@@ -143,6 +144,7 @@ def ver_clase(curso_id, clase_id):
         estados_clase=ESTADOS_CLASE_DEFAULT,
         tipos_clase=TIPOS_CLASE,
         modalidades_clase=MODALIDADES_CLASE,
+        tema=clase.get("tema", ""),
     )
 
 
@@ -194,3 +196,26 @@ def actualizar_asistencia(curso_id, clase_id):
 
     flash("Asistencia actualizada correctamente." if ok else resultado, "success" if ok else "danger")
     return redirect(url_for("clases.ver_clase", curso_id=curso_id, clase_id=clase_id))
+
+@clases_bp.route("/curso/<int:curso_id>/clases/<int:clase_id>/escanear", methods=["GET"])
+@requiere_staff
+def escanear_qr(curso_id, clase_id):
+    return render_template(
+        "admin/asistencia/escanear_qr.html",
+        title="Escanear QR",
+        curso_id=curso_id,
+        clase_id=clase_id,
+    )
+
+@clases_bp.route("/curso/<int:curso_id>/clases/<int:clase_id>/escanear", methods=["POST"])
+@requiere_staff
+def escanear_qr_post(curso_id, clase_id):
+    data = request.get_json(silent=True)
+    if not data or not data.get("token"):
+        return jsonify({"error": "Token inválido."}), 400
+
+    ok, resultado = api.post("/asistencia/escanear", json={"token": data["token"], "clase_id": clase_id})
+    if not ok:
+        return jsonify({"error": resultado}), 400
+
+    return jsonify(resultado.get("asistencia")), 200
