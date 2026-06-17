@@ -1,7 +1,10 @@
 from flask import Blueprint, abort, redirect, render_template, url_for
 
-from services.cursos_service import obtener_curso_activo, obtener_curso_activo_id
-from utils import api_client as api
+from services.cursos_service import (
+    obtener_cronograma,
+    obtener_curso_activo,
+    obtener_curso_activo_id,
+)
 from services.materiales_service import obtener_materiales_del_curso
 from utils.config import CURSO_ACTIVO_ID
 
@@ -31,8 +34,7 @@ def curso():
 
 @public_bp.route("/cronograma")
 def cronograma():
-    ok, data = api.get(f"/cursos/{obtener_curso_activo_id()}/cronograma", auth=False)
-    semanas = data.get("semanas", []) if ok and data else []
+    semanas = obtener_cronograma(obtener_curso_activo_id())
     return render_template(
         "public/cronograma/index.html",
         title="Cronograma",

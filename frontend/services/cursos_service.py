@@ -93,6 +93,12 @@ def obtener_curso_activo_id():
     return 1
 
 
+def obtener_cronograma(curso_id):
+    """Lista de semanas del cronograma de un curso (endpoint público, sin login)."""
+    ok, data = api.get(f"/cursos-publico/{curso_id}/cronograma", auth=False)
+    return data.get("semanas", []) if ok and data else []
+
+
 def listar_cursadas():
     """Lista de todas las cursadas (para el panel de gestión)."""
     ok, data = api.get("/cursos/", params={"page_size": 100})
