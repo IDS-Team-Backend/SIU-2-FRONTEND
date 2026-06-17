@@ -5,6 +5,9 @@ from services.profesores_service import (
     obtener_profesores,
     obtener_participaciones,
     registrar_profesor,
+    obtener_profesor,
+    editar_profesor,
+    eliminar_profesor,
 )
 
 profesores_bp = Blueprint("profesores", __name__)
@@ -52,6 +55,50 @@ def listar_profesores():
         mostrar_modal=request.args.get("accion") == "nueva",
         form_data={},
     )
+
+
+@profesores_bp.route("/profesores/<int:profesor_id>")
+@requiere_staff
+def ver_profesor(profesor_id):
+    ok, profesor = obtener_profesor(profesor_id)
+    if not ok:
+        flash(profesor, "danger")
+        return redirect(url_for("profesores.listar_profesores"))
+
+    participaciones = obtener_participaciones([profesor_id]).get(profesor_id, [])
+
+    return render_template(
+        "admin/profesores/detalle.html",
+        title="Ficha de profesor",
+        active_page="profesores",
+        profesor=profesor,
+        participaciones=participaciones,
+        mostrar_modal_editar=request.args.get("editar") == "1",
+    )
+
+
+@profesores_bp.route("/profesores/<int:profesor_id>/editar", methods=["POST"])
+@requiere_staff
+def editar(profesor_id):
+    datos = _leer_form(request.form)
+    usuario_id = request.form.get("usuario_id", type=int)
+    ok, error = editar_profesor(profesor_id, usuario_id, datos)
+
+    if ok:
+        flash("Datos del profesor actualizados.", "success")
+        return redirect(url_for("profesores.ver_profesor", profesor_id=profesor_id))
+
+    flash(f"Error al editar profesor: {error}", "danger")
+    return redirect(url_for("profesores.ver_profesor", profesor_id=profesor_id, editar="1"))
+
+
+@profesores_bp.route("/profesores/<int:profesor_id>/eliminar", methods=["POST"])
+@requiere_staff
+def eliminar(profesor_id):
+    ok, error = eliminar_profesor(profesor_id)
+    flash("Profesor eliminado." if ok else f"Error al eliminar: {error}",
+          "success" if ok else "danger")
+    return redirect(url_for("profesores.listar_profesores"))
 
 
 @profesores_bp.route("/profesores/crear", methods=["POST"])
