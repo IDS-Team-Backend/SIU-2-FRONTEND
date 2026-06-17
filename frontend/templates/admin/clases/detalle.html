@@ -33,11 +33,7 @@
       {% endif %}
     </div>
     <div class="page-header__actions">
-      <form action="{{ url_for('clases.generar_qrs', curso_id=curso_id, clase_id=clase.id) }}" method="POST" style="display:inline">
-        <button type="submit" class="btn btn-outline">
-          <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">qr_code</span> Generar QRs
-        </button>
-      </form>
+
       <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id, accion='editar_clase') }}" class="btn btn-outline">
         <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">edit</span> Editar clase
       </a>

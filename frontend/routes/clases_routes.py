@@ -4,7 +4,6 @@ import utils.user_context as UserContext
 from services.asistencia_service import (
     ESTADOS_ASISTENCIA,
     actualizar_planilla_asistencia,
-    generar_qrs_clase,
     obtener_asistencia_clase,
     parsear_asistencias_form,
 )
@@ -182,30 +181,15 @@ def eliminar_clase_route(curso_id, clase_id):
 
     return redirect(url_for("clases.listar_clases", curso_id=curso_id))
 
-
-@clases_bp.route("/curso/<int:curso_id>/clases/<int:clase_id>/generar-qrs", methods=["POST"])
-@requiere_staff
-def generar_qrs(curso_id, clase_id):
-    ok, resultado = generar_qrs_clase(clase_id)
-
-    if ok:
-        flash("QRs generados y enviados correctamente.", "success")
-    else:
-        flash(resultado, "danger")
-
-    return redirect(url_for("clases.ver_clase", curso_id=curso_id, clase_id=clase_id))
-
+# //////////////////////////////////////////////////
+# /////////////////// ASISTENCIA ///////////////////
+# //////////////////////////////////////////////////
 
 @clases_bp.route("/curso/<int:curso_id>/clases/<int:clase_id>/asistencia", methods=["POST"])
 @requiere_staff
 def actualizar_asistencia(curso_id, clase_id):
-    print(request.form, flush=True)
     asistencias = parsear_asistencias_form(request.form.items())
     ok, resultado = actualizar_planilla_asistencia(clase_id, asistencias)
 
-    if ok:
-        flash("Asistencia actualizada correctamente.", "success")
-    else:
-        flash(resultado, "danger")
-
+    flash("Asistencia actualizada correctamente." if ok else resultado, "success" if ok else "danger")
     return redirect(url_for("clases.ver_clase", curso_id=curso_id, clase_id=clase_id))
