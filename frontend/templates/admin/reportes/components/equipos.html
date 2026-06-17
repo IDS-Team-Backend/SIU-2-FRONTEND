@@ -1,5 +1,33 @@
 {# Template para reporte de equipos #}
 
+<form method="GET" style="margin-bottom:20px; display:flex; gap:10px; align-items:end;">
+      <input type="hidden" name="tab" value="equipos">
+      <div class="form-group">
+          <label for="evaluacion_id">
+              Evaluacion
+          </label>
+          <select
+              id="evaluacion_id"
+              name="evaluacion_id"
+              class="form-control"
+              onchange="this.form.submit()"
+          >
+              <option value="">
+                  Todas las evaluaciones
+              </option>
+              {% for evaluacion in evaluaciones %}
+                  <option
+                      value="{{ evaluacion.id }}"
+                      {% if evaluacion_filtro|string == evaluacion.id|string %}
+                          selected
+                      {% endif %}
+                  >
+                      {{ evaluacion.titulo }}
+                  </option>
+              {% endfor %}
+          </select>
+      </div>
+  </form>
 <div class="card-grid" style="margin-top: 20px;">
   {% for equipo in equipos %}
     <article class="card" style="border-left: 5px solid #3498db;">
