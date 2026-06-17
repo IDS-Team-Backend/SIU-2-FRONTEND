@@ -1,30 +1,52 @@
-{# Panel de asistencia del alumno en el curso: resumen + detalle por clase. #}
+{# Panel de asistencia del alumno en el curso: resumen + QR compacto + detalle por clase. #}
 {% import "components/empty_state.html" as es with context %}
 <div class="panel perfil-panel">
   <h2 class="panel-title">Asistencia</h2>
 
-  {% if not ficha.tiene_asistencia %}
-    {{ es.empty_state('fact_check', 'No hay asistencias registradas para este alumno en el curso.') }}
-  {% else %}
-    <div class="clase-summary-grid">
-      <div class="clase-summary-card">
-        <span class="clase-summary-label">Presentes</span>
-        <strong class="clase-summary-value">{{ ficha.asistencia_resumen.presentes }}</strong>
-      </div>
-      <div class="clase-summary-card">
-        <span class="clase-summary-label">Ausentes</span>
-        <strong class="clase-summary-value">{{ ficha.asistencia_resumen.ausentes }}</strong>
-      </div>
-      <div class="clase-summary-card">
-        <span class="clase-summary-label">Justificadas</span>
-        <strong class="clase-summary-value">{{ ficha.asistencia_resumen.justificadas }}</strong>
-      </div>
-      <div class="clase-summary-card">
-        <span class="clase-summary-label">Tarde</span>
-        <strong class="clase-summary-value">{{ ficha.asistencia_resumen.tarde }}</strong>
-      </div>
+  <div class="ficha-asis-top">
+    {% if ficha.token_qr %}
+    <div class="ficha-asis-qr" title="Se escanea en cada clase para registrar la asistencia">
+      <span class="ficha-asis-qr__label">QR de asistencia</span>
+      <div id="ficha-qr-container" class="ficha-asis-qr__box"></div>
+      <span class="ficha-asis-qr__hint">Escanealo en clase</span>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        new QRCode(document.getElementById("ficha-qr-container"), {
+          text: "{{ ficha.token_qr }}",
+          width: 120, height: 120,
+          colorDark: "#1e293b", colorLight: "#ffffff",
+        });
+      });
+    </script>
+    {% endif %}
+    <div class="ficha-asis-top__main">
+      {% if not ficha.tiene_asistencia %}
+        {{ es.empty_state('fact_check', 'No hay asistencias registradas para este alumno en el curso.') }}
+      {% else %}
+        <div class="clase-summary-grid">
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Presentes</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.presentes }}</strong>
+          </div>
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Ausentes</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.ausentes }}</strong>
+          </div>
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Justificadas</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.justificadas }}</strong>
+          </div>
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Tarde</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.tarde }}</strong>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 
+  {% if ficha.tiene_asistencia %}
     <div class="eval-tabla-wrapper" style="margin-top:1rem">
       <table class="table eval-tabla">
         <thead>

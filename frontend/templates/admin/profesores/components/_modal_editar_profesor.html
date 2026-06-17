@@ -1,59 +1,70 @@
-{# Modal server-side "Nuevo profesor". Se muestra cuando mostrar_modal es verdadero.
-   Usa la macro modal compartida. Requiere en contexto: form_data. #}
+{# Modal server-side "Editar profesor". Se muestra con ?editar=1 (mostrar_modal_editar).
+   Edita datos personales (PUT /usuarios) y de perfil (PATCH /profesores).
+   Requiere en contexto: profesor, mostrar_modal_editar. #}
 {% import "components/modal.html" as modal with context %}
 
-{% if mostrar_modal %}
-  {% call modal.modal('Nuevo profesor',
-                      cerrar_url=url_for('profesores.listar_profesores'),
+{% if mostrar_modal_editar %}
+  {% call modal.modal('Editar profesor',
+                      cerrar_url=url_for('profesores.ver_profesor', profesor_id=profesor.id),
                       size='md',
-                      subtitulo='Se le enviará un email para finalizar su registración y definir su contraseña') %}
-    <form action="{{ url_for('profesores.crear_profesor') }}" method="post">
+                      subtitulo=profesor.apellido ~ ', ' ~ profesor.nombre) %}
+    <form action="{{ url_for('profesores.editar', profesor_id=profesor.id) }}" method="post">
+      <input type="hidden" name="usuario_id" value="{{ profesor.usuario_id }}">
+
+      <p class="form-section-label">Datos personales</p>
       <div class="form-grid-2">
         <div class="form-group">
           <label for="nombre" class="form-group__label">Nombre</label>
           <input type="text" id="nombre" name="nombre" class="form-control" required
-                 value="{{ form_data.get('nombre') or '' }}">
+                 value="{{ profesor.nombre }}">
         </div>
         <div class="form-group">
           <label for="apellido" class="form-group__label">Apellido</label>
           <input type="text" id="apellido" name="apellido" class="form-control" required
-                 value="{{ form_data.get('apellido') or '' }}">
+                 value="{{ profesor.apellido }}">
         </div>
         <div class="form-group">
           <label for="email" class="form-group__label">Email</label>
           <input type="email" id="email" name="email" class="form-control" required
-                 value="{{ form_data.get('email') or '' }}">
+                 value="{{ profesor.email }}">
         </div>
         <div class="form-group">
           <label for="dni" class="form-group__label">DNI</label>
           <input type="text" id="dni" name="dni" class="form-control" inputmode="numeric" required
-                 placeholder="12345678" value="{{ form_data.get('dni') or '' }}">
+                 value="{{ profesor.dni }}">
         </div>
+      </div>
+
+      <p class="form-section-label" style="margin-top:16px">Datos del profesor</p>
+      <div class="form-grid-2">
         <div class="form-group">
           <label for="legajo" class="form-group__label">Legajo</label>
           <input type="text" id="legajo" name="legajo" class="form-control" inputmode="numeric" required
-                 value="{{ form_data.get('legajo') or '' }}">
+                 value="{{ profesor.legajo }}">
         </div>
         <div class="form-group">
           <label for="titulo" class="form-group__label">Título</label>
           <input type="text" id="titulo" name="titulo" class="form-control" required
-                 value="{{ form_data.get('titulo') or '' }}">
+                 value="{{ profesor.titulo }}">
         </div>
         <div class="form-group">
           <label for="departamento" class="form-group__label">Departamento</label>
           <input type="text" id="departamento" name="departamento" class="form-control" required
-                 value="{{ form_data.get('departamento') or '' }}">
+                 value="{{ profesor.departamento }}">
         </div>
         <div class="form-group">
           <label for="fecha_ingreso" class="form-group__label">Fecha de ingreso</label>
           <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="form-control" required
-                 value="{{ form_data.get('fecha_ingreso') or '' }}">
+                 value="{{ profesor.fecha_ingreso | fecha_input }}">
         </div>
       </div>
 
       <div class="form-actions" style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">
-        <a href="{{ url_for('profesores.listar_profesores') }}" class="btn btn-outline">Cancelar</a>
-        <button type="submit" class="btn btn-primary">Crear profesor</button>
+        <a href="{{ url_for('profesores.ver_profesor', profesor_id=profesor.id) }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">save</span>
+          Guardar cambios
+        </button>
       </div>
     </form>
   {% endcall %}

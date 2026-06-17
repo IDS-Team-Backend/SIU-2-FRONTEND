@@ -1,0 +1,27 @@
+{# Datos personales y de perfil del profesor (tira compacta). #}
+<div class="estu-datos">
+  <div class="estu-dato">
+    <span class="estu-dato__label">Legajo</span>
+    <span class="estu-dato__value">{{ profesor.legajo }}</span>
+  </div>
+  <div class="estu-dato">
+    <span class="estu-dato__label">DNI</span>
+    <span class="estu-dato__value">{{ profesor.dni }}</span>
+  </div>
+  <div class="estu-dato">
+    <span class="estu-dato__label">Email</span>
+    <span class="estu-dato__value">{{ profesor.email }}</span>
+  </div>
+  <div class="estu-dato">
+    <span class="estu-dato__label">Título</span>
+    <span class="estu-dato__value">{{ profesor.titulo }}</span>
+  </div>
+  <div class="estu-dato">
+    <span class="estu-dato__label">Departamento</span>
+    <span class="estu-dato__value">{{ profesor.departamento }}</span>
+  </div>
+  <div class="estu-dato">
+    <span class="estu-dato__label">Fecha de ingreso</span>
+    <span class="estu-dato__value">{{ profesor.fecha_ingreso | formatear_fecha or '—' }}</span>
+  </div>
+</div>

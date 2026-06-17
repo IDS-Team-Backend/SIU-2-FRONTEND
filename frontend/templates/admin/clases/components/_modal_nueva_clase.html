@@ -1,6 +1,7 @@
 {# Modal "Nueva clase" del calendario (index.html). Usa la macro modal compartida.
-   Comparte el contexto: curso_id, anio, mes, fecha_inicio_prefill,
-   fecha_fin_prefill, tipos_clase, modalidades_clase, estados_clase. #}
+   Comparte el contexto: curso_id, anio, mes, fecha_prefill, hora_prefill,
+   horas_clase, duraciones_clase, duracion_default, tipos_clase,
+   modalidades_clase, estados_clase. #}
 {% import "components/modal.html" as modal with context %}
 {% if request.args.get('accion') == 'nueva' %}
   {% call modal.modal('Nueva clase',
@@ -13,12 +14,26 @@
           <input type="text" id="nombre" name="nombre" required class="form-control" placeholder="Ej: Clase 1 - Introducción">
         </div>
         <div class="form-group">
-          <label for="fecha_hora_inicio">Fecha y hora de inicio</label>
-          <input type="datetime-local" id="fecha_hora_inicio" name="fecha_hora_inicio" required class="form-control" value="{{ fecha_inicio_prefill or '' }}">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" name="fecha" required class="form-control" value="{{ fecha_prefill or '' }}">
         </div>
-        <div class="form-group">
-          <label for="fecha_hora_fin">Fecha y hora de fin</label>
-          <input type="datetime-local" id="fecha_hora_fin" name="fecha_hora_fin" required class="form-control" value="{{ fecha_fin_prefill or '' }}">
+        <div class="clase-form-horario">
+          <div class="form-group">
+            <label for="hora_inicio">Hora de inicio</label>
+            <select id="hora_inicio" name="hora_inicio" required class="form-control">
+              {% for hora in horas_clase %}
+                <option value="{{ hora }}" {% if hora == hora_prefill %}selected{% endif %}>{{ hora }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="duracion_minutos">Duración</label>
+            <select id="duracion_minutos" name="duracion_minutos" required class="form-control">
+              {% for valor, etiqueta in duraciones_clase %}
+                <option value="{{ valor }}" {% if valor == duracion_default %}selected{% endif %}>{{ etiqueta }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
       </div>
       <div class="clase-form-grid__col">

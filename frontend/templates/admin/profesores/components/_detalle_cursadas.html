@@ -1,0 +1,41 @@
+{# Panel: cursadas en las que participa el profesor. Requiere en contexto: participaciones. #}
+{% import "components/empty_state.html" as es with context %}
+{% set roles = {'titular':'Titular','jefe_tp':'Jefe TP','ayudante':'Ayudante','colaborador':'Colaborador'} %}
+<div class="panel perfil-panel">
+  <div class="estu-cursos__head">
+    <h2 class="panel-title" style="margin:0">Cursadas en que participa</h2>
+    {% if participaciones %}
+      <span class="estu-cursos__count">
+        {{ participaciones | length }} {{ 'cursada' if participaciones | length == 1 else 'cursadas' }}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if not participaciones %}
+    {{ es.empty_state('co_present', 'El profesor no participa en ninguna cursada.') }}
+  {% else %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Período</th>
+            <th>Cursada</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in participaciones %}
+          <tr>
+            <td class="text-bold">{{ c.anio }} · {{ c.cuatrimestre }}°C</td>
+            <td>
+              {{ c.curso_nombre }}
+              {% if c.activa %}<span class="badge badge--success badge--pill">Activa</span>{% endif %}
+            </td>
+            <td>{{ roles.get(c.rol, c.rol) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>

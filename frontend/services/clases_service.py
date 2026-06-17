@@ -7,7 +7,6 @@ from utils import api_client as api
 from utils.filtros_fecha import (
     fecha_a_date,
     fecha_hora_api,
-    fecha_input_datetime,
     parsear_fecha_hora,
 )
 
@@ -30,6 +29,33 @@ MESES_ES = [
 ESTADOS_CLASE_DEFAULT = ["pendiente", "suspendida", "en curso", "finalizada"]
 TIPOS_CLASE = ["teorica", "practica"]
 MODALIDADES_CLASE = ["Virtual", "Presencial"]
+
+
+def _generar_horas(desde=7, hasta=23, paso_min=30):
+    """Franjas 'HH:MM' para el select de hora de inicio."""
+    horas = []
+    minutos, fin = desde * 60, hasta * 60
+    while minutos <= fin:
+        horas.append(f"{minutos // 60:02d}:{minutos % 60:02d}")
+        minutos += paso_min
+    return horas
+
+
+HORAS_CLASE = _generar_horas()
+HORA_CLASE_DEFAULT = "08:00"
+
+# (minutos, etiqueta) para el select de duración.
+DURACIONES_CLASE = [
+    (30, "30 min"),
+    (60, "1 h"),
+    (90, "1 h 30 min"),
+    (120, "2 h"),
+    (150, "2 h 30 min"),
+    (180, "3 h"),
+    (210, "3 h 30 min"),
+    (240, "4 h"),
+]
+DURACION_CLASE_DEFAULT = 120
 
 
 def _extraer_lista(data, posibles_claves):
@@ -182,19 +208,36 @@ def navegacion_calendario(anio, mes, hoy=None):
 
 
 def calcular_prefill_nueva_clase(fecha_prefill):
+    """Separa el prefill del calendario en (fecha 'YYYY-MM-DD', hora 'HH:MM')."""
     if fecha_prefill and len(fecha_prefill) == 10:
-        fecha_inicio_texto = f"{fecha_prefill}T08:00"
-    else:
-        fecha_inicio_texto = fecha_prefill or ""
+        return fecha_prefill, HORA_CLASE_DEFAULT
 
-    fecha_base = parsear_fecha_hora(fecha_inicio_texto)
+    fecha_base = parsear_fecha_hora(fecha_prefill)
     if fecha_base is None:
-        return fecha_inicio_texto or None, None
+        return "", HORA_CLASE_DEFAULT
 
-    return (
-        fecha_input_datetime(fecha_base),
-        fecha_input_datetime(fecha_base + timedelta(hours=1)),
-    )
+    return fecha_base.strftime("%Y-%m-%d"), fecha_base.strftime("%H:%M")
+
+
+def combinar_fecha_hora(fecha, hora):
+    """'2026-07-02' + '15:00' -> '2026-07-02T15:00' (formato datetime-local)."""
+    if not fecha or not hora:
+        return ""
+    return f"{fecha}T{hora}"
+
+
+def calcular_fecha_hora_fin(fecha, hora, duracion_minutos):
+    """Suma la duración al inicio y devuelve el fin como 'YYYY-MM-DDThh:mm'."""
+    inicio = parsear_fecha_hora(combinar_fecha_hora(fecha, hora))
+    if inicio is None:
+        return ""
+
+    try:
+        minutos = int(duracion_minutos)
+    except (TypeError, ValueError):
+        minutos = DURACION_CLASE_DEFAULT
+
+    return (inicio + timedelta(minutes=minutos)).strftime("%Y-%m-%dT%H:%M")
 
 
 def params_mes_desde_fecha(fecha_texto):

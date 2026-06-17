@@ -10,12 +10,17 @@ from services.asistencia_service import (
 )
 
 from services.clases_service import (
+    DURACION_CLASE_DEFAULT,
+    DURACIONES_CLASE,
     ESTADOS_CLASE_DEFAULT,
+    HORAS_CLASE,
     MODALIDADES_CLASE,
     TIPOS_CLASE,
     actualizar_clase,
     agrupar_clases_por_dia,
+    calcular_fecha_hora_fin,
     calcular_prefill_nueva_clase,
+    combinar_fecha_hora,
     crear_clase,
     eliminar_clase,
     extraer_id_clase_creada,
@@ -64,7 +69,7 @@ def listar_clases(curso_id):
         request.args.get("anio"),
         request.args.get("mes"),
     )
-    fecha_inicio_prefill, fecha_fin_prefill = calcular_prefill_nueva_clase(
+    fecha_prefill, hora_prefill = calcular_prefill_nueva_clase(
         request.args.get("fecha", "")
     )
 
@@ -77,8 +82,11 @@ def listar_clases(curso_id):
         estados_clase=estados_clase or ESTADOS_CLASE_DEFAULT,
         tipos_clase=TIPOS_CLASE,
         modalidades_clase=MODALIDADES_CLASE,
-        fecha_inicio_prefill=fecha_inicio_prefill,
-        fecha_fin_prefill=fecha_fin_prefill,
+        horas_clase=HORAS_CLASE,
+        duraciones_clase=DURACIONES_CLASE,
+        duracion_default=DURACION_CLASE_DEFAULT,
+        fecha_prefill=fecha_prefill,
+        hora_prefill=hora_prefill,
         **calendario,
     )
 
@@ -86,7 +94,12 @@ def listar_clases(curso_id):
 @clases_bp.route("/curso/<int:curso_id>/clases", methods=["POST"])
 @requiere_staff
 def crear_clase_route(curso_id):
-    fecha_hora_inicio = request.form.get("fecha_hora_inicio", "").strip()
+    fecha = request.form.get("fecha", "").strip()
+    hora_inicio = request.form.get("hora_inicio", "").strip()
+    duracion = request.form.get("duracion_minutos", "").strip()
+
+    fecha_hora_inicio = combinar_fecha_hora(fecha, hora_inicio)
+    fecha_hora_fin = calcular_fecha_hora_fin(fecha, hora_inicio, duracion)
 
     profesor_id = _resolver_profesor_id(curso_id)
     if not profesor_id:
@@ -98,7 +111,7 @@ def crear_clase_route(curso_id):
         profesor_id=profesor_id,
         nombre=request.form.get("nombre", "").strip(),
         fecha_hora_inicio=fecha_hora_inicio,
-        fecha_hora_fin=request.form.get("fecha_hora_fin", "").strip(),
+        fecha_hora_fin=fecha_hora_fin,
         tema=request.form.get("tema", "").strip(),
         tipo=request.form.get("tipo", "").strip(),
         modalidad=request.form.get("modalidad", "").strip(),
