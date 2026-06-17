@@ -84,17 +84,31 @@ def obtener_estadisticas_reporte(curso_id, export=None):
     return True, estadisticas
 
 
-def obtener_equipos_reporte(curso_id, export=None):
+def obtener_equipos_reporte(
+    curso_id,
+    evaluacion_id=None,
+    export=None
+):
     if not curso_id:
         return False, "Falta el ID del curso."
-    
-    params = {"curso_id": int(curso_id)}
-    if export: params["export"] = export
-
-    ok, data = api.get("/reportes/equipos", params=params, is_binary=export)
-    
+    params = {
+        "curso_id": int(curso_id)
+    }
+    if evaluacion_id:
+        params["evaluacion_id"] = int(evaluacion_id)
+    if export:
+        params["export"] = export
+    ok, data = api.get(
+        "/reportes/equipos",
+        params=params,
+        is_binary=export
+    )
     if not ok:
-        error_msg = data.get("error", "Error al obtener equipos.") if data else "Error de conexión."
+        error_msg = (
+            data.get("error", "Error al obtener equipos.")
+            if data
+            else "Error de conexión."
+        )
         return False, error_msg
     
     if export:

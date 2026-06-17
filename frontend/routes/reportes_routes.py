@@ -59,7 +59,7 @@ def listar_reportes(curso_id):
             elif tab_actual == "estadisticas":
                 ok, res = obtener_estadisticas_reporte(curso_id, export="pdf")
             elif tab_actual == "equipos":
-                ok, res = obtener_equipos_reporte(curso_id, export="pdf")
+                ok, res = obtener_equipos_reporte(curso_id, evaluacion_id=evaluacion_id, export="pdf")
 
             
             if ok and isinstance(res, (bytes, bytearray)):
@@ -115,7 +115,7 @@ def listar_reportes(curso_id):
             estadisticas = []
             error_msg = error_msg or f"Estadísticas: {estadisticas_data}"
 
-        ok_equipos, equipos_data = obtener_equipos_reporte(curso_id, export=False)
+        ok_equipos, equipos_data = obtener_equipos_reporte(curso_id, evaluacion_id=evaluacion_id, export=False)
         
         if ok_equipos:
             equipos = equipos_data
