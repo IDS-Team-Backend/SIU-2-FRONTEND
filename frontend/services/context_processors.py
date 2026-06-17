@@ -48,6 +48,15 @@ def registrar_context_processors(app):
     def inject_usuario_actual():
         if not usuario_esta_logueado():
             return {"usuario_actual": None}
-        
+
         perfiles = UserContext.get_perfiles()
-        return {"usuario_actual": {"perfiles": perfiles}}
+        return {
+            "usuario_actual": {
+                "perfiles": perfiles,
+                "es_admin":    "admin"    in perfiles,
+                "es_docente":  "docente"  in perfiles,
+                "es_alumno":   "alumno"   in perfiles,
+                "es_ayudante": "ayudante" in perfiles,
+                "es_staff":    any(p in perfiles for p in ("admin", "docente", "ayudante")),
+            }
+        }

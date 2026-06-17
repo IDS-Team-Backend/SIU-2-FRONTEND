@@ -30,7 +30,6 @@ def guardar_usuario_actual_en_sesion():
     g.perfiles = perfiles
     return True
 
-
 def get_id():
     usuario = getattr(g, "usuario", None)
     return usuario.get("id") if isinstance(usuario, dict) else None
@@ -57,3 +56,7 @@ def get_alumno_id():
 def get_perfiles():
     """Devuelve los perfiles desde g (que se cargaron de la session)."""
     return getattr(g, "perfiles", [])
+
+def es_staff():
+    perfiles = get_perfiles()
+    return "admin" in perfiles or "docente" in perfiles
