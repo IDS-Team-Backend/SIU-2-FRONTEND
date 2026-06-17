@@ -17,33 +17,16 @@
   {% call ph.page_header('Alumnos', _subtitulo) %}
     {{ imp.boton_importar_csv(url_con_filtros('alumnos.importar', curso_id=curso_id)) }}
 
-    <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, form='alta') }}"
-       class="btn {% if form_activo == 'alta' %}btn-primary{% else %}btn-outline{% endif %}">
-      <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
-      Nuevo estudiante
-    </a>
-
+    {# En el curso solo se asocian alumnos existentes; el alta se hace en Sistema → Alumnos. #}
     <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, form='vincular') }}"
-       class="btn btn-outline">
+       class="btn btn-primary">
       <span class="material-symbols-rounded" style="font-size:18px">link</span>
       Vincular alumno
     </a>
-
-    {# Importar altas masivas por CSV (campo csv_altas, distinto de la importación simple). #}
-    <form action="{{ url_con_filtros('alumnos.importar_altas', curso_id=curso_id) }}"
-          method="post" enctype="multipart/form-data" style="display:inline">
-      <input type="file" id="csv_altas" name="csv_altas" accept=".csv"
-             style="display:none" onchange="this.form.submit()">
-      <button type="button" class="btn btn-outline"
-              onclick="document.getElementById('csv_altas').click()">
-        <span class="material-symbols-rounded" style="font-size:18px">group_add</span>
-        Importar alumnos
-      </button>
-    </form>
   {% endcall %}
 
   {# ── Layout: tabla + panel de formulario ── #}
-  <div class="alumnos-layout {% if form_activo in ('alta','editar') %}alumnos-layout--with-form{% endif %}">
+  <div class="alumnos-layout {% if form_activo == 'editar' %}alumnos-layout--with-form{% endif %}">
 
     {# ══ COLUMNA IZQUIERDA: filtros + tabla ══ #}
     <div class="alumnos-layout__table">
@@ -67,7 +50,7 @@
     </div>{# /alumnos-layout__table #}
 
     {# ══ COLUMNA DERECHA: formulario activo ══ #}
-    {% if form_activo in ('alta', 'editar') %}
+    {% if form_activo == 'editar' %}
     <div class="alumnos-layout__form">
       {% include "admin/alumnos/components/_form_alumno.html" %}
     </div>

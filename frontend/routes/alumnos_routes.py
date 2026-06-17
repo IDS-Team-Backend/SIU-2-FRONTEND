@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, flash
+import math
+
+from flask import Blueprint, render_template, request, redirect, flash, url_for
 from services.decorators import requiere_staff
 from services.alumnos_service import (
     obtener_alumnos_del_curso,
@@ -9,15 +11,127 @@ from services.alumnos_service import (
     importar_csv,
     crear_alumno,
     editar_alumno,
-    vincular_alumnos_masivo, 
+    vincular_alumnos_masivo,
     importar_estudiantes_csv,
     desvincular_alumnos_masivo
 )
+from services.ficha_estudiante_service import obtener_ficha_estudiante
+from services.estudiantes_service import obtener_estudiantes, obtener_detalle_estudiante
 from utils.filtros import leer_filtros, url_con_filtros
 
 alumnos_bp = Blueprint("alumnos", __name__)
 
 COLUMNAS_ORDENABLES = {"padron", "nombre", "apellido", "email", "estado"}
+
+
+# ── Listado general de alumnos (catálogo del sistema) ────────────────────────────
+
+@alumnos_bp.route("/alumnos")
+@requiere_staff
+def listar_general():
+    page      = request.args.get("page", 1, type=int) or 1
+    page_size = request.args.get("page_size", 8, type=int) or 8
+    page_size = max(1, min(page_size, 100))
+    carrera   = (request.args.get("carrera") or "").strip()
+    anio      = request.args.get("anio_ingreso", type=int)
+    q         = (request.args.get("q") or "").strip()
+
+    ok, alumnos, paginacion = obtener_estudiantes(
+        page=page, page_size=page_size, carrera=carrera or None, anio_ingreso=anio,
+    )
+    if not ok:
+        flash(alumnos, "danger")
+        alumnos, paginacion = [], {}
+
+    # Búsqueda libre por nombre/apellido/padrón/email/dni (client-side sobre la página).
+    if q:
+        ql = q.lower()
+        alumnos = [
+            a for a in alumnos
+            if ql in str(a.get("padron",   "")).lower()
+            or ql in str(a.get("nombre",   "")).lower()
+            or ql in str(a.get("apellido", "")).lower()
+            or ql in str(a.get("email",    "")).lower()
+            or ql in str(a.get("dni",      "")).lower()
+        ]
+
+    return render_template(
+        "admin/alumnos/listado.html",
+        title="Alumnos",
+        active_page="alumnos_general",
+        alumnos=alumnos,
+        paginacion=paginacion,
+        page_size=page_size,
+        carrera=carrera,
+        anio_ingreso=anio,
+        q=q,
+        mostrar_modal=request.args.get("nuevo") == "1",
+        form_data={},
+    )
+
+
+# ── Alta de estudiante (sistema): crear cuenta + perfil, sin inscribir a un curso ──
+
+@alumnos_bp.route("/alumnos/crear", methods=["POST"])
+@requiere_staff
+def crear_general():
+    nombre       = request.form.get("nombre",       "").strip()
+    apellido     = request.form.get("apellido",     "").strip()
+    email        = request.form.get("email",        "").strip()
+    dni          = request.form.get("dni",          "").strip()
+    padron       = request.form.get("padron",       "").strip()
+    carrera      = request.form.get("carrera",      "").strip()
+    anio_ingreso = request.form.get("anio_ingreso", "").strip()
+
+    ok, error = crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso)
+    if ok:
+        flash(f"Estudiante {nombre} {apellido} creado correctamente.", "success")
+        return redirect(url_for("alumnos.listar_general"))
+
+    flash(f"Error al crear estudiante: {error}", "danger")
+    return redirect(url_for("alumnos.listar_general", nuevo="1"))
+
+
+@alumnos_bp.route("/alumnos/importar-altas", methods=["POST"])
+@requiere_staff
+def importar_altas_general():
+    archivo = request.files.get("csv_altas")
+    if not archivo or not archivo.filename:
+        flash("Seleccioná un archivo CSV.", "warning")
+        return redirect(url_for("alumnos.listar_general"))
+    if not archivo.filename.lower().endswith(".csv"):
+        flash("El archivo debe tener extensión .csv", "danger")
+        return redirect(url_for("alumnos.listar_general"))
+
+    ok, resultado = importar_estudiantes_csv(archivo)
+    if ok:
+        flash(
+            f"Altas completadas: {resultado['exitosos']} creados, "
+            f"{resultado['duplicados']} duplicados ignorados, "
+            f"{resultado['errores']} errores.",
+            "success" if resultado["errores"] == 0 else "warning",
+        )
+    else:
+        flash(f"Error en la importación: {resultado}", "danger")
+    return redirect(url_for("alumnos.listar_general"))
+
+
+# ── Ficha general del alumno (multi-curso) ───────────────────────────────────────
+
+@alumnos_bp.route("/alumnos/<int:estudiante_id>")
+@requiere_staff
+def ver_alumno(estudiante_id):
+    ok, detalle = obtener_detalle_estudiante(estudiante_id)
+    if not ok:
+        flash(detalle, "danger")
+        return redirect(url_for("alumnos.listar_general"))
+
+    return render_template(
+        "admin/alumnos/detalle.html",
+        title="Ficha de alumno",
+        active_page="alumnos_general",
+        detalle=detalle,
+    )
 
 
 @alumnos_bp.route("/curso/<int:curso_id>/alumnos")
@@ -39,8 +153,8 @@ def listar_alumnos(curso_id):
         flash(alumnos, "danger")
         alumnos, paginacion = [], {}
 
-    # ── Formulario activo (alta / editar / vincular) ───────────────────────
-    form_activo  = request.args.get("form", "")   # "alta" | "editar" | "vincular" | ""
+    # ── Formulario activo (editar / vincular) ──────────────────────────────
+    form_activo  = request.args.get("form", "")   # "editar" | "vincular" | ""
     alumno_editar = None
 
     if form_activo == "editar":
@@ -103,30 +217,49 @@ def listar_alumnos(curso_id):
     )
 
 
-# ── Alta ───────────────────────────────────────────────────────────────────────
+# ── Ficha del alumno en el curso (Page A) ───────────────────────────────────────
 
-@alumnos_bp.route("/curso/<int:curso_id>/alumnos/crear", methods=["POST"])
+FICHA_POR_PAGINA = 8
+
+
+def _paginar_lista(items, page):
+    """Pagina una lista en memoria (misma lógica que alumnos: 8 por página).
+    Retorna (pagina, paginacion) con paginacion={page, total_paginas, total}."""
+    total = len(items)
+    total_paginas = max(1, math.ceil(total / FICHA_POR_PAGINA))
+    page = max(1, min(page, total_paginas))
+    inicio = (page - 1) * FICHA_POR_PAGINA
+    return items[inicio:inicio + FICHA_POR_PAGINA], {
+        "page": page,
+        "total_paginas": total_paginas,
+        "total": total,
+    }
+
+
+@alumnos_bp.route("/curso/<int:curso_id>/alumnos/<int:estudiante_id>")
 @requiere_staff
-def crear(curso_id):
-    nombre       = request.form.get("nombre",       "").strip()
-    apellido     = request.form.get("apellido",     "").strip()
-    email        = request.form.get("email",        "").strip()
-    dni          = request.form.get("dni",          "").strip()
-    padron       = request.form.get("padron",       "").strip()
-    carrera      = request.form.get("carrera",      "").strip()
-    anio_ingreso = request.form.get("anio_ingreso", "").strip()
+def ver_ficha(curso_id, estudiante_id):
+    ok, ficha = obtener_ficha_estudiante(curso_id, estudiante_id)
+    if not ok:
+        flash(ficha, "danger")
+        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
 
-    ok, error = crear_alumno(
-        nombre, apellido, email, dni,
-        padron, carrera, anio_ingreso
+    eval_page = request.args.get("eval_page", 1, type=int) or 1
+    asis_page = request.args.get("asis_page", 1, type=int) or 1
+    evaluaciones_pagina, eval_paginacion = _paginar_lista(ficha["evaluaciones"], eval_page)
+    asistencia_pagina, asis_paginacion = _paginar_lista(ficha["asistencia_detalle"], asis_page)
+
+    return render_template(
+        "admin/alumnos/ficha.html",
+        title="Ficha del alumno",
+        active_page="alumnos",
+        curso_id=curso_id,
+        ficha=ficha,
+        evaluaciones_pagina=evaluaciones_pagina,
+        eval_paginacion=eval_paginacion,
+        asistencia_pagina=asistencia_pagina,
+        asis_paginacion=asis_paginacion,
     )
-
-    if ok:
-        flash(f"Estudiante {nombre} {apellido} creado correctamente.", "success")
-    else:
-        flash(f"Error al crear estudiante: {error}", "danger")
-
-    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
 
 
 # ── Editar ─────────────────────────────────────────────────────────────────────
@@ -243,30 +376,6 @@ def vincular_masivo(curso_id):
         flash(msg, categoria)
  
     return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
-
-@alumnos_bp.route("/curso/<int:curso_id>/alumnos/importar-altas", methods=["POST"])
-@requiere_staff
-def importar_altas(curso_id):
-    archivo = request.files.get("csv_altas")
-    if not archivo or not archivo.filename:
-        flash("Seleccioná un archivo CSV.", "warning")
-        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
-    if not archivo.filename.lower().endswith(".csv"):
-        flash("El archivo debe tener extensión .csv", "danger")
-        return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
- 
-    ok, resultado = importar_estudiantes_csv(archivo)
-    if ok:
-        flash(
-            f"Altas completadas: {resultado['exitosos']} creados, "
-            f"{resultado['duplicados']} duplicados ignorados, "
-            f"{resultado['errores']} errores.",
-            "success" if resultado["errores"] == 0 else "warning",
-        )
-    else:
-        flash(f"Error en la importación: {resultado}", "danger")
-    return redirect(url_con_filtros("alumnos.listar_alumnos", curso_id=curso_id))
-
 
 @alumnos_bp.route("/curso/<int:curso_id>/alumnos/desvincular-masivo", methods=["POST"])
 @requiere_staff

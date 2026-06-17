@@ -1,0 +1,59 @@
+{# Tabla del listado general de alumnos. Cada fila enlaza a la ficha general (multi-curso). #}
+{% import "components/empty_state.html" as es with context %}
+
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Padrón</th>
+        <th>Apellido y Nombre</th>
+        <th>Email</th>
+        <th>DNI</th>
+        <th>Carrera</th>
+        <th class="th--center">Año ingreso</th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alumnos %}
+      <tr>
+        <td class="text-bold">{{ a.padron }}</td>
+        <td>
+          <a href="{{ url_for('alumnos.ver_alumno', estudiante_id=a.id) }}" class="cell-link">
+            {{ a.apellido }}, {{ a.nombre }}
+          </a>
+        </td>
+        <td>{{ a.email }}</td>
+        <td>{{ a.dni }}</td>
+        <td>{{ a.carrera }}</td>
+        <td class="td--center">{{ a.anio_ingreso }}</td>
+        <td class="td--center">
+          <details class="row-actions">
+            <summary title="Acciones">
+              <span class="material-symbols-rounded" style="font-size:18px">more_vert</span>
+            </summary>
+            <div class="row-actions__menu">
+              <a href="{{ url_for('alumnos.ver_alumno', estudiante_id=a.id) }}">
+                <span class="material-symbols-rounded" style="font-size:16px">badge</span>
+                Ver ficha
+              </a>
+            </div>
+          </details>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7">
+          {% if q or carrera or anio_ingreso %}
+            {% call es.empty_state('search_off') %}
+              Sin resultados. <a href="{{ url_for('alumnos.listar_general') }}">Ver todos</a>
+            {% endcall %}
+          {% else %}
+            {{ es.empty_state('school', 'No hay alumnos cargados todavía.') }}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
