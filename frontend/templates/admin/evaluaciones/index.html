@@ -8,15 +8,18 @@
 {% block content %}
 {% import "components/page_header.html" as ph with context %}
 {% import "components/modal.html" as modal with context %}
+{% import "components/calendario_tabs.html" as tabs with context %}
 <section>
   {% if usuario_actual.es_staff %}
-    {% call ph.page_header(title) %}
+    {% call ph.page_header('Cronograma', 'Calendario de clases y evaluaciones de la cursada.') %}
       <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}"
-        class="btn btn-primary">
+         class="btn btn-primary">
         <span>+</span> Nueva Evaluación
       </a>
     {% endcall %}
   {% endif %}
+
+  {{ tabs.calendario_tabs(curso_id, 'evaluaciones', anio, mes) }}
 
   {# ── Toolbar del calendario ── #}
   <div class="cal-toolbar">
