@@ -61,6 +61,12 @@ def actualizar_planilla_asistencia(clase_id, asistencias):
         return False, data.get("error", "Error al actualizar asistencia.") if data else "Error de conexión."
     return True, data
 
+def escanear_qr(token, clase_id):
+    ok, data = api.post("/asistencia/escanear", json={"token": token, "clase_id": clase_id})
+    if not ok:
+        return False, data.get("error", "Error al escanear.") if data else "Error de conexión."
+    return True, data.get("asistencia")
+
 
 # //////////////////////////////////////////////
 # /////////// ALUMNOS - ASISTENCIA /////////////
@@ -73,8 +79,8 @@ def obtener_mis_asistencias(curso_id):
     return True, data.get("asistencias", {})
 
 
-def obtener_mi_qr(curso_id):
-    ok, data = api.get(f"/asistencia/cursos/{curso_id}/mi-qr")
+def obtener_mi_qr():
+    ok, data = api.get(f"/asistencia/mi-qr")
     if not ok:
         return False, data.get("error", "Error al obtener el QR.") if data else "Error de conexión."
     return True, data.get("token_qr")

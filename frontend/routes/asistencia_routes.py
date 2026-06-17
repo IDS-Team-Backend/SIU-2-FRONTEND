@@ -14,7 +14,7 @@ def mi_asistencia(curso_id):
         flash(asistencia, "danger")
         asistencia = {}
 
-    ok_qr, token_qr = obtener_mi_qr(curso_id)
+    ok_qr, token_qr = obtener_mi_qr()
     if not ok_qr:
         token_qr = None
 
