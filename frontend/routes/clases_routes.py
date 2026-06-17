@@ -49,7 +49,6 @@ def _redireccionar_a_mes_fecha(curso_id, fecha_texto):
 
 
 @clases_bp.route("/curso/<int:curso_id>/clases", methods=["GET"])
-@requiere_staff
 def listar_clases(curso_id):
     ok_clases, clases = obtener_clases_del_curso(curso_id)
     if not ok_clases:
@@ -118,16 +117,18 @@ def crear_clase_route(curso_id):
 
 
 @clases_bp.route("/curso/<int:curso_id>/clases/<int:clase_id>", methods=["GET"])
-@requiere_staff
 def ver_clase(curso_id, clase_id):
     ok_clase, clase = obtener_clase_por_id(clase_id)
     if not ok_clase:
         flash(clase, "danger")
         return redirect(url_for("clases.listar_clases", curso_id=curso_id))
 
-    ok_asistencia, asistencia = obtener_asistencia_clase(clase_id)
-    if not ok_asistencia:
-        flash(asistencia, "danger")
+    if UserContext.es_staff():
+        ok_asistencia, asistencia = obtener_asistencia_clase(clase_id)
+        if not ok_asistencia:
+            flash(asistencia, "danger")
+            asistencia = {"planilla": [], "resumen": {}}
+    else:
         asistencia = {"planilla": [], "resumen": {}}
 
     return render_template(

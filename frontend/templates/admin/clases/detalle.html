@@ -33,7 +33,7 @@
       {% endif %}
     </div>
     <div class="page-header__actions">
-
+      {% if usuario_actual.es_staff %}
       <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id, accion='editar_clase') }}" class="btn btn-outline">
         <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">edit</span> Editar clase
       </a>
@@ -45,6 +45,7 @@
             onsubmit="return confirm('¿Eliminar la clase «{{ clase.nombre }}»?');">
         <button type="submit" class="btn btn-outline" style="color:var(--text-danger)">Eliminar</button>
       </form>
+      {% endif %}
     </div>
   </div>
 
@@ -56,9 +57,12 @@
       {% endif %}
     </div>
 
-    {% include "admin/clases/components/_resumen_asistencia.html" %}
+    {% if usuario_actual.es_staff %}
+      {% include "admin/clases/components/_resumen_asistencia.html" %}
 
-    {% include "admin/clases/components/_tabla_asistencia.html" %}
+      {% include "admin/clases/components/_tabla_asistencia.html" %}
+    {% endif %}
+
   </div>
 </section>
 

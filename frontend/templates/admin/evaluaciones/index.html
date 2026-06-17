@@ -9,12 +9,14 @@
 {% import "components/page_header.html" as ph with context %}
 {% import "components/modal.html" as modal with context %}
 <section>
-  {% call ph.page_header(title) %}
-    <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}"
-       class="btn btn-primary">
-      <span>+</span> Nueva Evaluación
-    </a>
-  {% endcall %}
+  {% if usuario_actual.es_staff %}
+    {% call ph.page_header(title) %}
+      <a href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, accion='nueva', anio=anio, mes=mes) }}"
+        class="btn btn-primary">
+        <span>+</span> Nueva Evaluación
+      </a>
+    {% endcall %}
+  {% endif %}
 
   {# ── Toolbar del calendario ── #}
   <div class="cal-toolbar">

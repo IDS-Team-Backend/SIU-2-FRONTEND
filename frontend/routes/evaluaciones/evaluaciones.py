@@ -40,7 +40,6 @@ from routes.evaluaciones import (
 
 
 @evaluaciones_bp.route("/curso/<int:curso_id>/evaluaciones", methods=["GET"])
-@requiere_staff
 def listar_evaluaciones(curso_id):
     """Calendario mensual con las evaluaciones del curso en su día."""
     ok, evaluaciones = obtener_evaluaciones_del_curso(curso_id)
