@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import flash, redirect, request, url_for
+from flask import flash, make_response, redirect, request, session, url_for
 
 import utils.user_context as UserContext
 from services.auth_service import (
@@ -99,3 +99,14 @@ def proteger_rutas(app):
         # No logueado -> flash + redirect al login.
         flash("Primero iniciá sesión.", "warning")
         return redirect(url_for("auth.login"))
+    
+    @app.errorhandler(401)
+    def error_no_autorizado(e):
+        flash("Tu sesión expiró. Iniciá sesión nuevamente.", "warning")
+
+        session.clear()
+
+        response = make_response(redirect(url_for("auth.login")))
+        response.delete_cookie("access_token_cookie")
+        
+        return response
