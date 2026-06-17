@@ -1,0 +1,66 @@
+{# Modal server-side "Nuevo estudiante" (sistema). Se muestra cuando mostrar_modal es verdadero.
+   Crea la cuenta + perfil académico, sin inscribir a ningún curso. Requiere en contexto: form_data. #}
+{% import "components/modal.html" as modal with context %}
+
+{% if mostrar_modal %}
+  {% call modal.modal('Nuevo estudiante', size='md',
+                      cerrar_url=url_for('alumnos.listar_general'),
+                      subtitulo='Crea la cuenta en el sistema. Después se asocia a un curso.') %}
+    <form action="{{ url_for('alumnos.crear_general') }}" method="post">
+
+      <p class="form-section-label">Datos personales</p>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Nombre</label>
+          <input type="text" name="nombre" class="form-control" placeholder="María" required
+                 value="{{ form_data.get('nombre') or '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">Apellido</label>
+          <input type="text" name="apellido" class="form-control" placeholder="García" required
+                 value="{{ form_data.get('apellido') or '' }}">
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="m.garcia@fi.uba.ar" required
+                 value="{{ form_data.get('email') or '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">DNI</label>
+          <input type="text" name="dni" class="form-control" inputmode="numeric" placeholder="38500001" required
+                 value="{{ form_data.get('dni') or '' }}">
+        </div>
+      </div>
+
+      <p class="form-section-label" style="margin-top:16px">Datos académicos</p>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Padrón</label>
+          <input type="number" name="padron" class="form-control" min="1" placeholder="100020" required
+                 value="{{ form_data.get('padron') or '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">Año de ingreso</label>
+          <input type="number" name="anio_ingreso" class="form-control" min="1900" max="2099" placeholder="2024" required
+                 value="{{ form_data.get('anio_ingreso') or '' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-group__label">Carrera</label>
+        <input type="text" name="carrera" class="form-control" placeholder="Ingeniería en Informática" required
+               value="{{ form_data.get('carrera') or '' }}">
+      </div>
+
+      <div class="form-actions" style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">
+        <a href="{{ url_for('alumnos.listar_general') }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">person_add</span>
+          Crear estudiante
+        </button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}

@@ -59,10 +59,7 @@
           <span class="material-symbols-rounded">person</span>Alumnos
         </a>
         {% endif %}
-        <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id_contexto) }}">
-          <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
-        </a>
-        <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
+                <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">description</span>Material
         </a>
         {% if usuario_actual.es_staff %}
@@ -70,16 +67,8 @@
           <span class="material-symbols-rounded">bar_chart</span>Reportes
         </a>
         {% endif %}
-        <a class="{% if active_page == 'clases' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
-          <span class="material-symbols-rounded">class</span>Clases
-        </a>
         {% if feature_asistencia %}
         <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
-          <span class="material-symbols-rounded">how_to_reg</span>Asistencia
-        </a>
-        {% endif %}
-        {% if usuario_actual.es_alumno %}
-        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('asistencia.mi_asistencia', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">how_to_reg</span>Asistencia
         </a>
         {% endif %}
@@ -108,6 +97,9 @@
         <span class="material-symbols-rounded nav-group__chevron">expand_more</span>
       </button>
       <div class="nav-group__items">
+        <a class="{% if active_page == 'alumnos_general' %}active{% endif %}" href="{{ url_for('alumnos.listar_general') }}">
+          <span class="material-symbols-rounded">school</span>Alumnos
+        </a>
         <a class="{% if active_page == 'profesores' %}active{% endif %}" href="{{ url_for('profesores.listar_profesores') }}">
           <span class="material-symbols-rounded">badge</span>Profesores
         </a>

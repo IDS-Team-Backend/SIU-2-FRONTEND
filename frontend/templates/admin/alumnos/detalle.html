@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/perfil.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/ficha_estudiante.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="ficha-estudiante">
+  <a href="{{ url_for('alumnos.listar_general') }}" class="btn btn-ghost" style="margin-bottom:1rem">
+    <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">arrow_back</span>
+    Volver al listado
+  </a>
+
+  {% include "admin/alumnos/components/_detalle_hero.html" %}
+  {% include "admin/alumnos/components/_detalle_info.html" %}
+  {% include "admin/alumnos/components/_detalle_cursos.html" %}
+</section>
+{% endblock %}

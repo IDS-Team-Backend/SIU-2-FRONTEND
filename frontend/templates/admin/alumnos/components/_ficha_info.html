@@ -1,0 +1,46 @@
+{# Resumen del alumno en el curso: métricas clave destacadas + datos personales.
+   Los textos y los colores (variantes) se calculan en ficha_estudiante_service.py. #}
+<div class="ficha-stats">
+  <div class="ficha-stat ficha-stat--{{ ficha.promedio_variante }}">
+    <span class="ficha-stat__icon material-symbols-rounded">grade</span>
+    <div class="ficha-stat__body">
+      <span class="ficha-stat__label">Promedio</span>
+      <span class="ficha-stat__value">{{ ficha.promedio_texto }}</span>
+    </div>
+  </div>
+
+  <div class="ficha-stat ficha-stat--{{ ficha.asistencia_variante }}">
+    <span class="ficha-stat__icon material-symbols-rounded">how_to_reg</span>
+    <div class="ficha-stat__body">
+      <span class="ficha-stat__label">Asistencia</span>
+      <span class="ficha-stat__value">{{ ficha.asistencia_texto }}</span>
+    </div>
+  </div>
+
+  <div class="ficha-stat ficha-stat--{{ 'ok' if ficha.estado_cursada == 'Activo' else 'bad' }}">
+    <span class="ficha-stat__icon material-symbols-rounded">{{ 'check_circle' if ficha.estado_cursada == 'Activo' else 'cancel' }}</span>
+    <div class="ficha-stat__body">
+      <span class="ficha-stat__label">Estado en el curso</span>
+      <span class="ficha-stat__value">{{ ficha.estado_cursada }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="ficha-datos">
+  <div class="ficha-dato">
+    <span class="ficha-dato__label">DNI</span>
+    <span class="ficha-dato__value">{{ ficha.dni }}</span>
+  </div>
+  <div class="ficha-dato">
+    <span class="ficha-dato__label">Padrón</span>
+    <span class="ficha-dato__value">{{ ficha.padron }}</span>
+  </div>
+  <div class="ficha-dato">
+    <span class="ficha-dato__label">Carrera</span>
+    <span class="ficha-dato__value">{{ ficha.carrera }}</span>
+  </div>
+  <div class="ficha-dato">
+    <span class="ficha-dato__label">Email</span>
+    <span class="ficha-dato__value">{{ ficha.email }}</span>
+  </div>
+</div>

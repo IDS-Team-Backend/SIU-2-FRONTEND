@@ -1,0 +1,28 @@
+{# Barra de filtros del listado general de alumnos:
+   búsqueda libre (client-side) + carrera y año de ingreso (server-side). #}
+<form method="get" action="{{ url_for('alumnos.listar_general') }}" class="filter-bar">
+  <div class="filter-bar__search">
+    <span class="material-symbols-rounded filter-bar__icon">search</span>
+    <input type="text" name="q" value="{{ q }}"
+           placeholder="Nombre, apellido, padrón, email…"
+           class="filter-bar__input">
+    {% if q %}
+      <button type="button" class="filter-bar__clear-btn"
+              onclick="this.previousElementSibling.value='';this.closest('form').submit()">×</button>
+    {% endif %}
+  </div>
+
+  <input type="text" name="carrera" value="{{ carrera }}" placeholder="Carrera"
+         class="filter-bar__input" style="max-width:200px">
+
+  <input type="number" name="anio_ingreso" value="{{ anio_ingreso or '' }}" placeholder="Año ingreso"
+         class="filter-bar__input" style="max-width:140px">
+
+  <button type="submit" class="btn btn-outline">Buscar</button>
+
+  {% if q or carrera or anio_ingreso %}
+    <a href="{{ url_for('alumnos.listar_general') }}" class="btn btn-ghost">
+      <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">filter_list_off</span>
+    </a>
+  {% endif %}
+</form>

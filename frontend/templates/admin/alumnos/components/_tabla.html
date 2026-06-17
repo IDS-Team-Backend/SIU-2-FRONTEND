@@ -35,7 +35,7 @@
         <th style="width:36px"><input type="checkbox" id="check-todos" title="Seleccionar todos"></th>
         <th><a href="{{ sort_url('padron') }}"   class="sort-header">Padrón {{ sort_icon('padron') }}</a></th>
         <th><a href="{{ sort_url('apellido') }}" class="sort-header">Apellido y Nombre {{ sort_icon('apellido') }}</a></th>
-        {% if form_activo not in ('alta','editar') %}
+        {% if form_activo != 'editar' %}
         <th><a href="{{ sort_url('email') }}"    class="sort-header">Email {{ sort_icon('email') }}</a></th>
         <th><a href="{{ sort_url('dni') }}"      class="sort-header">DNI {{ sort_icon('dni') }}</a></th>
         {% endif %}
@@ -52,8 +52,12 @@
                  value="{{ alumno.estudiante_id }}" form="form-masivo">
         </td>
         <td class="text-bold">{{ alumno.padron }}</td>
-        <td>{{ alumno.apellido }}, {{ alumno.nombre }}</td>
-        {% if form_activo not in ('alta','editar') %}
+        <td>
+          <a href="{{ url_for('alumnos.ver_ficha', curso_id=curso_id, estudiante_id=alumno.estudiante_id) }}" class="cell-link">
+            {{ alumno.apellido }}, {{ alumno.nombre }}
+          </a>
+        </td>
+        {% if form_activo != 'editar' %}
         <td>{{ alumno.email }}</td>
         <td>{{ alumno.dni }}</td>
         {% endif %}
@@ -70,6 +74,14 @@
               <span class="material-symbols-rounded" style="font-size:18px">more_vert</span>
             </summary>
             <div class="row-actions__menu">
+
+              <a href="{{ url_for('alumnos.ver_ficha', curso_id=curso_id,
+                           estudiante_id=alumno.estudiante_id) }}">
+                <span class="material-symbols-rounded" style="font-size:16px">badge</span>
+                Ver ficha
+              </a>
+
+              <div class="row-actions__divider"></div>
 
               <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id,
                            form='editar', estudiante_id=alumno.estudiante_id) }}">
