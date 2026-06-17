@@ -805,7 +805,7 @@ h1 {
 
 .modal-overlay[hidden] {
   display: none !important;
-}
+} 
 
 .modal {
   background: var(--surface);
