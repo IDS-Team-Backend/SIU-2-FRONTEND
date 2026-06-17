@@ -11,11 +11,14 @@ def _password_inutilizable():
     return ''.join(secrets.choice(string.ascii_letters + string.digits + "!@#$") 
                    for _ in range(64))
 
-def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None):
+def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None, q=None):
     """Retorna (ok, alumnos, paginacion) donde paginacion es un dict con page/total_paginas/total."""
     params = {"curso_id": curso_id, "page": page, "page_size": page_size}
     if estado:
         params["estado"] = estado
+    
+    if q:
+        params["q"] = q
 
     ok_cu, data_cu = api.get("/estudiante_curso/", params=params)
     if not ok_cu:

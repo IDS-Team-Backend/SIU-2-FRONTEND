@@ -29,31 +29,25 @@ COLUMNAS_ORDENABLES = {"padron", "nombre", "apellido", "email", "estado"}
 @alumnos_bp.route("/alumnos")
 @requiere_staff
 def listar_general():
-    page      = request.args.get("page", 1, type=int) or 1
+    page = request.args.get("page", 1, type=int) or 1
     page_size = request.args.get("page_size", 8, type=int) or 8
     page_size = max(1, min(page_size, 100))
-    carrera   = (request.args.get("carrera") or "").strip()
-    anio      = request.args.get("anio_ingreso", type=int)
-    q         = (request.args.get("q") or "").strip()
+
+    carrera = (request.args.get("carrera") or "").strip()
+    anio = request.args.get("anio_ingreso", type=int)
+    q = (request.args.get("q") or "").strip()
 
     ok, alumnos, paginacion = obtener_estudiantes(
-        page=page, page_size=page_size, carrera=carrera or None, anio_ingreso=anio,
+        page=page,
+        page_size=page_size,
+        carrera=carrera or None,
+        anio_ingreso=anio,
+        q=q or None,
     )
+
     if not ok:
         flash(alumnos, "danger")
         alumnos, paginacion = [], {}
-
-    # Búsqueda libre por nombre/apellido/padrón/email/dni (client-side sobre la página).
-    if q:
-        ql = q.lower()
-        alumnos = [
-            a for a in alumnos
-            if ql in str(a.get("padron",   "")).lower()
-            or ql in str(a.get("nombre",   "")).lower()
-            or ql in str(a.get("apellido", "")).lower()
-            or ql in str(a.get("email",    "")).lower()
-            or ql in str(a.get("dni",      "")).lower()
-        ]
 
     return render_template(
         "admin/alumnos/listado.html",
@@ -147,7 +141,7 @@ def listar_alumnos(curso_id):
     page_size     = max(1, min(page_size, 100))
 
     ok, alumnos, paginacion = obtener_alumnos_del_curso(
-        curso_id, page=page, page_size=page_size, estado=estado_filtro or None,
+        curso_id, page=page, page_size=page_size, estado=estado_filtro or None, q=q or None,
     )
     if not ok:
         flash(alumnos, "danger")
@@ -177,17 +171,6 @@ def listar_alumnos(curso_id):
         else:
             buscar_error = resultado
 
-    # ── Filtros client-side ───────────────────────────────────────────────
-    if q:
-        q_lower = q.lower()
-        alumnos = [
-            a for a in alumnos
-            if q_lower in str(a.get("padron",   "")).lower()
-            or q_lower in str(a.get("nombre",   "")).lower()
-            or q_lower in str(a.get("apellido", "")).lower()
-            or q_lower in str(a.get("email",    "")).lower()
-            or q_lower in str(a.get("dni",      "")).lower()
-        ]
 
     alumnos = sorted(
         alumnos,
