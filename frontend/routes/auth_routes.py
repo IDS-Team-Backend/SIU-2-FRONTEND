@@ -84,6 +84,11 @@ def finalizar_registracion():
 def post_login():
     perfiles = UserContext.get_perfiles()
 
+    ok = UserContext.guardar_usuario_actual_en_sesion()  # carga datos del usuario en la sesión para que estén disponibles en el contexto global (g.usuario y g.perfiles)
+    if not ok:
+        flash("Error al cargar los datos del usuario en la sesion.", "danger")
+        return redirect(url_for("auth.login"))
+
     #remplazar a futuro con obtener_destino_por_perfil(perfiles) cuando se tenga perfiles
     #POR AHORA ESTA HARDCODEADO PARA REDIRIGIR AL CURSO ACTIVO, YA QUE NO HAY PERFILES NI ASIGNACIÓN DE PERFILES A USUARIOS EN EL BACKEND
 
