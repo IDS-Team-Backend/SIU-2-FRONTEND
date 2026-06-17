@@ -1,0 +1,19 @@
+{# Barra de pestañas que unifica los calendarios de Clases y Evaluaciones.
+   Tabs server-side: cada pestaña enlaza a su propia ruta. Se pasa anio/mes
+   para preservar el mes visible al cambiar de pestaña (url_for omite los None).
+   Uso: {% import "components/calendario_tabs.html" as tabs with context %}
+        {{ tabs.calendario_tabs(curso_id, 'clases', anio, mes) }} #}
+{% macro calendario_tabs(curso_id, activa, anio=none, mes=none) %}
+  <div class="cal-tabs" role="tablist">
+    <a class="cal-tab {% if activa == 'clases' %}cal-tab--active{% endif %}"
+       role="tab" aria-selected="{{ 'true' if activa == 'clases' else 'false' }}"
+       href="{{ url_for('clases.listar_clases', curso_id=curso_id, anio=anio, mes=mes) }}">
+      <span class="material-symbols-rounded">class</span> Clases
+    </a>
+    <a class="cal-tab {% if activa == 'evaluaciones' %}cal-tab--active{% endif %}"
+       role="tab" aria-selected="{{ 'true' if activa == 'evaluaciones' else 'false' }}"
+       href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id, anio=anio, mes=mes) }}">
+      <span class="material-symbols-rounded">assignment_turned_in</span> Evaluaciones
+    </a>
+  </div>
+{% endmacro %}
