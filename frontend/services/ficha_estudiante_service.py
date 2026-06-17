@@ -113,7 +113,7 @@ def obtener_ficha_estudiante(curso_id, estudiante_id):
         "padron":         padron if padron is not None else "—",
         "carrera":        est.get("carrera",  "—"),
         "estado_cursada": estado_cursada,
-        "token_qr":       inscripciones[0].get("token_qr"),
+        "token_qr":       est.get("token_qr"),
 
         # Métricas destacadas: texto a mostrar + variante de color (ver helpers arriba).
         "promedio_texto":      str(promedio) if promedio is not None else "Sin notas",

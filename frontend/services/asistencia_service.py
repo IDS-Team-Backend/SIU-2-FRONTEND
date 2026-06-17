@@ -80,7 +80,8 @@ def obtener_mis_asistencias(curso_id):
 
 
 def obtener_mi_qr():
-    ok, data = api.get(f"/asistencia/mi-qr")
+    # QR único por estudiante: el backend lo resuelve desde el usuario autenticado.
+    ok, data = api.get("/asistencia/mi-qr")
     if not ok:
         return False, data.get("error", "Error al obtener el QR.") if data else "Error de conexión."
     return True, data.get("token_qr")
