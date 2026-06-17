@@ -47,9 +47,11 @@
           <button type="submit" class="btn btn-outline" style="color:var(--text-danger)">Eliminar</button>
         </form>
       </div>
+      {% if clase.status == 'en curso' %}
       <a href="{{ url_for('clases.escanear_qr', curso_id=curso_id, clase_id=clase.id, accion='escanear_qr') }}" class="btn btn-primary escanear-qr">
         <span class="material-symbols-rounded escanear-qr-texto" style="font-size:18px;vertical-align:middle">qr_code_scanner</span> Escanear QRs
       </a>
+      {% endif %}
       {% endif %}
     </div>
   </div>
