@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import request
+from flask import abort, request
 from datetime import datetime
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:5000").rstrip("/")
@@ -90,6 +90,8 @@ def _request(method, path, params=None, json_body=None, auth=True, is_binary=Fal
         data = {}
 
     if not response.ok:
+        if response.status_code == 401:
+            abort(401)
         mensaje = extraer_mensaje_error(response, data)
 
         return False, {

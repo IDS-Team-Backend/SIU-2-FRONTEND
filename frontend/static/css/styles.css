@@ -804,6 +804,10 @@ h1 {
   padding: 20px;
 }
 
+.modal-overlay[hidden] {
+  display: none !important;
+} 
+
 .modal {
   background: var(--surface);
   width: 100%;

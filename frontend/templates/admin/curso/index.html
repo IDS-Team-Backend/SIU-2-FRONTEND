@@ -43,7 +43,7 @@
     <div class="panel">
       <h2 class="panel-title">Accesos rápidos</h2>
       <div class="section-cards">
-        {{ sections.section_card(url_for('private.cronograma', curso_id=curso.id), 'calendar_month', 'Cronograma', 'Fechas, temas y modalidad de cada clase') }}
+        {{ sections.section_card(url_for('clases.listar_clases', curso_id=curso.id), 'calendar_month', 'Cronograma', 'Calendario de clases y evaluaciones') }}
         {{ sections.section_card(url_for('private.material', curso_id=curso.id), 'menu_book', 'Materiales', curso.stats.materiales ~ ' recursos disponibles') }}
         {{ sections.section_card(url_for('alumnos.listar_alumnos', curso_id=curso.id), 'group', 'Alumnos', curso.stats.alumnos ~ ' inscriptos') }}
         {{ sections.section_card(url_for('evaluaciones.listar_evaluaciones', curso_id=curso.id), 'assignment_turned_in', 'Evaluaciones', curso.stats.evaluaciones ~ ' instancias programadas') }}

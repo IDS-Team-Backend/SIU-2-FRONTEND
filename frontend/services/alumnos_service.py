@@ -237,10 +237,10 @@ def vincular_alumnos_masivo(estudiante_ids, curso_id):
     if not curso_id:
         return False, "Faltó el ID del curso."
  
-    ok, data = api_request("POST", "/estudiante_curso/inscribir-lote", json_body={
-        "curso_id":       curso_id,
+    ok, data = api.post("/estudiante_curso/inscribir-lote", json={
+        "curso_id": curso_id,
         "estudiante_ids": estudiante_ids,
-        "estado":         "activo",
+        "estado": "activo",
     })
  
     if not ok:
@@ -268,10 +268,11 @@ def desvincular_alumnos_masivo(estudiante_ids, curso_id):
     if not estudiante_ids:
         return False, "No se seleccionó ningún alumno."
 
-    ok, data = api_request("POST", "/estudiante_curso/desvincular-lote", json_body={
-        "curso_id":       curso_id,
+    ok, data = api.post("/estudiante_curso/desvincular-lote", json={
+        "curso_id": curso_id,
         "estudiante_ids": estudiante_ids,
     })
+    
     if not ok:
         return False, data.get("error", "Error al desvincular.") if data else "Error de conexión."
 

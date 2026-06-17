@@ -46,7 +46,12 @@ Modal overlay con header opcional. El cuerpo va en `{% call %}`. `size`: sm | md
 - `badge_activa(activa, ...)` — booleano "Activa / Finalizada".
 
 ### `components/cronograma_tabla.html` → `cronograma_tabla(semanas)`
-Tabla de cronograma compartida entre admin y public.
+Tabla de cronograma (Semana / Teórica / Práctica) del frontend público.
+
+### `components/calendario_tabs.html` → `calendario_tabs(curso_id, activa, anio=None, mes=None)`
+Pestañas Clases / Evaluaciones del backoffice (tabs server-side: cada una enlaza a
+su ruta). `activa`: `'clases'` | `'evaluaciones'`. Se pasa `anio`/`mes` para preservar
+el mes visible al cambiar de pestaña.
 
 ### `admin/components/paginador.html` → `paginador(paginacion, url_pagina, unidad, ...)`
 Paginador server-side. **Es el único paginador**: no reimplementar (antes había 3).

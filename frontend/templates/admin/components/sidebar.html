@@ -51,7 +51,7 @@
         <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('private.curso', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">dashboard</span>Resumen
         </a>
-        <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('private.cronograma', curso_id=curso_id_contexto) }}">
+        <a class="{% if active_page in ['clases', 'evaluaciones'] %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">calendar_month</span>Cronograma
         </a>
         {% if usuario_actual.es_staff %}
@@ -74,7 +74,7 @@
           <span class="material-symbols-rounded">class</span>Clases
         </a>
         {% if feature_asistencia %}
-        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('private.cronograma', curso_id=curso_id_contexto) }}">
+        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">how_to_reg</span>Asistencia
         </a>
         {% endif %}

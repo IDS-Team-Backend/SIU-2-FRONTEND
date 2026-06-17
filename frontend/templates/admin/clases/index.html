@@ -1,5 +1,6 @@
 {% extends "admin/base.html" %}
 {% import "components/page_header.html" as ph with context %}
+{% import "components/calendario_tabs.html" as tabs with context %}
 
 {% block extra_head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluaciones.css') }}">
@@ -15,6 +16,8 @@
       </a>
     {% endcall %}
   {% endif %}
+
+  {{ tabs.calendario_tabs(curso_id, 'clases', anio, mes) }}
 
   {% include "admin/clases/components/_calendario.html" %}
 </section>
