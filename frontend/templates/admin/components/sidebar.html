@@ -54,18 +54,22 @@
         <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('private.cronograma', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">calendar_month</span>Cronograma
         </a>
+        {% if usuario_actual.es_staff %}
         <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">person</span>Alumnos
         </a>
+        {% endif %}
         <a class="{% if active_page == 'evaluaciones' %}active{% endif %}" href="{{ url_for('evaluaciones.listar_evaluaciones', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">assignment_turned_in</span>Evaluaciones
         </a>
-<a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
+        <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">description</span>Material
         </a>
+        {% if usuario_actual.es_staff %}
         <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">bar_chart</span>Reportes
         </a>
+        {% endif %}
         <a class="{% if active_page == 'clases' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">class</span>Clases
         </a>
@@ -74,9 +78,16 @@
           <span class="material-symbols-rounded">how_to_reg</span>Asistencia
         </a>
         {% endif %}
+        {% if usuario_actual.es_alumno %}
+        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('asistencia.mi_asistencia', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">how_to_reg</span>Asistencia
+        </a>
+        {% endif %}
       </div>
+
     </div>
 
+    {% if usuario_actual.es_staff %}
     {# ── Configuración e Historial ── #}
     <div class="nav-group__items nav-group__items--sep">
       <a class="{% if active_page == 'gestion' %}active{% endif %}"
@@ -88,6 +99,7 @@
         <span class="material-symbols-rounded">history_edu</span>Historial
       </a>
     </div>
+  
 
     {# ── Sistema (catálogos globales) ── #}
     <div class="nav-group nav-group--global" data-group="sistema">
@@ -101,7 +113,9 @@
         </a>
       </div>
     </div>
+    {% endif %}
   </nav>
+
 
   {# ── Usuario ── #}
   {% set rol_labels = {'admin': 'Administrador', 'docente': 'Docente', 'ayudante': 'Ayudante', 'alumno': 'Alumno'} %}
