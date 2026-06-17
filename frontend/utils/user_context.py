@@ -1,57 +1,59 @@
-from flask import g, request
+from flask import g, request, session
 from utils import api_client as api
-from utils.api_client import TOKEN_COOKIE_NAME
 
 def crear_contexto_usuario(app):
-    """Carga datos del usuario logueado en g.usuario y g.perfiles antes de cada request."""
+    """Pasa los datos de la sesión al objeto g antes de cada request, SIN llamar a la API."""
 
     @app.before_request
-    def guardar_sesion_del_usuario():
-        # Solo intentar si hay cookie de sesión — evita spam de warnings en páginas públicas.
-        if not request.cookies.get(TOKEN_COOKIE_NAME):
+    def cargar_usuario_desde_sesion():
+        if request.endpoint == 'static' or request.path.startswith('/static/'):
             return
 
-        ok, respuesta = api.get("/auth/me")
-        if ok and respuesta:
-            g.usuario = respuesta.get("usuario", {})
-            g.perfiles = respuesta.get("perfiles", [])
+        g.usuario = session.get("usuario")
+        g.perfiles = session.get("perfiles", [])
+
+def guardar_usuario_actual_en_sesion():
+    ok, respuesta = api.get("/auth/me")
+
+    print("Respuesta de /auth/me:", ok, respuesta, flush=True)
+
+    if not ok or not respuesta or not respuesta.get("usuario"):
+        session.clear() # eliminamos los datos ante un problema
+        return False
+    
+    usuario = respuesta.get("usuario")
+    perfiles = respuesta.get("perfiles", [])
+
+    session["usuario"] = usuario
+    session["perfiles"] = perfiles
+    g.usuario = usuario
+    g.perfiles = perfiles
+    return True
 
 
 def get_id():
     usuario = getattr(g, "usuario", None)
-    if isinstance(usuario, dict):
-        return usuario.get("id")
-    return None
+    return usuario.get("id") if isinstance(usuario, dict) else None
+
 
 def get_profesor_id():
-    """ Devuelve el id_profesor unicamente si el usuario tiene el perfil docente, sino devuelve None """
+    """Devuelve el id_profesor únicamente si el usuario tiene el perfil docente."""
     perfiles = get_perfiles()
     if "docente" in perfiles:
-            usuario = getattr(g, "usuario", None)
-            if usuario:
-                return usuario.get("profesor_id")
+        usuario = getattr(g, "usuario", None)
+        return usuario.get("profesor_id") if usuario else None
     return None
 
+
 def get_alumno_id():
-    """ Devuelve el id_alumno unicamente si el usuario tiene el perfil alumno, sino devuelve None """
+    """Devuelve el id_alumno únicamente si el usuario tiene el perfil alumno."""
     perfiles = get_perfiles()
     if "alumno" in perfiles:
-            usuario = getattr(g, "usuario", None)
-            if usuario:
-                return usuario.get("alumno_id")
+        usuario = getattr(g, "usuario", None)
+        return usuario.get("alumno_id") if usuario else None
     return None
 
 
 def get_perfiles():
-    if hasattr(g, "perfiles") and g.perfiles is not None: # si los perfiles estan guardados en el contexto de usuario, los devuelve sin hacer la consulta al backend
-        return g.perfiles
-
-    ok, data = api.get("/auth/me/perfiles")
-
-    if not ok:
-        return []
-
-    if not isinstance(data, dict):
-        return []
-
-    return data.get("perfiles", [])
+    """Devuelve los perfiles desde g (que se cargaron de la session)."""
+    return getattr(g, "perfiles", [])
