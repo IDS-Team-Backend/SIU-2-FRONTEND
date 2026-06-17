@@ -1,0 +1,207 @@
+.mi-asistencia__grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+.mi-asistencia__qr-card,
+.mi-asistencia__stats {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.mi-asistencia__section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+
+/* ── QR ── */
+.mi-asistencia__qr-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.mi-asistencia__qr-hint {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  text-align: center;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* ── Porcentaje ── */
+.mi-asistencia__porcentaje-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.mi-asistencia__porcentaje {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+}
+
+.mi-asistencia__porcentaje--ok      { background: #d1fae5; color: #047857; }
+.mi-asistencia__porcentaje--riesgo  { background: #fef3c7; color: #b45309; }
+.mi-asistencia__porcentaje--critico { background: #fee2e2; color: #b91c1c; }
+
+.mi-asistencia__condicion {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .mi-asistencia__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mi-asistencia__qr-box {
+    justify-content: center;
+  }
+}
+
+/* ── Banner de condición ── */
+.mi-asistencia__condicion-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.mi-asistencia__condicion-banner--ok      { background: #d1fae5; }
+.mi-asistencia__condicion-banner--riesgo  { background: #fef3c7; }
+.mi-asistencia__condicion-banner--critico { background: #fee2e2; }
+
+.mi-asistencia__condicion-pct {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.mi-asistencia__condicion-banner--ok      .mi-asistencia__condicion-pct { color: #047857; }
+.mi-asistencia__condicion-banner--riesgo  .mi-asistencia__condicion-pct { color: #b45309; }
+.mi-asistencia__condicion-banner--critico .mi-asistencia__condicion-pct { color: #b91c1c; }
+
+.mi-asistencia__condicion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mi-asistencia__condicion-label {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.mi-asistencia__condicion-sub {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+
+/* ── Grid de stats ── */
+.mi-asistencia__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.mi-asistencia__stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.mi-asistencia__stat-item--presente  { background: #f0fdf4; border-color: #bbf7d0; }
+.mi-asistencia__stat-item--tarde     { background: #fffbeb; border-color: #fde68a; }
+.mi-asistencia__stat-item--ausente   { background: #fff1f2; border-color: #fecdd3; }
+.mi-asistencia__stat-item--justificada { background: #eef2ff; border-color: #c7d2fe; }
+
+.mi-asistencia__stat-valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.mi-asistencia__stat-item--presente   .mi-asistencia__stat-valor { color: #047857; }
+.mi-asistencia__stat-item--tarde      .mi-asistencia__stat-valor { color: #b45309; }
+.mi-asistencia__stat-item--ausente    .mi-asistencia__stat-valor { color: #b91c1c; }
+.mi-asistencia__stat-item--justificada .mi-asistencia__stat-valor { color: #3730a3; }
+
+.mi-asistencia__stat-label {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+/* ── Barra de progreso segmentada ── */
+.mi-asistencia__barra-wrap { margin-top: 4px; }
+
+.mi-asistencia__barra {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--border);
+  gap: 1px;
+}
+
+.mi-asistencia__barra-seg { height: 100%; transition: width 0.3s ease; }
+.mi-asistencia__barra-seg--presente   { background: #34d399; }
+.mi-asistencia__barra-seg--tarde      { background: #fbbf24; }
+.mi-asistencia__barra-seg--justificada { background: #818cf8; }
+.mi-asistencia__barra-seg--ausente    { background: #f87171; }
+
+.mi-asistencia__barra-leyenda {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  flex-wrap: wrap;
+}
+
+.mi-asistencia__barra-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.mi-asistencia__barra-dot--presente    { background: #34d399; }
+.mi-asistencia__barra-dot--tarde       { background: #fbbf24; }
+.mi-asistencia__barra-dot--justificada { background: #818cf8; }
+.mi-asistencia__barra-dot--ausente     { background: #f87171; }
+
+/* ── Responsive stats ── */
+@media (max-width: 640px) {
+  .mi-asistencia__stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.eval-seccion {
+    margin-top: 40px; 
+}

@@ -10,6 +10,7 @@ from routes.profesores_routes import profesores_bp
 from routes.gestion_routes import gestion_bp
 from routes.clases_routes import clases_bp
 from routes.password_routes import password_bp
+from routes.asistencia_routes import asistencia_bp
     
 # Prefijo del backoffice. 
 ADMIN_PREFIX = "/admin"
@@ -34,6 +35,7 @@ BLUEPRINTS_BACKOFFICE = (
     tipo_evaluaciones_bp,
     reportes_bp,
     clases_bp,
+    asistencia_bp,
 )
 
 
