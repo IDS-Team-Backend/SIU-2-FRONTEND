@@ -10,13 +10,37 @@
 <section>
   {% call ph.page_header(title) %}
     {% if tab_actual == 'alumnos' %}
-      <button type="submit" form="form-filtros-alumnos" name="export" value="pdf" class="btn btn-primary">
+      <button type="submit"
+              form="form-filtros-alumnos"
+              name="export"
+              value="pdf"
+              class="btn btn-primary">
         <span>📥</span> Exportar PDF
       </button>
-    {% else %}
-      <a href="{{ url_for('reportes.listar_reportes', tab=tab_actual, curso_id=curso_id, export='pdf') }}" class="btn btn-primary">
-        <span>📥</span> Exportar PDF
+
+    {% elif tab_actual == 'equipos' %}
+      <a href="{{ url_for(
+          'reportes.listar_reportes',
+          curso_id=curso_id,
+          tab='equipos',
+          evaluacion_id=evaluacion_filtro,
+          export='pdf'
+      ) }}"
+      class="btn btn-primary">
+          <span>📥</span> Exportar PDF
       </a>
+
+    {% else %}
+      <a href="{{ url_for(
+          'reportes.listar_reportes',
+          curso_id=curso_id,
+          tab=tab_actual,
+          export='pdf'
+      ) }}"
+      class="btn btn-primary">
+          <span>📥</span> Exportar PDF
+      </a>
+
     {% endif %}
   {% endcall %}
 

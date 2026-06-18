@@ -12,8 +12,6 @@
 
   {# ── Encabezado ── #}
   {% set _plural = 's' if alumnos | length != 1 else '' %}
-  {% set _subtitulo = (alumnos | length) ~ ' alumno' ~ _plural ~
-                      (' encontrado' ~ _plural if (q or estado_filtro) else ' inscripto' ~ _plural) %}
   {% call ph.page_header('Alumnos', _subtitulo) %}
     {{ imp.boton_importar_csv(url_con_filtros('alumnos.importar', curso_id=curso_id)) }}
 
