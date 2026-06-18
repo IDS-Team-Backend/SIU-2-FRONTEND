@@ -1,7 +1,7 @@
 from utils import api_client as api
 
 
-def obtener_estudiantes(page=1, page_size=20, carrera=None, anio_ingreso=None):
+def obtener_estudiantes(page=1, page_size=20, carrera=None, anio_ingreso=None, q=None):
     """Listado general de estudiantes del sistema.
     Retorna (ok, estudiantes, paginacion). El backend responde 204 (data=None)
     cuando no hay resultados."""
@@ -10,6 +10,8 @@ def obtener_estudiantes(page=1, page_size=20, carrera=None, anio_ingreso=None):
         params["carrera"] = carrera
     if anio_ingreso:
         params["anio_ingreso"] = anio_ingreso
+    if q:
+        params["q"] = q
 
     ok, data = api.get("/estudiantes/", params=params)
     if not ok:
