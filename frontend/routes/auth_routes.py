@@ -56,13 +56,14 @@ def login():
 @auth_bp.route("/finalizar-registracion", methods=["GET", "POST"])
 def finalizar_registracion():
     email = (request.values.get("email") or "").strip()
+    codigo = (request.values.get("codigo") or "").strip()
 
     if request.method == "POST":
         ok, data = api.post(
             "/auth/finalizar-registro",
             json={
                 "email":              email,
-                "codigo":             (request.form.get("codigo") or "").strip(),
+                "codigo":             codigo,
                 "nueva_password":     request.form.get("nueva_password") or "",
                 "confirmar_password": request.form.get("confirmar_password") or "",
             },
@@ -74,9 +75,9 @@ def finalizar_registracion():
             return redirect(url_for("public.index"))
 
         error = data.get("error", "No se pudo finalizar la registración.") if isinstance(data, dict) else "Error inesperado."
-        return render_template("auth/finalizar_registracion.html", email=email, error=error)
+        return render_template("auth/finalizar_registracion.html", email=email, codigo=codigo, error=error)
 
-    return render_template("auth/finalizar_registracion.html", email=email)
+    return render_template("auth/finalizar_registracion.html", email=email, codigo=codigo)
 
 
 @auth_bp.route("/post-login")

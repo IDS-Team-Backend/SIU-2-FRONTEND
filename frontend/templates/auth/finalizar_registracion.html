@@ -52,7 +52,7 @@
         <label for="codigo">Código de verificación</label>
         <div class="input-icon-wrapper">
           <span class="material-symbols-rounded input-icon">pin</span>
-          <input type="text" id="codigo" name="codigo" class="form-control"
+          <input type="text" id="codigo" name="codigo" class="form-control" value="{{ codigo or '' }}"
                  placeholder="123456" inputmode="numeric" required autocomplete="one-time-code">
         </div>
       </div>

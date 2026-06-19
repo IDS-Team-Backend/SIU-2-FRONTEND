@@ -9,7 +9,7 @@ from services.alumnos_service import (
     desvincular_alumno_del_curso,
     cambiar_estado_inscripcion,
     importar_csv,
-    crear_alumno,
+    registrar_alumno,
     editar_alumno,
     vincular_alumnos_masivo,
     importar_estudiantes_csv,
@@ -77,7 +77,7 @@ def crear_general():
     carrera      = request.form.get("carrera",      "").strip()
     anio_ingreso = request.form.get("anio_ingreso", "").strip()
 
-    ok, error = crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso)
+    ok, error = registrar_alumno(request.form.to_dict())
     if ok:
         flash(f"Estudiante {nombre} {apellido} creado correctamente.", "success")
         return redirect(url_for("alumnos.listar_general"))
