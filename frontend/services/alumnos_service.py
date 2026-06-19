@@ -56,47 +56,53 @@ def obtener_alumnos_del_curso(curso_id, page=1, page_size=8, estado=None, q=None
 
     return True, resultado, paginacion
 
+def registrar_alumno(datos):
+    """datos: nombre, apellido, email, dni, legajo, anio_ingreso, carrera."""
+    ok, data = api.post("/estudiantes/registro", json=datos)
+    if not ok:
+        return False, data.get("error", "Error al crear el estudiante.") if data else "Error de conexión."
+    return True, data
 
-def crear_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso):
-    """
-    Alta de un nuevo estudiante (sin inscribirlo al curso):
-      1. POST /usuarios/   → crea la cuenta
-      2. POST /estudiantes/ → crea el perfil académico
-    El admin luego lo vincula al curso con el flujo de vincular.
-    """
-    # Crear usuario 
-    password = _password_inutilizable()  # no se usa, el alumno no puede loguearse hasta que se vincule al curso
-    ok_u, data_u = api.post("/usuarios/", json={
-        "nombre":   nombre.strip(),
-        "apellido": apellido.strip(),
-        "email":    email.strip(),
-        "dni":      int(str(dni).strip()),
-        "password": password,
-    })
-    if not ok_u:
-        errors = data_u.get("errors", []) if data_u else []
-        msg = "; ".join(e.get("description", e.get("message", "")) for e in errors) if errors \
-              else data_u.get("error", "Error al crear el usuario.") if data_u else "Error de conexión."
-        return False, msg
 
-    usuario_id = (data_u.get("usuario") or {}).get("id") or data_u.get("id")
-    if not usuario_id:
-        return False, "No se pudo obtener el ID del usuario creado."
+# def registrar_alumno(nombre, apellido, email, dni, padron, carrera, anio_ingreso):
+#     """
+#     Alta de un nuevo estudiante (sin inscribirlo al curso):
+#     Al estudiante le llega un mail para finalizar su registro (setear contraseña)
+#     El admin luego lo vincula al curso con el flujo de vincular.
+#     """
+#     # Crear usuario 
+#     password = _password_inutilizable()  # no se usa, el alumno no puede loguearse hasta que se vincule al curso
+#     ok_u, data_u = api.post("/usuarios/", json={
+#         "nombre":   nombre.strip(),
+#         "apellido": apellido.strip(),
+#         "email":    email.strip(),
+#         "dni":      int(str(dni).strip()),
+#         "password": password,
+#     })
+#     if not ok_u:
+#         errors = data_u.get("errors", []) if data_u else []
+#         msg = "; ".join(e.get("description", e.get("message", "")) for e in errors) if errors \
+#               else data_u.get("error", "Error al crear el usuario.") if data_u else "Error de conexión."
+#         return False, msg
 
-    # Crear estudiante 
-    ok_e, data_e = api.post("/estudiantes/", json={
-        "usuario_id":   usuario_id,
-        "padron":       int(padron),
-        "carrera":      carrera.strip(),
-        "anio_ingreso": int(anio_ingreso),
-    })
-    if not ok_e:
-        errors = data_e.get("errors", []) if data_e else []
-        msg = "; ".join(e.get("description", e.get("message", "")) for e in errors) if errors \
-              else data_e.get("error", "Error al crear el estudiante.") if data_e else "Error de conexión."
-        return False, msg
+#     usuario_id = (data_u.get("usuario") or {}).get("id") or data_u.get("id")
+#     if not usuario_id:
+#         return False, "No se pudo obtener el ID del usuario creado."
 
-    return True, None
+#     # Crear estudiante 
+#     ok_e, data_e = api.post("/estudiantes/", json={
+#         "usuario_id":   usuario_id,
+#         "padron":       int(padron),
+#         "carrera":      carrera.strip(),
+#         "anio_ingreso": int(anio_ingreso),
+#     })
+#     if not ok_e:
+#         errors = data_e.get("errors", []) if data_e else []
+#         msg = "; ".join(e.get("description", e.get("message", "")) for e in errors) if errors \
+#               else data_e.get("error", "Error al crear el estudiante.") if data_e else "Error de conexión."
+#         return False, msg
+
+#     return True, None
 
 
 def editar_alumno(estudiante_id, usuario_id, nombre, apellido, email, dni,
