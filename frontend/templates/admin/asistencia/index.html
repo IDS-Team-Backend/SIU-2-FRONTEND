@@ -45,6 +45,12 @@
     </div>
 
     {# ── Estadísticas ── #}
+    {% if not asistencia %}
+      <div class="eval-aviso">
+          <span class="material-symbols-rounded">info</span>
+          <span>Aún no hay datos de asistencia disponibles para esta cursada.</span>
+      </div>
+    {% else %}
     <div class="mi-asistencia__stats">
     <h2 class="mi-asistencia__section-title">Resumen</h2>
 
@@ -107,6 +113,8 @@
 
     </div>
 
+    {% endif %}
+
   </div>
 
   {# ── Detalle por clase ── #}
@@ -148,6 +156,11 @@
       </table>
     </div>
   </div>
+  {% else %}
+    <div class="eval-aviso">
+        <span class="material-symbols-rounded">info</span>
+        <span>Aún no hay datos de asistencia disponibles para esta cursada.</span>
+    </div>
   {% endif %}
 
 </section>

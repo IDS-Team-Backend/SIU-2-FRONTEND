@@ -28,8 +28,10 @@
       <div class="cal-day{% if dia.month != mes %} cal-day--muted{% endif %}{% if dia == hoy %} cal-day--hoy{% endif %}">
         <div class="cal-day__head">
           <span class="cal-day__num">{{ dia.day }}</span>
+          {% if usuario_actual.es_staff %}
           <a class="cal-day__add" title="Nueva clase este día"
              href="{{ url_for('clases.listar_clases', curso_id=curso_id, accion='nueva', fecha=dia.isoformat(), anio=anio, mes=mes) }}">+</a>
+          {% endif %}
         </div>
 
         {% set clases_del_dia = clases_por_dia.get(dia) %}
