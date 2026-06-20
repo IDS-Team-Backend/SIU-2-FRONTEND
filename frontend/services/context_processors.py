@@ -1,5 +1,5 @@
 import re as _re
-from flask import request as _request
+from flask import request as _request, session
 from services.auth_service import usuario_esta_logueado
 from services.cursos_service import obtener_curso_para_vista
 from utils import api_client as api
@@ -25,23 +25,39 @@ def registrar_context_processors(app):
                 "curso_activo": _CURSO_FALLBACK,
                 "curso_id_contexto": _CURSO_FALLBACK["id"],
                 "curso_contexto": _CURSO_FALLBACK,
+                "mis_cursos": [],
             }
+
+        mis_cursos = session.get("mis_cursos")
+        if not mis_cursos:
+            ok_cursos, data_cursos = api.get("/cursos/me")
+            mis_cursos = data_cursos.get("cursos", []) if ok_cursos and data_cursos else []
+            session["mis_cursos"] = mis_cursos
+
         ok, data = api.get("/cursos-publico/activa", auth=False)
         curso_activo = data if (ok and data) else _CURSO_FALLBACK
         # curso_id_contexto: el id de la cursada que se está viendo ahora (puede ser
         # distinto a la activa cuando el admin navega una cursada histórica).
-        curso_id_contexto = _curso_id_del_path() or curso_activo.get("id") or _CURSO_FALLBACK["id"]
+        curso_id_contexto = (
+            session.get("curso_seleccionado_id")
+            or _curso_id_del_path()
+            or curso_activo.get("id")
+            or _CURSO_FALLBACK["id"]
+        )
         # curso_contexto: datos completos de la cursada que se está navegando. Si es la
         # activa, reutilizamos el objeto ya cargado; si es otra, la traemos por id.
+
         if curso_id_contexto == curso_activo.get("id"):
             curso_contexto = curso_activo
         else:
             ok_ctx, ctx = obtener_curso_para_vista(curso_id_contexto)
             curso_contexto = ctx if ok_ctx else curso_activo
+
         return {
             "curso_activo": curso_activo,
             "curso_id_contexto": curso_id_contexto,
             "curso_contexto": curso_contexto,
+            "mis_cursos": mis_cursos,
         }
 
     @app.context_processor

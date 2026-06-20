@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
 
 import utils.user_context as UserContext
 from services.auth_service import (
@@ -106,4 +106,12 @@ def logout():
     response = redirect(url_for("auth.login"))
     borrar_token_cookie(response)
     flash("Sesión cerrada correctamente.", "success")
+    session.clear()
     return response
+
+@auth_bp.route("/cambiar-curso/<int:curso_id>")
+@login_required
+def cambiar_curso(curso_id):
+    session["curso_seleccionado_id"] = curso_id
+    
+    return redirect(url_for("private.curso", curso_id=curso_id))
