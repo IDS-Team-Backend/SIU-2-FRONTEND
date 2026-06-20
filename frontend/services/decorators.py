@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import flash, make_response, redirect, request, session, url_for
+from flask import flash, make_response, redirect, render_template, request, session, url_for
 
 import utils.user_context as UserContext
 from services.auth_service import (
@@ -109,4 +109,9 @@ def proteger_rutas(app):
         response = make_response(redirect(url_for("auth.login")))
         response.delete_cookie("access_token_cookie")
         
+        session.clear()
         return response
+
+    @app.errorhandler(404)
+    def error_no_autorizado(e):
+        return render_template("errors/404.html"), 404

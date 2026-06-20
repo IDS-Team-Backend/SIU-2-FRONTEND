@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Página no encontrada</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+</head>
+<body class="error-body">
+  <div class="error-page">
+    <span class="material-symbols-rounded error-page__icon">search_off</span>
+    <h1 class="error-page__code">404</h1>
+    <p class="error-page__title">Página no encontrada</p>
+    <p class="error-page__desc">La página que buscás no existe o fue movida.</p>
+    <div class="error-page__actions">
+      <a href="javascript:history.back()" class="btn btn-outline">
+        <span class="material-symbols-rounded">arrow_back</span>
+        Volver
+      </a>
+      <a href="/" class="btn btn-primary">
+        <span class="material-symbols-rounded">home</span>
+        Ir al inicio
+      </a>
+    </div>
+  </div>
+</body>
+</html>
+
+<!-- pagina completamente aparte porque no necesita ningun layout ni sidebar ni nada -->
