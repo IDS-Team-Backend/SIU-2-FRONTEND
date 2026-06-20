@@ -1794,4 +1794,101 @@ h1 {
     padding: 0;
   }
 
+/* ── Calendario: lista en lugar de grilla ── */
+  .cal-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+  }
+
+  .cal-weekday {
+    display: none;
+  }
+
+  .cal-day {
+    min-height: unset;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .cal-day:last-child {
+    border-bottom: none;
+  }
+
+  /* Ocultar días sin clases y días de otros meses */
+  .cal-day--muted {
+    display: none;
+  }
+
+  .cal-day--sin-eventos {
+    display: none;
+  }
+
+  .cal-day__head {
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    width: 36px;
+    gap: 2px;
+  }
+
+  .cal-day__num {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .cal-day__add {
+    opacity: 1;
+  }
+
+  .cal-day__eventos {
+    flex: 1;
+  }
+
+  .cal-evento {
+    white-space: normal;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  /* ── Stats grid de asistencia ── */
+  .mi-asistencia__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mi-asistencia__stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ── Clase form grid ── */
+  .clase-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Eval tabla ── */
+  .eval-tabla-wrapper {
+    overflow-x: auto;
+  }
+
+  /* ── Search bar ── */
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-bar__input {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* ── QR scan layout ── */
+  .qr-scan__layout {
+    grid-template-columns: 1fr;
+  }
+
 }
