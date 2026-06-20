@@ -160,6 +160,11 @@
       <span class="material-symbols-rounded user-arrow">unfold_more</span>
     </button>
     <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
+      {% if usuario_actual.es_alumno %}
+
+
+      {% elif usuario_actual.es_staff %}
+
       <a href="{{ url_for('perfil.perfil_profesor') }}" role="menuitem">
         <span class="material-symbols-rounded">co_present</span>
         <div>
@@ -167,6 +172,8 @@
           <span class="menu-item-desc">Ver ficha de profesor</span>
         </div>
       </a>
+
+      {% endif %}
       <a href="{{ url_for('auth.logout') }}" role="menuitem" class="sidebar-logout">
         <span class="material-symbols-rounded">logout</span>
         <div>

@@ -4,6 +4,7 @@ from services.decorators import login_required
 from services.auth_service import es_staff, es_alumno
 from services.cursos_service import obtener_curso_activo_id
 from services import perfil_service
+from services.decorators import requiere_staff
 
 perfil_bp = Blueprint("perfil", __name__)
 POR_PAGINA = 5
@@ -58,7 +59,7 @@ def estudiante():
 
 
 @perfil_bp.route("/perfil/profesor")
-@login_required
+@requiere_staff
 def perfil_profesor():
     ok, perfil = perfil_service.obtener_perfil_profesor(obtener_curso_activo_id())
     if not ok:
