@@ -12,6 +12,21 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
+  <!-- barra superior con menu hamburguesa celu -->
+  {% set curso_nombre = curso_contexto.materia_nombre or curso_contexto.nombre %}
+  <div class="mobile-topbar">
+    <div class="mobile-topbar__brand">
+      <span class="material-symbols-rounded">school</span>
+        {{ curso_nombre or 'SIU 2' }}
+    </div>
+    <button class="mobile-topbar__hamburger" id="sidebar-toggle" aria-label="Abrir menú">
+      <span class="material-symbols-rounded">menu</span>
+    </button>
+  </div>
+
+  <!-- menu que se abre con el boton en celu  -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
   <div class="layout">
     {% include "admin/components/sidebar.html" %}
  
@@ -40,6 +55,7 @@
   </div>
   <script type="module" src="{{ url_for('static', filename='js/toggle_dropdown.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/sidebar_nav.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/mobile_menu.js') }}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

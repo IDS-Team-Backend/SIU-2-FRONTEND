@@ -25,6 +25,7 @@
   --radius-md: 12px;
   --radius-sm: 4px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --primary-light: #7dd3fc;
   /* Superficies secundarias y estados (centralizan literales antes repetidos) */
   --surface-alt: #f8fafc;
   --surface-hover: #f1f5f9;
@@ -134,8 +135,9 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
 }
 
 .sidebar-context .badge { color: white; }
@@ -289,6 +291,7 @@ a {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  gap: 3px;
 }
 
 .user-name {
@@ -297,9 +300,21 @@ a {
   color: white;
 }
 
+#sidebar-cursos-menu .sidebar-user .user-info .user-name,
+.sidebar-menu-wrapper .sidebar-user .user-info .user-name {
+  padding: 0 12px;
+}
+
+#sidebar-cursos-menu .sidebar-user,
+.sidebar-menu-wrapper .sidebar-user {
+  padding: 16px 10px;
+  gap: 0; 
+}
+
 .user-role {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
+  bottom: 10px;
 }
 
 .user-arrow {
@@ -329,6 +344,25 @@ a {
   transform: translateY(8px);
   transition: var(--transition);
   z-index: 50;
+}
+
+#sidebar-cursos-menu {
+  top: calc(100% + 8px);
+  bottom: auto;
+  background: var(--surface);
+}
+
+#sidebar-cursos-menu .sidebar-user {
+  background: #5595fc;
+  padding: 13px 9px;  
+  margin-top: 4px; 
+  transform: scale(1);
+  transition: var(--transition), padding 0.2s ease;
+}
+
+#sidebar-cursos-menu .sidebar-user:hover {
+  background: #3b86ff;
+  transform: scale(1.02);
 }
 
 .sidebar-user-wrapper.is-open .sidebar-user-menu {
@@ -708,10 +742,10 @@ h1 {
    ========================================================================== */
 .badge {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 2px 10px;
   border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 900;
 }
 
 .badge--success { background: var(--text-success); color: white; }
@@ -1584,4 +1618,180 @@ h1 {
 
 .pagination-info {
     font-weight: 500;
+}
+
+/* ==========================================================================
+   RESPONSIVE MOBILE
+   Todo lo que sigue solo aplica en pantallas <= 768px.
+   La vista desktop queda intacta.
+   ========================================================================== */
+
+.mobile-topbar {
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  /* ── Layout principal ── */
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Sidebar: oculto por defecto, drawer deslizable ── */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* Overlay oscuro detrás del drawer */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 199;
+  }
+
+  .sidebar-overlay.is-open {
+    display: block;
+  }
+
+  /* ── Topbar mobile: barra fija arriba con hamburguesa ── */
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--sidebar-bg);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .mobile-topbar__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+  }
+
+  .mobile-topbar__brand .material-symbols-rounded {
+    font-size: 1.5rem;
+  }
+
+  .mobile-topbar__hamburger {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-topbar__hamburger .material-symbols-rounded {
+    font-size: 1.8rem;
+  }
+
+  /* ── Main content ── */
+  .main {
+    padding: 16px;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .page-header__actions .btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+  }
+
+  /* ── Topbar de navegación (tabs) ── */
+  .topbar {
+    min-width: unset;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 4px 8px;
+  }
+
+  .topbar a {
+    padding: 10px 14px;
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  /* ── Cards ── */
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Tabla ── */
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .table thead th,
+  .table tbody td {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+
+  /* ── Page hero ── */
+  .page-hero {
+    padding: 24px 20px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .page-hero-title { font-size: 1.6rem; }
+
+  .page-hero-image {
+    width: 100%;
+    height: 80px;
+  }
+
+  /* ── Modal ── */
+  .modal {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
 }
