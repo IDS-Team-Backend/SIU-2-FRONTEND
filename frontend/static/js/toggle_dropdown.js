@@ -11,8 +11,15 @@ setupDropdown({
 
 // Dropdown de usuario en el sidebar.
 setupDropdown({
-  root: ".sidebar-user-wrapper",
+  root: ".sidebar-user-wrapper:not(.sidebar-menu-wrapper)",
   toggle: ".sidebar-user",
   openClass: "is-open",
   refocus: true,
+});
+
+// Dropdown de cursos en el sidebar.
+setupDropdown({
+  root: ".sidebar-menu-wrapper",
+  toggle: ".sidebar-cursos-toggle",
+  openClass: "is-open",
 });
