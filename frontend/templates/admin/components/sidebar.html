@@ -8,20 +8,54 @@
   {# ── Contexto: cursada que se está navegando (nombre + período + estado) ── #}
   {% import "components/estado_badge.html" as badges %}
   {% set ctx_titulo = curso_contexto.materia_nombre or curso_contexto.nombre %}
-  <div class="sidebar-context">
-    <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
-    <div class="sidebar-context__info">
-      <span class="sidebar-context__name" title="{{ ctx_titulo }}">{{ ctx_titulo }}</span>
-      {% if curso_contexto.anio or curso_contexto.estado %}
-      <span class="sidebar-context__meta">
-        {% if curso_contexto.anio %}{{ curso_contexto.anio }}{% if curso_contexto.cuatrimestre %} · {{ curso_contexto.cuatrimestre }}º cuat.{% endif %}{% endif %}
-        {% if curso_contexto.estado %}
-          {{ badges.estado_curso_badge(curso_contexto.estado) }}
-        {% endif %}
-      </span>
+
+  <div class="sidebar-user-wrapper sidebar-menu-wrapper">
+    <button class="sidebar-user sidebar-cursos-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
+      <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
+      <div class="user-info">
+        <span class="user-name">{{ curso_contexto.materia_nombre }}</span>
+        <span class="user-role">
+          {% if curso_contexto.anio or curso_contexto.estado %}
+          <span class="sidebar-context__meta">
+            {{ curso_contexto.nombre }}
+            {% if curso_contexto.estado %}
+              {{ badges.estado_curso_badge(curso_contexto.estado) }}
+            {% endif %}
+          </span>
+          {% endif %}
+        </span>
+      </div>
+      {% if not mis_cursos|length <= 1 %}
+      <span class="material-symbols-rounded user-arrow">unfold_more</span>
       {% endif %}
-    </div>
+    </button>
+
+    {% if mis_cursos|length > 1 %}
+      <div class="sidebar-user-menu sidebar-cursos-menu" id="sidebar-cursos-menu" role="menu">
+        {% for curso in mis_cursos %}
+        {% if curso.id != curso_id_contexto %}
+          <a type="button" href="{{ url_for('auth.cambiar_curso', curso_id=curso.id) }}" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu"
+          class="sidebar-user">
+            <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
+            <div class="user-info" id="cursos-info">
+              <span class="user-name">{{ curso.materia_nombre }}</span>
+              <span class="user-role">
+                {% if curso_contexto.anio or curso_contexto.estado %}
+                <span class="sidebar-context__meta">
+                  {{ curso.nombre }}
+                  {{ badges.estado_curso_badge(curso.estado) }}
+                </span>
+                {% endif %}
+              </span>
+            </div>
+          </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
+
+  
 
   {# ── Banner: cursada anterior (cuando se navega fuera de la activa) ── #}
   {% if curso_id_contexto and curso_activo.id and curso_id_contexto != curso_activo.id %}
@@ -67,8 +101,8 @@
           <span class="material-symbols-rounded">bar_chart</span>Reportes
         </a>
         {% endif %}
-        {% if feature_asistencia %}
-        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
+        {% if usuario_actual.es_alumno %}
+        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('asistencia.mi_asistencia', curso_id=curso_id_contexto) }}">
           <span class="material-symbols-rounded">how_to_reg</span>Asistencia
         </a>
         {% endif %}
