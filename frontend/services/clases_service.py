@@ -289,17 +289,6 @@ def obtener_clase_por_id(clase_id):
     return True, normalizar_clase(data)
 
 
-def obtener_estados_clase():
-    ok, data = api.get("/clases/estados")
-
-    if not ok:
-        error_msg = data.get("error", "Error al obtener estados de clase.") if data else "Error de conexión."
-        return False, error_msg
-
-    estados = _extraer_lista(data, ["estados", "resultados", "items", "data"])
-    return True, estados
-
-
 def crear_clase(
     curso_id,
     profesor_id,
@@ -310,7 +299,7 @@ def crear_clase(
     tipo=None,
     modalidad=None,
     tags=None,
-    status=None,
+    suspendida=False,
 ):
     if not curso_id:
         return False, "Falta el ID del curso."
@@ -336,19 +325,18 @@ def crear_clase(
         tema=tema,
         tipo=tipo,
         modalidad=modalidad,
-        status=status,
     )
+    payload["suspendida"] = bool(suspendida)
 
     tags_normalizados = _normalizar_tags(tags)
     if tags_normalizados is not None:
         payload["tags"] = tags_normalizados
 
     ok, data = api.post("/clases", json=payload)
-
     if not ok:
         error_msg = data.get("error", "Error al crear la clase.") if data else "Error de conexión."
         return False, error_msg
-
+    
     return True, data
 
 
@@ -361,7 +349,7 @@ def actualizar_clase(
     tipo=None,
     modalidad=None,
     tags=None,
-    status=None,
+    suspendida=False,
     metodo="PATCH",
 ):
     if not clase_id:
@@ -374,8 +362,8 @@ def actualizar_clase(
         tema=tema,
         tipo=tipo,
         modalidad=modalidad,
-        status=status,
     )
+    payload["suspendida"] = bool(suspendida)
 
     tags_normalizados = _normalizar_tags(tags)
     if tags_normalizados is not None:

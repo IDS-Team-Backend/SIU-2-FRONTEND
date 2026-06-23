@@ -27,7 +27,6 @@ from services.clases_service import (
     navegacion_calendario,
     obtener_clase_por_id,
     obtener_clases_del_curso,
-    obtener_estados_clase,
     params_mes_desde_fecha,
 )
 from services.decorators import requiere_staff
@@ -61,10 +60,6 @@ def listar_clases(curso_id):
         flash(clases, "danger")
         clases = []
 
-    ok_estados, estados_clase = obtener_estados_clase()
-    if not ok_estados:
-        estados_clase = []
-
     calendario = navegacion_calendario(
         request.args.get("anio"),
         request.args.get("mes"),
@@ -79,7 +74,6 @@ def listar_clases(curso_id):
         curso_id=curso_id,
         active_page="clases",
         clases_por_dia=agrupar_clases_por_dia(clases),
-        estados_clase=estados_clase or ESTADOS_CLASE_DEFAULT,
         tipos_clase=TIPOS_CLASE,
         modalidades_clase=MODALIDADES_CLASE,
         horas_clase=HORAS_CLASE,
@@ -103,7 +97,7 @@ def crear_clase_route(curso_id):
 
     profesor_id = _resolver_profesor_id(curso_id)
     if not profesor_id:
-        flash("No hay docentes asignados a esta cursada. Agregá un profesor al equipo docente primero.", "danger")
+        flash("No hay docentes asignados a esta cursada.", "danger")
         return _redireccionar_a_mes_fecha(curso_id, fecha_hora_inicio)
 
     ok, resultado = crear_clase(
@@ -116,7 +110,7 @@ def crear_clase_route(curso_id):
         tipo=request.form.get("tipo", "").strip(),
         modalidad=request.form.get("modalidad", "").strip(),
         tags=request.form.get("tags", "").strip(),
-        status=request.form.get("status", "").strip(),
+        suspendida=request.form.get("suspendida") == "on",
     )
 
     if ok:
@@ -136,7 +130,7 @@ def ver_clase(curso_id, clase_id):
     if not ok_clase:
         flash(clase, "danger")
         return redirect(url_for("clases.listar_clases", curso_id=curso_id))
-
+    
     if UserContext.es_staff():
         ok_asistencia, asistencia = obtener_asistencia_clase(clase_id)
         if not ok_asistencia:
@@ -154,7 +148,6 @@ def ver_clase(curso_id, clase_id):
         planilla_asistencia=asistencia["planilla"],
         resumen_asistencia=asistencia["resumen"],
         estados_asistencia=ESTADOS_ASISTENCIA,
-        estados_clase=ESTADOS_CLASE_DEFAULT,
         tipos_clase=TIPOS_CLASE,
         modalidades_clase=MODALIDADES_CLASE,
         tema=clase.get("tema", ""),
@@ -173,7 +166,7 @@ def actualizar_clase_route(curso_id, clase_id):
         tipo=request.form.get("tipo", "").strip(),
         modalidad=request.form.get("modalidad", "").strip(),
         tags=request.form.get("tags", "").strip(),
-        status=request.form.get("status", "").strip(),
+        suspendida=request.form.get("suspendida") == "on",
         metodo="PATCH",
     )
 
