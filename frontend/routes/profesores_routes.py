@@ -39,7 +39,8 @@ def _leer_form(form):
 @requiere_staff
 def listar_profesores():
     page = request.args.get("page", 1, type=int) or 1
-    ok, profesores, paginacion = obtener_profesores(page=page, page_size=20)
+    page_size = request.args.get("page_size", 20, type=int) or 20
+    ok, profesores, paginacion = obtener_profesores(page=page, page_size=page_size)
     if not ok:
         flash(profesores, "danger")
         profesores, paginacion = [], {}

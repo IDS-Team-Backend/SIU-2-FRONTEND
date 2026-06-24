@@ -209,3 +209,25 @@
   min-height: 0;
   overflow-y: auto;
 }
+
+/* ── Grilla de carga masiva de notas (evaluación individual) ── */
+.eval-masiva__barra {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.eval-tabla .eval-masiva__entrega,
+.eval-tabla .eval-masiva__nota {
+  max-width: 11rem;
+}
+
+.eval-tabla .eval-masiva__nota {
+  max-width: 6rem;
+  text-align: center;
+}
+
+.eval-tabla .eval-masiva__nota:disabled {
+  background: var(--surface-muted, #f1f1f4);
+  cursor: not-allowed;
+}
