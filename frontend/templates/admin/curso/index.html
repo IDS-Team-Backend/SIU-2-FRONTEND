@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+{% endblock %}
+
+{% block content %}
+{% import "admin/curso/components/_info_card.html" as info with context %}
+{% import "admin/curso/components/_section_card.html" as sections with context %}
+<section>
+  {% if usuario_actual.es_staff %}
+  <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+    <a href="{{ url_for('gestion.gestionar', curso_id=curso.id) }}" class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">tune</span>
+      Gestionar cursada
+    </a>
+  </div>
+  {% endif %}
+
+  {% include "admin/curso/components/_page_hero.html" %}
+
+  <div class="info-grid">
+    {{ info.info_card('Año / Cuatrimestre', curso.anio ~ ' · ' ~ curso.cuatrimestre ~ '°C') }}
+    {{ info.info_card('Modalidad', curso.modalidad) }}
+    {{ info.info_card('Carga horaria', (curso.horas_semanales or '—') ~ ' hs/semana') }}
+    {{ info.info_card('Alumnos inscriptos', curso.stats.alumnos) }}
+  </div>
+
+  <div class="curso-panels">
+    <div class="panel">
+      <h2 class="panel-title">Docentes</h2>
+      <ul class="docentes-list">
+        {% if not curso.profesores %}
+          <li class="eval-aviso">
+            <span class="material-symbols-rounded">info</span>
+            <span>Aún no hay docentes asignados a esta cursada.</span>
+          </li>
+        {% endif %}
+        {% for d in curso.profesores %}
+          <li class="docente-item">
+            <span class="material-symbols-rounded">account_circle</span>
+            <div>
+              <div class="docente-nombre">{{ d.nombre }}</div>
+              <div class="docente-rol">{{ d.rol }}</div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">Accesos rápidos</h2>
+      <div class="section-cards">
+        {{ sections.section_card(url_for('clases.listar_clases', curso_id=curso.id), 'calendar_month', 'Cronograma', 'Calendario de clases y evaluaciones') }}
+        {{ sections.section_card(url_for('private.material', curso_id=curso.id), 'menu_book', 'Materiales', curso.stats.materiales ~ ' recursos disponibles') }}
+        {% if usuario_actual.es_staff %}
+        {{ sections.section_card(url_for('alumnos.listar_alumnos', curso_id=curso.id), 'group', 'Alumnos', curso.stats.alumnos ~ ' inscriptos') }}
+        {% endif %}
+        {{ sections.section_card(url_for('evaluaciones.listar_evaluaciones', curso_id=curso.id), 'assignment_turned_in', 'Evaluaciones', curso.stats.evaluaciones ~ ' instancias programadas') }}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+from routes.public_routes import public_bp
+from routes.auth_routes import auth_bp
+from routes.private_routes import private_bp
+from routes.perfil_routes import perfil_bp
+from routes.alumnos_routes import alumnos_bp
+from routes.evaluaciones import evaluaciones_bp
+from routes.tipos_evaluaciones_routes import tipo_evaluaciones_bp
+from routes.reportes_routes import reportes_bp
+from routes.profesores_routes import profesores_bp
+from routes.gestion_routes import gestion_bp
+from routes.clases_routes import clases_bp
+from routes.password_routes import password_bp
+from routes.asistencia_routes import asistencia_bp
+    
+# Prefijo del backoffice. 
+ADMIN_PREFIX = "/admin"
+
+# Sin prefijo: acceso + páginas públicas (no van bajo /admin).
+#   - public_bp: landing + cronograma (sin login)
+#   - auth_bp:   login / logout / post-login 
+BLUEPRINTS_PUBLICOS = (
+    public_bp,
+    auth_bp,
+    password_bp
+)
+
+# Backoffice: todo lo que se consulta autenticado vive bajo ADMIN_PREFIX.
+BLUEPRINTS_BACKOFFICE = (
+    private_bp,             # curso, materias, 
+    perfil_bp,             # perfil del usuario
+    alumnos_bp,
+    gestion_bp,            # gestión de la cursada (info del curso + equipo docente)
+    profesores_bp,         # alta de profesores (global)
+    evaluaciones_bp,
+    tipo_evaluaciones_bp,
+    reportes_bp,
+    clases_bp,
+    asistencia_bp,
+)
+
+
+def register_routes(app):
+    for bp in BLUEPRINTS_PUBLICOS:
+        app.register_blueprint(bp)
+    for bp in BLUEPRINTS_BACKOFFICE:
+        app.register_blueprint(bp, url_prefix=ADMIN_PREFIX)

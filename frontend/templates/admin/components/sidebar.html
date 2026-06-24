@@ -1,0 +1,187 @@
+<aside class="sidebar">
+  {# ── Marca ── #}
+  <div class="sidebar-header">
+    <span class="material-symbols-rounded logo-icon">school</span>
+    <h2>Sistema</h2>
+  </div>
+
+  {# ── Contexto: cursada que se está navegando (nombre + período + estado) ── #}
+  {% import "components/estado_badge.html" as badges %}
+  {% set ctx_titulo = curso_contexto.materia_nombre or curso_contexto.nombre %}
+
+  <div class="sidebar-user-wrapper sidebar-menu-wrapper">
+    <button class="sidebar-user sidebar-cursos-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
+      <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
+      <div class="user-info">
+        <span class="user-name">{{ curso_contexto.materia_nombre }}</span>
+        <span class="user-role">
+          {% if curso_contexto.anio or curso_contexto.estado %}
+          <span class="sidebar-context__meta">
+            {{ curso_contexto.nombre }}
+            {% if curso_contexto.estado %}
+              {{ badges.estado_curso_badge(curso_contexto.estado) }}
+            {% endif %}
+          </span>
+          {% endif %}
+        </span>
+      </div>
+      {% if not mis_cursos|length <= 1 %}
+      <span class="material-symbols-rounded user-arrow">unfold_more</span>
+      {% endif %}
+    </button>
+
+    {% if mis_cursos|length > 1 %}
+      <div class="sidebar-user-menu sidebar-cursos-menu" id="sidebar-cursos-menu" role="menu">
+        {% for curso in mis_cursos %}
+        {% if curso.id != curso_id_contexto %}
+          <a type="button" href="{{ url_for('auth.cambiar_curso', curso_id=curso.id) }}" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu"
+          class="sidebar-user">
+            <span class="material-symbols-rounded sidebar-context__icon">menu_book</span>
+            <div class="user-info" id="cursos-info">
+              <span class="user-name">{{ curso.materia_nombre }}</span>
+              <span class="user-role">
+                {% if curso_contexto.anio or curso_contexto.estado %}
+                <span class="sidebar-context__meta">
+                  {{ curso.nombre }}
+                  {{ badges.estado_curso_badge(curso.estado) }}
+                </span>
+                {% endif %}
+              </span>
+            </div>
+          </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  
+
+  {# ── Banner: cursada anterior (cuando se navega fuera de la activa) ── #}
+  {% if curso_id_contexto and curso_activo.id and curso_id_contexto != curso_activo.id %}
+  <div class="sidebar-banner">
+    <span class="material-symbols-rounded">history_edu</span>
+    <span>Revisando cursada anterior</span>
+    <a href="{{ url_for('private.curso', curso_id=curso_activo.id) }}" class="sidebar-banner__link">
+      Volver a la activa
+    </a>
+  </div>
+  {% endif %}
+
+  <nav>
+    {# ── Cursada en contexto (operación diaria) ── #}
+    <div class="nav-group" data-group="cursada">
+      <button type="button" class="nav-group__toggle" aria-expanded="true">
+        <span class="nav-group__label">
+          {%- if curso_id_contexto and curso_activo.id and curso_id_contexto != curso_activo.id -%}
+            Cursada anterior
+          {%- else -%}
+            Cursada activa
+          {%- endif -%}
+        </span>
+        <span class="material-symbols-rounded nav-group__chevron">expand_more</span>
+      </button>
+      <div class="nav-group__items">
+        <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('private.curso', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">dashboard</span>Resumen
+        </a>
+        <a class="{% if active_page in ['clases', 'evaluaciones'] %}active{% endif %}" href="{{ url_for('clases.listar_clases', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">calendar_month</span>Cronograma
+        </a>
+        {% if usuario_actual.es_staff %}
+        <a class="{% if active_page == 'alumnos' %}active{% endif %}" href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">person</span>Alumnos
+        </a>
+        {% endif %}
+                <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('private.material', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">description</span>Material
+        </a>
+        {% if usuario_actual.es_staff %}
+        <a class="{% if active_page == 'reportes' %}active{% endif %}" href="{{ url_for('reportes.listar_reportes', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">bar_chart</span>Reportes
+        </a>
+        {% endif %}
+        {% if usuario_actual.es_alumno %}
+        <a class="{% if active_page == 'asistencia' %}active{% endif %}" href="{{ url_for('asistencia.mi_asistencia', curso_id=curso_id_contexto) }}">
+          <span class="material-symbols-rounded">how_to_reg</span>Asistencia
+        </a>
+        {% endif %}
+      </div>
+
+    </div>
+
+    {% if usuario_actual.es_staff %}
+    {# ── Configuración e Historial ── #}
+    <div class="nav-group__items nav-group__items--sep">
+      <a class="{% if active_page == 'gestion' %}active{% endif %}"
+         href="{{ url_for('gestion.gestionar', curso_id=curso_id_contexto) }}">
+        <span class="material-symbols-rounded">tune</span>Configuración
+      </a>
+      <a class="{% if active_page == 'historial' %}active{% endif %}"
+         href="{{ url_for('gestion.historial') }}">
+        <span class="material-symbols-rounded">history_edu</span>Historial
+      </a>
+    </div>
+  
+
+    {# ── Sistema (catálogos globales) ── #}
+    <div class="nav-group nav-group--global" data-group="sistema">
+      <button type="button" class="nav-group__toggle" aria-expanded="true">
+        <span class="nav-group__label">Sistema</span>
+        <span class="material-symbols-rounded nav-group__chevron">expand_more</span>
+      </button>
+      <div class="nav-group__items">
+        <a class="{% if active_page == 'alumnos_general' %}active{% endif %}" href="{{ url_for('alumnos.listar_general') }}">
+          <span class="material-symbols-rounded">school</span>Alumnos
+        </a>
+        <a class="{% if active_page == 'profesores' %}active{% endif %}" href="{{ url_for('profesores.listar_profesores') }}">
+          <span class="material-symbols-rounded">badge</span>Profesores
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </nav>
+
+
+  {# ── Usuario ── #}
+  {% set rol_labels = {'admin': 'Administrador', 'docente': 'Docente', 'ayudante': 'Ayudante', 'alumno': 'Alumno'} %}
+  {% set perfiles = (usuario_actual.perfiles if usuario_actual else []) or [] %}
+  <div class="sidebar-user-wrapper">
+    <button class="sidebar-user" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sidebar-user-menu">
+      <span class="material-symbols-rounded user-avatar">account_circle</span>
+      <div class="user-info">
+        <span class="user-name">{{ g.usuario.nombre if g.usuario is defined and g.usuario else 'Usuario' }}</span>
+        <span class="user-role">
+          {%- set etiquetas = [] -%}
+          {%- for p in perfiles -%}{%- set _ = etiquetas.append(rol_labels.get(p|lower, p|capitalize)) -%}{%- endfor -%}
+          {{ etiquetas | join(', ') if etiquetas else 'Administrador' }}
+        </span>
+      </div>
+      <span class="material-symbols-rounded user-arrow">unfold_more</span>
+    </button>
+    <div class="sidebar-user-menu" id="sidebar-user-menu" role="menu">
+      {% if usuario_actual.es_alumno %}
+
+
+      {% elif usuario_actual.es_staff %}
+
+      <a href="{{ url_for('perfil.perfil_profesor') }}" role="menuitem">
+        <span class="material-symbols-rounded">co_present</span>
+        <div>
+          <span class="menu-item-title">Perfil Docente</span>
+          <span class="menu-item-desc">Ver ficha de profesor</span>
+        </div>
+      </a>
+
+      {% endif %}
+      <a href="{{ url_for('auth.logout') }}" role="menuitem" class="sidebar-logout">
+        <span class="material-symbols-rounded">logout</span>
+        <div>
+          <span class="menu-item-title">Cerrar sesión</span>
+          <span class="menu-item-desc">Salir del sistema</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</aside>

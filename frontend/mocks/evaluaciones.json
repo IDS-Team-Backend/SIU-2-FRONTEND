@@ -1,0 +1,7 @@
+[
+  {"titulo": "Parcialito",                   "curso_id": 1, "fecha": "14/04", "tipo_evaluacion_id": 1, "descripcion": "Parcialito virtual obligatorio. Sólo requiere asistencia, no se necesita aprobar.",                          "activo": 1},
+  {"titulo": "1er Parcial",                  "curso_id": 1, "fecha": "07/05", "tipo_evaluacion_id": 2, "descripcion": "Parcial presencial integrador. Incluye Linux, Bash, Flask, HTML/CSS, JS y conceptos de Backend.",            "activo": 1},
+  {"titulo": "1er Recuperatorio",            "curso_id": 1, "fecha": "11/06", "tipo_evaluacion_id": 2, "descripcion": "Primer recuperatorio del parcial integrador. Permite promoción si se aprueba con 7 o más.",                  "activo": 1},
+  {"titulo": "TP Integrador - Defensa Oral", "curso_id": 1, "fecha": "18/06", "tipo_evaluacion_id": 3, "descripcion": "Defensa oral del trabajo práctico grupal. Incluye calificación grupal e individual.",                       "activo": 1},
+  {"titulo": "2do Recuperatorio",            "curso_id": 1, "fecha": "02/07", "tipo_evaluacion_id": 2, "descripcion": "Segundo recuperatorio del parcial. No habilita promoción.",                                                  "activo": 1}
+]

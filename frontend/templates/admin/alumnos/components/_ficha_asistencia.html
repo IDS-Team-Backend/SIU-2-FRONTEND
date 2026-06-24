@@ -1,0 +1,92 @@
+{# Panel de asistencia del alumno en el curso: resumen + QR compacto + detalle por clase. #}
+{% import "components/empty_state.html" as es with context %}
+<div class="panel perfil-panel">
+  <h2 class="panel-title">Asistencia</h2>
+
+  <div class="ficha-asis-top">
+    {% if ficha.token_qr %}
+    <div class="ficha-asis-qr" title="Se escanea en cada clase para registrar la asistencia">
+      <span class="ficha-asis-qr__label">QR de asistencia</span>
+      <div id="ficha-qr-container" class="ficha-asis-qr__box"></div>
+      <span class="ficha-asis-qr__hint">Escanealo en clase</span>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        new QRCode(document.getElementById("ficha-qr-container"), {
+          text: "{{ ficha.token_qr }}",
+          width: 120, height: 120,
+          colorDark: "#1e293b", colorLight: "#ffffff",
+        });
+      });
+    </script>
+    {% endif %}
+    <div class="ficha-asis-top__main">
+      {% if not ficha.tiene_asistencia %}
+        {{ es.empty_state('fact_check', 'No hay asistencias registradas para este alumno en el curso.') }}
+      {% else %}
+        <div class="clase-summary-grid">
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Presentes</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.presentes }}</strong>
+          </div>
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Ausentes</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.ausentes }}</strong>
+          </div>
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Justificadas</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.justificadas }}</strong>
+          </div>
+          <div class="clase-summary-card">
+            <span class="clase-summary-label">Tarde</span>
+            <strong class="clase-summary-value">{{ ficha.asistencia_resumen.tarde }}</strong>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if ficha.tiene_asistencia %}
+    <div class="eval-tabla-wrapper" style="margin-top:1rem">
+      <table class="table eval-tabla">
+        <thead>
+          <tr>
+            <th>Clase</th>
+            <th>Fecha</th>
+            <th class="th--center">Estado</th>
+            <th>Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in asistencia_pagina %}
+          <tr>
+            <td class="text-bold">{{ a.clase_nombre }}</td>
+            <td>{{ a.fecha_hora_inicio|formatear_fecha_hora or '—' }}</td>
+            <td class="td--center">
+              {% set estado = (a.estado or '')|string|lower %}
+              {% if estado == 'presente' %}
+                <span class="badge badge--pill asistencia-badge asistencia-badge--presente">Presente</span>
+              {% elif estado == 'justificada' %}
+                <span class="badge badge--pill asistencia-badge asistencia-badge--justificada">Justificada</span>
+              {% elif estado == 'tarde' %}
+                <span class="badge badge--pill asistencia-badge asistencia-badge--tarde">Tarde</span>
+              {% elif estado == 'ausente' %}
+                <span class="badge badge--pill asistencia-badge asistencia-badge--ausente">Ausente</span>
+              {% else %}
+                <span class="text-muted">{{ a.estado or 'Sin estado' }}</span>
+              {% endif %}
+            </td>
+            <td>{{ a.fecha_registro|formatear_fecha_hora or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if asis_paginacion.total_paginas > 1 %}
+      {% import "admin/components/paginador.html" as pg with context %}
+      {% macro url_pag(n) %}{{ url_for('alumnos.ver_ficha', curso_id=curso_id, estudiante_id=ficha.id, asis_page=n, eval_page=eval_paginacion.page) }}{% endmacro %}
+      {{ pg.paginador(asis_paginacion, url_pag, 'clase' if asis_paginacion.total == 1 else 'clases') }}
+    {% endif %}
+  {% endif %}
+</div>

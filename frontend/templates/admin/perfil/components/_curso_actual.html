@@ -1,0 +1,15 @@
+{# Panel del curso actual del estudiante. #}
+<div class="panel perfil-panel">
+  <h2 class="panel-title">Curso actual</h2>
+  <ul class="docentes-list">
+    <li class="docente-item">
+      <span class="material-symbols-rounded">menu_book</span>
+      <div>
+        <div class="docente-nombre">{{ perfil.curso.codigo }} · {{ perfil.curso.nombre }}</div>
+        <div class="docente-rol">
+          Comisión {{ perfil.curso.comision }} · {{ perfil.curso.modalidad }} · Inicio {{ perfil.curso.inicio }}
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+
+  {% call ph.page_header('Profesores', profesores | length ~ ' profesor' ~ ('es' if profesores | length != 1 else '')) %}
+    <a href="{{ url_for('profesores.listar_profesores', accion='nueva') }}" class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
+      Nuevo profesor
+    </a>
+  {% endcall %}
+
+  {% include "admin/profesores/components/_tabla.html" %}
+
+</section>
+
+{% include "admin/profesores/components/_modal_cursadas.html" %}
+{% include "admin/profesores/components/_modal_nuevo_profesor.html" %}
+
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/modal_cursadas.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/row_actions.js') }}"></script>
+{% endblock %}

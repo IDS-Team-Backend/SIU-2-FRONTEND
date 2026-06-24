@@ -1,0 +1,75 @@
+{# Tabla de profesores. Usa el componente empty_state para el caso sin filas.
+   Requiere en contexto: profesores. #}
+{% import "components/empty_state.html" as es with context %}
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Legajo</th>
+        <th>Apellido y Nombre</th>
+        <th>Email</th>
+        <th>Departamento</th>
+        <th>Cursadas en que participa</th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for profesor in profesores %}
+      <tr>
+        <td class="text-bold">{{ profesor.legajo }}</td>
+        <td>
+          <a href="{{ url_for('profesores.ver_profesor', profesor_id=profesor.id) }}" class="cell-link">
+            {{ profesor.apellido }}, {{ profesor.nombre }}
+          </a>
+        </td>
+        <td>{{ profesor.email }}</td>
+        <td>{{ profesor.departamento }}</td>
+        <td>
+          {% if profesor.participaciones %}
+            <button type="button" class="btn-cursadas-prof"
+              data-nombre="{{ profesor.apellido }}, {{ profesor.nombre }}"
+              data-cursadas='{{ profesor.participaciones | tojson }}'>
+              {{ profesor.participaciones | length }} cursada{% if profesor.participaciones | length != 1 %}s{% endif %}
+            </button>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td class="td--center">
+          <details class="row-actions">
+            <summary title="Acciones">
+              <span class="material-symbols-rounded" style="font-size:18px">more_vert</span>
+            </summary>
+            <div class="row-actions__menu">
+              <a href="{{ url_for('profesores.ver_profesor', profesor_id=profesor.id) }}">
+                <span class="material-symbols-rounded" style="font-size:16px">badge</span>
+                Ver ficha
+              </a>
+              <a href="{{ url_for('profesores.ver_profesor', profesor_id=profesor.id, editar='1') }}">
+                <span class="material-symbols-rounded" style="font-size:16px">edit</span>
+                Editar
+              </a>
+              <div class="row-actions__divider"></div>
+              <form action="{{ url_for('profesores.eliminar', profesor_id=profesor.id) }}" method="post">
+                <button type="submit" class="action--danger"
+                        onclick="return confirm('¿Eliminar al profesor {{ profesor.apellido }}, {{ profesor.nombre }}?')">
+                  <span class="material-symbols-rounded" style="font-size:16px">delete</span>
+                  Eliminar
+                </button>
+              </form>
+            </div>
+          </details>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6">
+          {{ es.empty_state('co_present', 'Todavía no hay profesores cargados.',
+                            accion_url=url_for('profesores.listar_profesores', accion='nueva'),
+                            accion_texto='Crear primer profesor') }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

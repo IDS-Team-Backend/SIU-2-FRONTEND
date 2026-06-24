@@ -1,0 +1,115 @@
+/* ==========================================================================
+   SCHEDULE TABLE (Cronograma)
+   ========================================================================== */
+.schedule-table {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.schedule-table table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.schedule-table th {
+  background: var(--bg);
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.schedule-table td {
+  vertical-align: top;
+  padding: 14px 16px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.schedule-table tr:hover td {
+  background: transparent;
+  color: var(--text);
+}
+
+.schedule-table .col-semana {
+  text-align: center;
+  width: 80px;
+  color: var(--text-soft);
+  font-weight: 600;
+  border-right: 1px solid var(--border);
+}
+
+.schedule-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-cell-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+}
+
+.schedule-temas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.schedule-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.schedule-empty {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   BADGES (chips usadas por las celdas del cronograma)
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge-modalidad {
+  background: #e0f2fe;
+  color: var(--primary-dark);
+}
+
+.badge-tag {
+  background: #dcfce7;
+  color: #166534;
+}

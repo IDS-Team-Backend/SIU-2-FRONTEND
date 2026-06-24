@@ -1,0 +1,81 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluacion_detalle.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluaciones.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/clases.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="eval-detalle">
+
+  <div class="page-header">
+    <div>
+      <a href="{{ url_for('clases.listar_clases', curso_id=curso_id) }}" class="eval-volver">
+        <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">arrow_back</span>
+        Volver al calendario
+      </a>
+      <h1>{{ clase.nombre }}</h1>
+      <p class="eval-meta">
+        <span><strong>Inicio:</strong> {{ clase.fecha_hora_inicio|formatear_fecha_hora or '—' }}</span>
+        <span><strong>Fin:</strong> {{ clase.fecha_hora_fin|formatear_fecha_hora or '—' }}</span>
+        <span><strong>Estado:</strong> {{ (clase.status or 'Sin estado')|capitalize }}</span>
+        {% if clase.tipo %}<span><strong>Tipo:</strong> {{ clase.tipo|capitalize }}</span>{% endif %}
+        {% if clase.modalidad %}<span><strong>Modalidad:</strong> {{ clase.modalidad }}</span>{% endif %}
+        {% if clase.tema %}<span><strong>Tema:</strong> {{ clase.tema }}</span>{% endif %}
+      </p>
+      {% if clase.tags %}
+        <div class="schedule-tags" style="margin-top:12px">
+          {% for tag in clase.tags %}
+            <span class="badge badge-modalidad">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="page-header__actions">
+      {% if usuario_actual.es_staff %}
+      <div class="buttons-container-clases">
+        <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id, accion='editar_clase') }}" class="btn btn-outline">
+          <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">edit</span> Editar clase
+        </a>
+        <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase.id, accion='editar_asistencia') }}" class="btn btn-outline">
+          <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">fact_check</span> Editar asistencia
+        </a>
+        <form action="{{ url_for('clases.eliminar_clase_route', curso_id=curso_id, clase_id=clase.id) }}"
+              method="POST" style="display:inline"
+              onsubmit="return confirm('¿Eliminar la clase «{{ clase.nombre }}»?');">
+          <button type="submit" class="btn btn-outline" style="color:var(--text-danger)">Eliminar</button>
+        </form>
+      </div>
+      {% if clase.status == 'en curso' %}
+      <a href="{{ url_for('clases.escanear_qr', curso_id=curso_id, clase_id=clase.id, accion='escanear_qr') }}" class="btn btn-primary escanear-qr">
+        <span class="material-symbols-rounded escanear-qr-texto" style="font-size:18px;vertical-align:middle">qr_code_scanner</span> Escanear QRs
+      </a>
+      {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="eval-seccion">
+    {% if usuario_actual.es_staff %}
+    <div class="eval-seccion__header">
+      <h2>Asistencia</h2>
+      {% if resumen_asistencia %}
+        <span class="text-muted">{{ resumen_asistencia.total or planilla_asistencia|length }} registros</span>
+      {% endif %}
+    </div>
+
+    
+      {% include "admin/clases/components/_resumen_asistencia.html" %}
+
+      {% include "admin/clases/components/_tabla_asistencia.html" %}
+    {% endif %}
+
+    <h3>Tema: {{ clase.tema or '—' }}</h3>
+
+  </div>
+</section>
+
+{% include "admin/clases/components/_modales.html" %}
+
+{% endblock %}

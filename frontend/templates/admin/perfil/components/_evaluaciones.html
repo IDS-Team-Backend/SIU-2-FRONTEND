@@ -1,0 +1,76 @@
+{# Panel de evaluaciones del curso con paginación server-side.
+   Usa el paginador compartido (admin/components/paginador.html) y el empty_state. #}
+{% import "components/empty_state.html" as es with context %}
+<div class="panel perfil-panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <h2 class="panel-title" style="margin:0">Evaluaciones del curso</h2>
+    {% if total_evaluaciones > 0 %}
+      <span style="font-size:.85rem;color:var(--text-soft)">
+        {{ total_evaluaciones }} evaluación{% if total_evaluaciones != 1 %}es{% endif %}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if not perfil.evaluaciones %}
+    {{ es.empty_state('quiz', 'No hay evaluaciones cargadas todavía.') }}
+
+  {% else %}
+    <table class="perfil-table">
+      <thead>
+        <tr>
+          <th>Instancia</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Nota</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in evaluaciones_pagina %}
+        <tr>
+          <td>{{ e.titulo }}</td>
+          <td>
+            <span class="badge badge--pill"
+                  style="background:#f0f4ff;color:#3730a3;font-size:.75rem">
+              {{ e.tipo | default('—') }}
+            </span>
+          </td>
+          <td>{{ e.fecha }}</td>
+          <td>
+            {% if e.nota is not none %}
+              {# FIX: badge verde si aprobó (≥4), rojo si desaprobó #}
+              <span class="estado-badge {{ 'estado-aprobada' if e.nota >= 4 else 'estado-desaprobada' }}">
+                {{ e.nota }}
+              </span>
+            {% else %}
+              <span class="estado-badge estado-pendiente">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {# FIX: comparación con 'Aprobada' (femenino), no 'Aprobado' #}
+            {% if e.estado == 'Aprobada' %}
+              <span class="estado-badge estado-aprobada">{{ e.estado }}</span>
+            {% elif e.estado == 'Desaprobada' %}
+              <span class="estado-badge estado-desaprobada">{{ e.estado }}</span>
+            {% else %}
+              <span class="estado-badge estado-pendiente">{{ e.estado }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {# ── Paginación (paginador compartido) ── #}
+    {% if total_paginas > 1 %}
+      {% import "admin/components/paginador.html" as pg with context %}
+      {% set paginacion = {'page': pagina_actual, 'total_paginas': total_paginas, 'total': total_evaluaciones} %}
+      {% macro url_pag(n) %}{{ url_for('perfil.estudiante', page=n) }}{% endmacro %}
+      {{ pg.paginador(
+           paginacion, url_pag,
+           'evaluación' if total_evaluaciones == 1 else 'evaluaciones'
+      ) }}
+    {% endif %}
+
+  {% endif %}
+</div>

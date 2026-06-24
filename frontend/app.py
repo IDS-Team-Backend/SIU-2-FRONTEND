@@ -1,94 +1,29 @@
-from flask import Flask, render_template, redirect, url_for
+import os
 
-app = Flask(__name__)
+from flask import Flask
 
-listar_materias = [
-    {"nombre": "Materia 1"},
-    {"nombre": "Materia 2"},
-    {"nombre": "Materia 3"},
-]
-
-listar_alumnos = [
-    {"legajo": "1001", "nombre": "Alumno 1", "estado": "Activo"},
-    {"legajo": "1002", "nombre": "Alumno 2", "estado": "Activo"},
-    {"legajo": "1003", "nombre": "Alumno 3", "estado": "Inactivo"},
-]
-
-listar_materiales = [
-    {"titulo": "Material 1"},
-    {"titulo": "Material 2"},
-    {"titulo": "Material 3"},
-]
-
-evaluaciones = [
-    {"nombre": "Evaluación 1", "fecha": "01/01"},
-    {"nombre": "Evaluación 2", "fecha": "02/01"},
-    {"nombre": "Evaluación 3", "fecha": "03/01"},
-]
+from utils.user_context import crear_contexto_usuario
+from routes import register_routes
+from services.context_processors import registrar_context_processors
+from services.decorators import proteger_rutas
+from utils.filtros_fecha import registrar_filtros_fecha
 
 
-@app.route("/")
-def index():
-    return redirect(url_for("materias"))
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-cambiar-en-produccion")
+
+    crear_contexto_usuario(app)     # por cada f5, carga datos del usuario logueado en el contexto global ( g.usuario y g.perfiles )
+    register_routes(app)            # blueprints (público, privado, backoffice, auth)
+    proteger_rutas(app)             # gate global de autenticación
+    registrar_context_processors(app)  # curso_activo / usuario_actual en plantillas
+    registrar_filtros_fecha(app)    # filtros Jinja de fecha
+
+    return app
 
 
-@app.route("/materias")
-def materias():
-    return render_template(
-        "materias.html",
-        title="Materias",
-        active_page="materias",
-        materias=listar_materias,
-    )
-
-
-@app.route("/alumnos")
-def alumnos_page():
-    return render_template(
-        "alumnos.html",
-        title="Alumnos",
-        active_page="alumnos",
-        alumnos=listar_alumnos,
-    )
-
-
-@app.route("/material")
-def material():
-    return render_template(
-        "material.html",
-        title="Material",
-        active_page="material",
-        materiales=listar_materiales,
-    )
-
-
-@app.route("/evaluaciones")
-def evaluaciones_page():
-    return render_template(
-        "evaluaciones.html",
-        title="Evaluaciones",
-        active_page="evaluaciones",
-        evaluaciones=evaluaciones,
-    )
-
-
-@app.route("/metricas")
-def metricas():
-    return render_template(
-        "metricas.html",
-        title="Métricas",
-        active_page="metricas",
-    )
-
-
-@app.route("/perfil")
-def perfil():
-    return render_template(
-        "perfil.html",
-        title="Perfil",
-        active_page="perfil",
-    )
+app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5001, debug=True)

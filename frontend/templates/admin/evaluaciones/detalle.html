@@ -1,0 +1,97 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/evaluacion_detalle.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/tipos_input.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/paginador.css') }}">
+{% endblock %}
+
+{# Campos del formulario de entrega (registrar). #}
+{% macro entrega_fields(estados) %}
+  <div class="form-group">
+    <label for="fecha_entrega">Fecha y hora de entrega</label>
+    <input type="datetime-local" id="fecha_entrega" name="fecha_entrega" required class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="estado">Estado</label>
+    <select id="estado" name="estado" required class="form-control">
+      {% for est in estados %}
+        <option value="{{ est }}">{{ est|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="archivo_url">Archivo (URL)</label>
+    <input type="url" id="archivo_url" name="archivo_url" class="form-control" placeholder="https://…">
+  </div>
+  <div class="form-group">
+    <label for="entrega_obs">Observaciones de la entrega</label>
+    <textarea id="entrega_obs" name="observaciones" rows="2" class="form-control"></textarea>
+  </div>
+{% endmacro %}
+
+{# Campos del formulario de nota (cargar / editar): número + devolución. #}
+{% macro nota_fields(nota) %}
+  <div class="form-group">
+    <label for="nota">Nota</label>
+    <input type="number" id="nota" name="nota" required class="form-control" step="0.01" min="0" max="10"
+           value="{{ nota.nota if nota else '' }}" placeholder="0 a 10">
+  </div>
+  <div class="form-group">
+    <label for="nota_obs">Devolución / Observaciones</label>
+    <textarea id="nota_obs" name="observaciones" rows="3" class="form-control"
+              placeholder="Comentarios para el alumno/equipo…">{{ (nota.observaciones or '') if nota else '' }}</textarea>
+  </div>
+{% endmacro %}
+
+{% block content %}
+{% import "admin/components/_importar_csv.html" as imp with context %}
+<section class="eval-detalle">
+
+  {# ── Encabezado ── #}
+  {% include "admin/evaluaciones/components/_encabezado.html" %}
+
+  {% if es_grupal %}
+    {# ── Equipos · entregas · notas ── #}
+    <div class="eval-seccion">
+      <div class="eval-seccion__header">
+        <h2>Equipos</h2>
+        <div class="eval-seccion__acciones">
+          {{ imp.boton_importar_csv(
+               url_for('evaluaciones.importar_equipos_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id)) }}
+          <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, accion='nuevo_equipo') }}"
+             class="btn btn-primary">
+            <span>+</span> Nuevo equipo
+          </a>
+        </div>
+      </div>
+      {% include "admin/evaluaciones/components/tabla_equipos.html" %}
+    </div>
+  {% else %}
+    {# ── Alumnos · entregas · notas ── #}
+    <div class="eval-seccion">
+      <div class="eval-seccion__header">
+        <h2>Alumnos</h2>
+      </div>
+      {% include "admin/evaluaciones/components/tabla_alumnos.html" %}
+    </div>
+  {% endif %}
+</section>
+
+
+{# ─────────────────────────── Modales ─────────────────────────── #}
+{# Migrados a la macro modal compartida. Cada grupo en un partial local; las
+   macros entrega_fields / nota_fields se comparten vía contexto del include. #}
+{% if es_grupal %}
+  {% include "admin/evaluaciones/components/_modales_equipo.html" %}
+{% else %}
+  {% include "admin/evaluaciones/components/_modales_alumno.html" %}
+{% endif %}
+
+{% include "admin/evaluaciones/components/_modales_evaluacion.html" %}
+
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/tipos_input.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,188 @@
+/* ==========================================================================
+   Ficha del alumno en el curso (Page A) — solo layout/estética.
+   Scopeado bajo .ficha-alumno para no afectar al perfil ni a clases.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Métricas clave del curso (Promedio · Asistencia · Estado): 3 tarjetas
+   destacadas, con ícono y acento de color según el valor.
+   -------------------------------------------------------------------------- */
+.ficha-alumno .ficha-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 4px 0 16px;
+}
+
+.ficha-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ficha-stat__icon {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--surface-alt);
+  color: var(--text-soft);
+  font-size: 26px;
+}
+
+.ficha-stat__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ficha-stat__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.ficha-stat__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* Acentos según estado del valor */
+.ficha-stat--ok   { border-left-color: #10b981; }
+.ficha-stat--ok   .ficha-stat__icon { background: #ecfdf5; color: #10b981; }
+.ficha-stat--warn { border-left-color: #f59e0b; }
+.ficha-stat--warn .ficha-stat__icon { background: #fffbeb; color: #f59e0b; }
+.ficha-stat--bad  { border-left-color: #ef4444; }
+.ficha-stat--bad  .ficha-stat__icon { background: #fef2f2; color: #ef4444; }
+.ficha-stat--muted .ficha-stat__value { font-size: 1.05rem; color: var(--text-soft); }
+
+/* --------------------------------------------------------------------------
+   Datos personales (secundarios): fila compacta de 4.
+   -------------------------------------------------------------------------- */
+.ficha-alumno .ficha-datos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.ficha-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 12px 14px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.ficha-dato__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.ficha-dato__value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* --------------------------------------------------------------------------
+   Resumen de asistencia: 4 en una fila, con acento de color por tipo.
+   -------------------------------------------------------------------------- */
+.ficha-alumno .clase-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ficha-alumno .clase-summary-card {
+  border-top: 3px solid var(--border);
+}
+.ficha-alumno .clase-summary-card:nth-child(1) { border-top-color: #10b981; } /* presentes */
+.ficha-alumno .clase-summary-card:nth-child(2) { border-top-color: #ef4444; } /* ausentes */
+.ficha-alumno .clase-summary-card:nth-child(3) { border-top-color: #3b82f6; } /* justificadas */
+.ficha-alumno .clase-summary-card:nth-child(4) { border-top-color: #f59e0b; } /* tarde */
+
+.ficha-alumno .clase-summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Asistencia: resumen + QR compacto al costado
+   -------------------------------------------------------------------------- */
+.ficha-alumno .ficha-asis-top {
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.ficha-alumno .ficha-asis-top__main {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.ficha-alumno .ficha-asis-top__main .clase-summary-grid {
+  margin: 0;
+  width: 100%;
+}
+
+.ficha-alumno .ficha-asis-qr {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.ficha-alumno .ficha-asis-qr__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.ficha-alumno .ficha-asis-qr__box {
+  line-height: 0;
+}
+.ficha-alumno .ficha-asis-qr__hint {
+  font-size: 0.72rem;
+  color: var(--text-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .ficha-alumno .ficha-stats       { grid-template-columns: 1fr; }
+  .ficha-alumno .ficha-datos,
+  .ficha-alumno .clase-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 460px) {
+  .ficha-alumno .ficha-datos,
+  .ficha-alumno .clase-summary-grid { grid-template-columns: 1fr; }
+}

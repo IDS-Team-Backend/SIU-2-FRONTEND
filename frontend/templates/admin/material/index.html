@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
+
+{% block content %}
+<section>
+  {% set puede_gestionar = usuario_actual and ('docente' in usuario_actual.perfiles or 'admin' in usuario_actual.perfiles) %}
+
+  {% call ph.page_header('Materiales') %}
+    {% if puede_gestionar %}
+    <button class="btn btn-primary" data-modal-open="modal-subir">
+      + Subir Material
+    </button>
+    {% endif %}
+  {% endcall %}
+
+  {# Mensajes flash #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% include "admin/material/components/_lista_materiales.html" %}
+</section>
+
+{% if puede_gestionar %}
+  {% include "admin/material/components/_modal_subir.html" %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/modal.js') }}"></script>
+{% endblock %}

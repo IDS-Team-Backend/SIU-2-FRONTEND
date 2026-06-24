@@ -1,0 +1,20 @@
+{# Tarjetas de resumen de asistencia (presentes / ausentes / justificadas / tarde).
+   Partial local de admin/clases/detalle.html. Comparte el contexto: resumen_asistencia. #}
+<div class="clase-summary-grid">
+  <div class="clase-summary-card">
+    <span class="clase-summary-label">Presentes</span>
+    <strong class="clase-summary-value">{{ resumen_asistencia.presentes if resumen_asistencia else 0 }}</strong>
+  </div>
+  <div class="clase-summary-card">
+    <span class="clase-summary-label">Ausentes</span>
+    <strong class="clase-summary-value">{{ resumen_asistencia.ausentes if resumen_asistencia else 0 }}</strong>
+  </div>
+  <div class="clase-summary-card">
+    <span class="clase-summary-label">Justificadas</span>
+    <strong class="clase-summary-value">{{ resumen_asistencia.justificadas if resumen_asistencia else 0 }}</strong>
+  </div>
+  <div class="clase-summary-card">
+    <span class="clase-summary-label">Tarde</span>
+    <strong class="clase-summary-value">{{ resumen_asistencia.tarde if resumen_asistencia else 0 }}</strong>
+  </div>
+</div>

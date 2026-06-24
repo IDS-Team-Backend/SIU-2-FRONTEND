@@ -1,0 +1,27 @@
+{
+  "1": {
+    "id": 1,
+    "codigo": "FIUBA-7540",
+    "nombre": "Introducción al Desarrollo de Software",
+    "descripcion": "Materia introductoria al desarrollo de software con Python. Cubre Linux, Bash, control de versiones con Git, desarrollo web con Flask (HTML, CSS, JS), APIs REST, bases de datos SQL, testing, agilidad (Kanban, CI/CD) y containerización con Docker. Modalidad virtual con clases presenciales obligatorias.",
+    "anio": 2026,
+    "cuatrimestre": 1,
+    "modalidad": "Virtual con presenciales obligatorias",
+    "carrera": "Ingeniería en Informática",
+    "horas_semanales": 6,
+    "profesores": [
+      {"id": 1, "nombre": "Bruno Lanzillotta", "rol": "Profesor a cargo"},
+      {"id": 2, "nombre": "Martín Sosa", "rol": "JTP"},
+      {"id": 3, "nombre": "Franco Capra", "rol": "JTP"},
+      {"id": 4, "nombre": "Carolina Di Matteo", "rol": "Ayudante"},
+      {"id": 5, "nombre": "Leonel Chaves", "rol": "Ayudante"},
+      {"id": 6, "nombre": "Tomás Villegas", "rol": "Ayudante"},
+      {"id": 7, "nombre": "Néstor Palavecino", "rol": "Ayudante"}
+    ],
+    "stats": {
+      "alumnos": 48,
+      "materiales": 8,
+      "evaluaciones": 5
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{# Encabezado de pantalla reutilizable: título + subtítulo opcional + acciones.
+   Las acciones (botones) van en el bloque {% call %}.
+
+   Uso:
+   {% import "components/page_header.html" as ph with context %}
+   {% call ph.page_header('Alumnos', '12 inscriptos') %}
+     <a href="..." class="btn btn-primary">Nuevo</a>
+   {% endcall %}
+
+   Si no hace falta subtítulo ni acciones, se puede llamar con
+   {{ ph.page_header('Título') }} (sin {% call %}). #}
+{% macro page_header(titulo, subtitulo=None) %}
+<div class="page-header">
+  <div>
+    <h1>{{ titulo }}</h1>
+    {% if subtitulo %}<p class="text-muted">{{ subtitulo }}</p>{% endif %}
+  </div>
+  {% if caller %}
+    <div class="page-header__actions">
+      {{ caller() }}
+    </div>
+  {% endif %}
+</div>
+{% endmacro %}

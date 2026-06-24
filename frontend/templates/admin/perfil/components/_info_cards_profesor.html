@@ -1,0 +1,27 @@
+{# Tarjetas de datos del profesor (DNI, email, rol, ingreso, antigüedad, departamento). #}
+<div class="info-grid">
+  <div class="info-card">
+    <span class="info-card-label">DNI</span>
+    <span class="info-card-value">{{ perfil.dni }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Email</span>
+    <span class="info-card-value">{{ perfil.email }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Rol</span>
+    <span class="info-card-value">{{ perfil.rol }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Fecha de ingreso</span>
+    <span class="info-card-value">{{ perfil.fecha_ingreso | formatear_fecha or "—" }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Antigüedad</span>
+    <span class="info-card-value">{{ perfil.antiguedad }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Departamento</span>
+    <span class="info-card-value">{{ perfil.departamento }}</span>
+  </div>
+</div>

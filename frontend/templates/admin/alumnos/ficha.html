@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/perfil.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/clases.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/paginador.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/ficha_alumno.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="ficha-alumno">
+  <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-ghost" style="margin-bottom:1rem">
+    <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">arrow_back</span>
+    Volver a alumnos
+  </a>
+
+  {% include "admin/alumnos/components/_ficha_hero.html" %}
+  {% include "admin/alumnos/components/_ficha_info.html" %}
+
+  {% if ficha.estado_cursada == 'Abandono' %}
+    <div class="flash flash--warning" style="margin-bottom:1rem">
+      El alumno está en abandono; las notas pueden no estar disponibles para este curso.
+    </div>
+  {% endif %}
+
+  {% include "admin/alumnos/components/_ficha_evaluaciones.html" %}
+  {% include "admin/alumnos/components/_ficha_asistencia.html" %}
+</section>
+{% endblock %}

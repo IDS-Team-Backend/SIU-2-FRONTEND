@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/curso.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/perfil.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+  {% include "admin/perfil/components/_hero_profesor.html" %}
+  {% include "admin/perfil/components/_info_cards_profesor.html" %}
+  {% include "admin/perfil/components/_catedra.html" %}
+  {% include "admin/perfil/components/_acciones.html" %}
+</section>
+{% endblock %}

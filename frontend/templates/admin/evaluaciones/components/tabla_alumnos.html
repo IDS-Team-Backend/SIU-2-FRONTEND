@@ -1,0 +1,112 @@
+{% import "admin/components/paginador.html" as pg with context %}
+{# Evaluación individual: grilla de carga masiva. Cada fila permite registrar la
+   entrega (select) y, si tiene entrega, cargar/editar la nota inline. Un único
+   "Guardar cambios" envía todas las filas. Mantiene el flujo entrega→nota.
+   Los inputs se asocian por form="form-notas-masivo" (HTML5) para no anidar forms
+   con las acciones de quitar nota/entrega. #}
+
+<form id="form-notas-masivo" method="post"
+      action="{{ url_for('evaluaciones.guardar_masivo', curso_id=curso_id, evaluacion_id=evaluacion.id) }}"></form>
+<input type="hidden" name="page" value="{{ page }}" form="form-notas-masivo">
+<input type="hidden" name="page_size" value="{{ page_size }}" form="form-notas-masivo">
+
+<div class="eval-tabla-wrapper">
+  <table class="table eval-tabla">
+    <thead>
+      <tr>
+        <th>Alumno</th>
+        <th>Entrega</th>
+        <th class="th--center">Nota</th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for alumno in alumnos %}
+        {% set nota = notas_por_sujeto.get(alumno.id) %}
+        {% set entrega = entregas_por_sujeto.get(alumno.id) %}
+        <tr>
+          <td>
+            <span class="text-bold">{{ alumno.apellido }}, {{ alumno.nombre }}</span>
+            <span class="text-muted" style="margin-left:6px">{{ alumno.padron }}</span>
+            {% if not alumno.activo %}
+              <span class="badge badge--danger badge--pill" style="margin-left:6px">Abandono</span>
+            {% endif %}
+          </td>
+
+          {# ── Entrega: badge fijo si existe (no se editan), select si no ── #}
+          <td>
+            {% if entrega %}
+              <span class="badge badge--pill">{{ entrega.estado|capitalize }}</span>
+            {% else %}
+              <select name="entrega_{{ alumno.id }}" form="form-notas-masivo"
+                      class="form-control eval-masiva__entrega" data-alumno="{{ alumno.id }}">
+                <option value="">— sin entrega —</option>
+                <option value="entregado">Entregado</option>
+                <option value="tarde">Tarde</option>
+                <option value="rehacer">Rehacer</option>
+              </select>
+            {% endif %}
+          </td>
+
+          {# ── Nota: habilitada solo si tiene entrega (o si se le marca recién) ── #}
+          <td class="td--center">
+            <input type="number" name="nota_{{ alumno.id }}" form="form-notas-masivo"
+                   class="form-control eval-masiva__nota" data-alumno="{{ alumno.id }}"
+                   min="0" max="10" step="0.01" placeholder="—"
+                   value="{{ nota.nota if nota else '' }}"
+                   {% if not entrega %}disabled{% endif %}>
+          </td>
+
+          {# ── Acciones de quitar (forms separados, no anidados) ── #}
+          <td class="td--center">
+            {% if nota %}
+              <form method="post" style="display:inline"
+                    action="{{ url_for('evaluaciones.borrar_nota', curso_id=curso_id, evaluacion_id=evaluacion.id, nota_id=nota.id) }}"
+                    onsubmit="return confirm('¿Quitar la nota de {{ alumno.apellido }}, {{ alumno.nombre }}?')">
+                <button type="submit" class="btn-icon btn-icon--danger" title="Quitar nota">
+                  <span class="material-symbols-rounded">backspace</span>
+                </button>
+              </form>
+            {% elif entrega %}
+              <form method="post" style="display:inline"
+                    action="{{ url_for('evaluaciones.borrar_entrega', curso_id=curso_id, evaluacion_id=evaluacion.id, entrega_id=entrega.id) }}"
+                    onsubmit="return confirm('¿Quitar la entrega de {{ alumno.apellido }}, {{ alumno.nombre }}?')">
+                <input type="hidden" name="alumno_id" value="{{ alumno.id }}">
+                <button type="submit" class="btn-icon btn-icon--danger" title="Quitar entrega">
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </form>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4">
+            <div class="tabla-vacia" style="padding:2rem;text-align:center">
+              <p class="text-muted" style="margin:0">No hay alumnos inscriptos en este curso.</p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if alumnos %}
+  <div class="eval-masiva__barra">
+    <button type="submit" form="form-notas-masivo" class="btn btn-primary">Guardar cambios</button>
+  </div>
+{% endif %}
+
+{% macro url_pag(n) %}{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, page=n, page_size=page_size) }}{% endmacro %}
+{{ pg.paginador(
+     paginacion,
+     url_pag,
+     'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
+     url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id),
+     page_size
+) }}
+
+<script type="module" src="{{ url_for('static', filename='js/eval_masiva.js') }}"></script>

@@ -1,0 +1,140 @@
+{# Tabla de alumnos: encabezados ordenables, filas con menú de acciones y estado vacío. #}
+{% import "components/empty_state.html" as es with context %}
+
+{% macro sort_url(col) -%}
+  {{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=1,
+                     sort=col, dir='desc' if sort_col==col and sort_dir=='asc' else 'asc') }}
+{%- endmacro %}
+
+{% macro sort_icon(col) %}
+  {% if sort_col == col %}
+    <span class="material-symbols-rounded sort-icon sort-icon--active" style="font-size:13px;vertical-align:middle">
+      {% if sort_dir == 'asc' %}arrow_upward{% else %}arrow_downward{% endif %}
+    </span>
+  {% else %}
+    <span class="material-symbols-rounded sort-icon" style="font-size:13px;vertical-align:middle;opacity:.3">unfold_more</span>
+  {% endif %}
+{% endmacro %}
+
+{# Barra de acción masiva: el form vacío asocia los checkboxes por id (atributo form="" de HTML5). #}
+<form method="post" id="form-masivo"
+      action="{{ url_con_filtros('alumnos.desvincular_masivo', curso_id=curso_id) }}"></form>
+
+<div id="barra-masiva" class="barra-masiva" style="display:none">
+  <span id="contador-seleccion" class="barra-masiva__contador">0 seleccionados</span>
+  <button type="submit" form="form-masivo" class="btn btn-danger btn-sm">
+    <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">link_off</span>
+    Desvincular seleccionados
+  </button>
+</div>
+
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width:36px"><input type="checkbox" id="check-todos" title="Seleccionar todos"></th>
+        <th><a href="{{ sort_url('padron') }}"   class="sort-header">Padrón {{ sort_icon('padron') }}</a></th>
+        <th><a href="{{ sort_url('apellido') }}" class="sort-header">Apellido y Nombre {{ sort_icon('apellido') }}</a></th>
+        {% if form_activo != 'editar' %}
+        <th><a href="{{ sort_url('email') }}"    class="sort-header">Email {{ sort_icon('email') }}</a></th>
+        <th><a href="{{ sort_url('dni') }}"      class="sort-header">DNI {{ sort_icon('dni') }}</a></th>
+        {% endif %}
+        <th><a href="{{ sort_url('estado') }}"   class="sort-header">Estado {{ sort_icon('estado') }}</a></th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for alumno in alumnos %}
+      <tr {% if alumno_editar and alumno.estudiante_id == alumno_editar.estudiante_id %}
+            class="row--editing"{% endif %}>
+        <td>
+          <input type="checkbox" class="check-fila" name="seleccionados"
+                 value="{{ alumno.estudiante_id }}" form="form-masivo">
+        </td>
+        <td class="text-bold">{{ alumno.padron }}</td>
+        <td>
+          <a href="{{ url_for('alumnos.ver_ficha', curso_id=curso_id, estudiante_id=alumno.estudiante_id) }}" class="cell-link">
+            {{ alumno.apellido }}, {{ alumno.nombre }}
+          </a>
+        </td>
+        {% if form_activo != 'editar' %}
+        <td>{{ alumno.email }}</td>
+        <td>{{ alumno.dni }}</td>
+        {% endif %}
+        <td>
+          {% if alumno.estado == "activo" %}
+            <span class="badge badge--success badge--pill">Activo</span>
+          {% elif alumno.estado == "abandono" %}
+            <span class="badge badge--danger badge--pill">Abandono</span>
+          {% endif %}
+        </td>
+        <td class="td--center">
+          <details class="row-actions">
+            <summary title="Acciones">
+              <span class="material-symbols-rounded" style="font-size:18px">more_vert</span>
+            </summary>
+            <div class="row-actions__menu">
+
+              <a href="{{ url_for('alumnos.ver_ficha', curso_id=curso_id,
+                           estudiante_id=alumno.estudiante_id) }}">
+                <span class="material-symbols-rounded" style="font-size:16px">badge</span>
+                Ver ficha
+              </a>
+
+              <div class="row-actions__divider"></div>
+
+              <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id,
+                           form='editar', estudiante_id=alumno.estudiante_id) }}">
+                <span class="material-symbols-rounded" style="font-size:16px">edit</span>
+                Editar
+              </a>
+
+              <div class="row-actions__divider"></div>
+
+              <form action="{{ url_con_filtros('alumnos.cambiar_estado', curso_id=curso_id,
+                                inscripcion_id=alumno.inscripcion_id) }}" method="post">
+                <input type="hidden" name="estudiante_id" value="{{ alumno.estudiante_id }}">
+                {% if alumno.estado == "activo" %}
+                  <input type="hidden" name="estado" value="abandono">
+                  <button type="submit" class="action--danger">
+                    <span class="material-symbols-rounded" style="font-size:16px">person_off</span>
+                    Dar de baja
+                  </button>
+                {% else %}
+                  <input type="hidden" name="estado" value="activo">
+                  <button type="submit">
+                    <span class="material-symbols-rounded" style="font-size:16px">person_check</span>
+                    Reactivar
+                  </button>
+                {% endif %}
+              </form>
+
+              <form action="{{ url_con_filtros('alumnos.desvincular_alumno', curso_id=curso_id,
+                                inscripcion_id=alumno.inscripcion_id) }}" method="post">
+                <button type="submit" class="action--danger"
+                        onclick="return confirm('¿Desvincular a {{ alumno.nombre }} {{ alumno.apellido }}?')">
+                  <span class="material-symbols-rounded" style="font-size:16px">link_off</span>
+                  Desvincular
+                </button>
+              </form>
+
+            </div>
+          </details>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7">
+          {% if q or estado_filtro %}
+            {% call es.empty_state('search_off') %}
+              Sin resultados. <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}">Ver todos</a>
+            {% endcall %}
+          {% else %}
+            {{ es.empty_state('group', 'No hay alumnos inscriptos todavía.') }}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,75 @@
+{# Panel de edición de un alumno (se muestra con ?form=editar).
+   El alta de estudiantes se hace en Sistema → Alumnos (modal "Nuevo estudiante"). #}
+<div class="form-panel">
+
+  <div class="form-panel__header">
+    <div>
+      <h2 class="form-panel__title">Editar alumno</h2>
+      <p class="form-panel__subtitle">{{ alumno_editar.apellido }}, {{ alumno_editar.nombre }}</p>
+    </div>
+    <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}"
+       class="form-panel__close" title="Cerrar">
+      <span class="material-symbols-rounded">close</span>
+    </a>
+  </div>
+
+  <div class="form-panel__body">
+
+    <form action="{{ url_for('alumnos.editar', curso_id=curso_id, estudiante_id=alumno_editar.estudiante_id) }}" method="post">
+
+      <input type="hidden" name="usuario_id" value="{{ alumno_editar.usuario_id }}">
+
+      <p class="form-section-label">Datos personales</p>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Nombre</label>
+          <input type="text" name="nombre" class="form-control" value="{{ alumno_editar.nombre }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">Apellido</label>
+          <input type="text" name="apellido" class="form-control" value="{{ alumno_editar.apellido }}" required>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Email</label>
+          <input type="email" name="email" class="form-control" value="{{ alumno_editar.email }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">DNI</label>
+          <input type="text" name="dni" class="form-control" inputmode="numeric" value="{{ alumno_editar.dni }}" required>
+        </div>
+      </div>
+
+      <p class="form-section-label" style="margin-top:20px">Datos académicos</p>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-group__label">Padrón</label>
+          <input type="number" name="padron" class="form-control" min="1" value="{{ alumno_editar.padron }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">Año de ingreso</label>
+          <input type="number" name="anio_ingreso" class="form-control" min="1900" max="2099" value="{{ alumno_editar.anio_ingreso }}" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group__label">Carrera</label>
+        <input type="text" name="carrera" class="form-control" value="{{ alumno_editar.carrera }}" required>
+      </div>
+
+      <div class="form-panel__actions">
+        <button type="submit" class="btn btn-primary">
+          <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">save</span>
+          Guardar cambios
+        </button>
+        <a href="{{ url_for('alumnos.listar_alumnos', curso_id=curso_id) }}" class="btn btn-outline">Cancelar</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>

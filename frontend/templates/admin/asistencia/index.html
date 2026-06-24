@@ -1,0 +1,167 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/asistencia.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="mi-asistencia">
+
+  <div class="page-header">
+    <div>
+      <h1>Mi asistencia</h1>
+      {% if asistencia.curso %}
+        <p class="eval-meta"><span>{{ asistencia.curso }}</span></p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mi-asistencia__grid">
+
+    {# ── QR ── #}
+    <div class="mi-asistencia__qr-card">
+      <h2 class="mi-asistencia__section-title">Tu código QR</h2>
+      {% if token_qr %}
+        <div id="qr-container" class="mi-asistencia__qr-box"></div>
+        <p class="mi-asistencia__qr-hint">Mostralo en cada clase para registrar tu asistencia.</p>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            new QRCode(document.getElementById("qr-container"), {
+              text: "{{ token_qr }}",
+              width: 200,
+              height: 200,
+              colorDark: "#1e293b",
+              colorLight: "#ffffff",
+            });
+          });
+        </script>
+      {% else %}
+        <div class="eval-aviso">
+          <span class="material-symbols-rounded">info</span>
+          <span>Todavía no tenés un QR asignado. Contactá a tu docente.</span>
+        </div>
+      {% endif %}
+    </div>
+
+    {# ── Estadísticas ── #}
+    {% if not asistencia %}
+      <div class="eval-aviso">
+          <span class="material-symbols-rounded">info</span>
+          <span>Aún no hay datos de asistencia disponibles para esta cursada.</span>
+      </div>
+    {% else %}
+    <div class="mi-asistencia__stats">
+    <h2 class="mi-asistencia__section-title">Resumen</h2>
+
+    {% set pct = asistencia.porcentaje_asistencia or 0 %}
+
+    <div class="mi-asistencia__condicion-banner
+        {% if pct >= 75 %}mi-asistencia__condicion-banner--ok
+        {% elif pct >= 50 %}mi-asistencia__condicion-banner--riesgo
+        {% else %}mi-asistencia__condicion-banner--critico{% endif %}">
+        <div class="mi-asistencia__condicion-pct">{{ pct }}%</div>
+        <div class="mi-asistencia__condicion-info">
+        <span class="mi-asistencia__condicion-label">
+            {% if pct >= 75 %}Regular{% elif pct >= 50 %}En riesgo{% else %}Libre{% endif %}
+        </span>
+        <span class="mi-asistencia__condicion-sub">
+            {{ asistencia.presentes + asistencia.tarde }} de {{ asistencia.total_clases }} clases asistidas
+        </span>
+        </div>
+    </div>
+
+    <div class="mi-asistencia__stats-grid">
+        <div class="mi-asistencia__stat-item mi-asistencia__stat-item--presente">
+        <span class="mi-asistencia__stat-valor">{{ asistencia.presentes or 0 }}</span>
+        <span class="mi-asistencia__stat-label">Presentes</span>
+        </div>
+        <div class="mi-asistencia__stat-item mi-asistencia__stat-item--tarde">
+        <span class="mi-asistencia__stat-valor">{{ asistencia.tarde or 0 }}</span>
+        <span class="mi-asistencia__stat-label">Tardanzas</span>
+        </div>
+        <div class="mi-asistencia__stat-item mi-asistencia__stat-item--ausente">
+        <span class="mi-asistencia__stat-valor">{{ asistencia.ausentes or 0 }}</span>
+        <span class="mi-asistencia__stat-label">Ausentes</span>
+        </div>
+        <div class="mi-asistencia__stat-item mi-asistencia__stat-item--justificada">
+        <span class="mi-asistencia__stat-valor">{{ asistencia.justificadas or 0 }}</span>
+        <span class="mi-asistencia__stat-label">Justificadas</span>
+        </div>
+    </div>
+
+    <div class="mi-asistencia__barra-wrap">
+        <div class="mi-asistencia__barra">
+        {% if asistencia.total_clases %}
+            <div class="mi-asistencia__barra-seg mi-asistencia__barra-seg--presente"
+                style="width: {{ ((asistencia.presentes or 0) / asistencia.total_clases * 100)|round }}%"></div>
+            <div class="mi-asistencia__barra-seg mi-asistencia__barra-seg--tarde"
+                style="width: {{ ((asistencia.tarde or 0) / asistencia.total_clases * 100)|round }}%"></div>
+            <div class="mi-asistencia__barra-seg mi-asistencia__barra-seg--justificada"
+                style="width: {{ ((asistencia.justificadas or 0) / asistencia.total_clases * 100)|round }}%"></div>
+            <div class="mi-asistencia__barra-seg mi-asistencia__barra-seg--ausente"
+                style="width: {{ ((asistencia.ausentes or 0) / asistencia.total_clases * 100)|round }}%"></div>
+        {% endif %}
+        </div>
+        <div class="mi-asistencia__barra-leyenda">
+        <span class="mi-asistencia__barra-dot mi-asistencia__barra-dot--presente"></span> Presente
+        <span class="mi-asistencia__barra-dot mi-asistencia__barra-dot--tarde"></span> Tarde
+        <span class="mi-asistencia__barra-dot mi-asistencia__barra-dot--justificada"></span> Justificada
+        <span class="mi-asistencia__barra-dot mi-asistencia__barra-dot--ausente"></span> Ausente
+        </div>
+    </div>
+
+    </div>
+
+    {% endif %}
+
+  </div>
+
+  {# ── Detalle por clase ── #}
+  {% if asistencia.detalle %}
+  <div class="eval-seccion">
+    <div class="eval-seccion__header">
+      <h2>Detalle por clase</h2>
+      <span class="text-muted">{{ asistencia.total_clases or 0 }} clases</span>
+    </div>
+
+    <div class="eval-tabla-wrapper">
+      <table class="table eval-tabla">
+        <thead>
+          <tr>
+            <th>Clase</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Registrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in asistencia.detalle %}
+          <tr>
+            <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=item.clase_id) }}">
+                <td>{{ item.clase_nombre }}</td>
+                <td>{{ item.fecha_hora_inicio|formatear_fecha_hora or '—' }}</td>
+                <td>
+                <span class="entrega-badge asistencia-badge--{{ item.estado }}">
+                    {{ item.estado|capitalize }}
+                </span>
+                </td>
+                <td class="entrega-fecha">
+                {{ item.fecha_registro|formatear_fecha_hora if item.fecha_registro else '—' }}
+                </td>
+            </a>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+    <div class="eval-aviso">
+        <span class="material-symbols-rounded">info</span>
+        <span>Aún no hay datos de asistencia disponibles para esta cursada.</span>
+    </div>
+  {% endif %}
+
+</section>
+{% endblock %}

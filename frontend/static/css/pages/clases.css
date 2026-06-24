@@ -1,0 +1,162 @@
+/* Estilos específicos para Clases, reusando la base visual de evaluaciones. */
+
+.clase-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.clase-form-grid__col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.clase-form-horario {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.clase-form-grid .form-actions {
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.cal-evento--clase {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cal-evento--clase .clase-chip {
+  font-size: 0.68rem;
+  opacity: 0.8;
+}
+
+.clase-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 4px;
+}
+
+.clase-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.clase-summary-label {
+  display: block;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.clase-summary-value {
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.asistencia-tabla td,
+.asistencia-tabla th {
+  vertical-align: top;
+}
+
+.asistencia-badge--presente {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.asistencia-badge--ausente {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.asistencia-badge--tarde {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.asistencia-badge--justificada {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.asistencia-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.asistencia-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.asistencia-row__main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.asistencia-row__controls {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 10px;
+}
+
+.asistencia-select {
+  min-width: 180px;
+}
+
+@media (max-width: 900px) {
+  .clase-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .asistencia-row__controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .clase-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clase-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.escanear-qr {
+  width: 100%;
+  
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
+
+.buttons-container-clases {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px; 
+}
+
+.buttons-container-clases .btn {
+    white-space: nowrap;
+    display: inline-flex; 
+    align-items: center;
+    gap: 8px; 
+}

@@ -1,0 +1,65 @@
+{# Tabla de cronograma (Semana / Teórica / Práctica) del frontend público.
+
+   Uso:
+   {% import "components/cronograma_tabla.html" as crono with context %}
+   {{ crono.cronograma_tabla(semanas) }} #}
+
+{% macro _celda(celda) %}
+  {% if celda.fecha or celda.temas or celda.tags %}
+    <div class="schedule-cell">
+      {% if celda.fecha or celda.modalidad %}
+        <div class="schedule-cell-header">
+          {% if celda.fecha %}<strong>{{ celda.fecha }}</strong>{% endif %}
+          {% if celda.modalidad %}
+            <span class="badge badge-modalidad">{{ celda.modalidad }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if celda.temas %}
+        <ul class="schedule-temas">
+          {% for tema in celda.temas %}
+            <li>{{ tema }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if celda.tags %}
+        <div class="schedule-tags">
+          {% for tag in celda.tags %}
+            <span class="badge badge-tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro cronograma_tabla(semanas) %}
+  {% if semanas %}
+    <div class="schedule-table">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-semana">Semana</th>
+            <th>Teórica</th>
+            <th>Práctica</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in semanas %}
+            <tr>
+              <td class="col-semana">{{ s.semana }}</td>
+              <td>{{ _celda(s.teorica) }}</td>
+              <td>{{ _celda(s.practica) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="schedule-table">
+      <div class="schedule-empty">No hay cronograma cargado para este curso</div>
+    </div>
+  {% endif %}
+{% endmacro %}

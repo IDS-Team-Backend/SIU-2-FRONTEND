@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/paginador.css') }}">
+{% endblock %}
+
+{% block content %}
+{% import "admin/components/_importar_csv.html" as imp with context %}
+{% import "components/page_header.html" as ph with context %}
+<section>
+
+  {# ── Encabezado ── #}
+  {% set _plural = 's' if alumnos | length != 1 else '' %}
+  {% call ph.page_header('Alumnos', _subtitulo) %}
+    {{ imp.boton_importar_csv(url_con_filtros('alumnos.importar', curso_id=curso_id)) }}
+
+    {# En el curso solo se asocian alumnos existentes; el alta se hace en Sistema → Alumnos. #}
+    <a href="{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, form='vincular') }}"
+       class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">link</span>
+      Vincular alumno
+    </a>
+  {% endcall %}
+
+  {# ── Layout: tabla + panel de formulario ── #}
+  <div class="alumnos-layout {% if form_activo == 'editar' %}alumnos-layout--with-form{% endif %}">
+
+    {# ══ COLUMNA IZQUIERDA: filtros + tabla ══ #}
+    <div class="alumnos-layout__table">
+
+      {% include "admin/alumnos/components/_filtros.html" %}
+
+      {% include "admin/alumnos/components/_tabla.html" %}
+
+      {% if not q %}
+        {% import "admin/components/paginador.html" as pg with context %}
+        {% macro url_pag(n) %}{{ url_con_filtros('alumnos.listar_alumnos', curso_id=curso_id, page=n, page_size=page_size) }}{% endmacro %}
+        {{ pg.paginador(
+             paginacion, url_pag,
+             'alumno' if (paginacion and paginacion.total == 1) else 'alumnos',
+             url_for('alumnos.listar_alumnos', curso_id=curso_id),
+             page_size,
+             {'estado_filtro': estado_filtro, 'sort': sort_col, 'dir': sort_dir}
+        ) }}
+      {% endif %}
+
+    </div>{# /alumnos-layout__table #}
+
+    {# ══ COLUMNA DERECHA: formulario activo ══ #}
+    {% if form_activo == 'editar' %}
+    <div class="alumnos-layout__form">
+      {% include "admin/alumnos/components/_form_alumno.html" %}
+    </div>
+    {% endif %}{# /form_activo #}
+
+  </div>{# /alumnos-layout #}
+
+</section>
+
+{# ══ MODAL — Vincular alumno existente ══ #}
+{% if mostrar_modal %}
+  {% include "admin/alumnos/components/_modal_vincular.html" %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/row_actions.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/seleccion_masiva.js') }}"></script>
+{% endblock %}

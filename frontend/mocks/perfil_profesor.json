@@ -1,0 +1,12 @@
+{
+  "nombre": "Bruno",
+  "apellido": "Lanzillotta",
+  "dni": "33.421.987",
+  "email": "blanzillotta@fi.uba.ar",
+  "departamento": "Departamento de Computación",
+  "rol": "Profesor a cargo",
+  "antiguedad": "5 años",
+  "catedra": {
+    "rol": "Profesor a cargo"
+  }
+}

@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
+
+{% block content %}
+<section>
+    {% call ph.page_header(title) %}
+        <a href="{{ url_for('tipo_evaluaciones.listar_tipo_evaluaciones', curso_id=curso_id, accion='nueva') }}"
+           class="btn btn-primary">
+            <span>+</span>
+            Nuevo Tipo de Evaluación
+        </a>
+    {% endcall %}
+
+    {% include "admin/tipo_evaluaciones/components/_lista.html" %}
+</section>
+
+{% include "admin/tipo_evaluaciones/components/_modales.html" %}
+
+{% endblock %}

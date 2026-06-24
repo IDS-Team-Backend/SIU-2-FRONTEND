@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+{% import "components/page_header.html" as ph with context %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/paginador.css') }}">
+{% endblock %}
+
+{% block content %}
+<section>
+
+  {% set _total = paginacion.total if (paginacion and paginacion.total) else (alumnos | length) %}
+  {% call ph.page_header('Alumnos', _total ~ ' alumno' ~ ('s' if _total != 1 else '')) %}
+    <a href="{{ url_for('alumnos.listar_general', nuevo='1') }}" class="btn btn-primary">
+      <span class="material-symbols-rounded" style="font-size:18px">person_add</span>
+      Nuevo estudiante
+    </a>
+
+    {# Importar altas masivas por CSV (crea estudiantes). #}
+    <form action="{{ url_for('alumnos.importar_altas_general') }}"
+          method="post" enctype="multipart/form-data" style="display:inline">
+      <input type="file" id="csv_altas" name="csv_altas" accept=".csv"
+             style="display:none" onchange="this.form.submit()">
+      <button type="button" class="btn btn-outline"
+              onclick="document.getElementById('csv_altas').click()">
+        <span class="material-symbols-rounded" style="font-size:18px">group_add</span>
+        Importar alumnos
+      </button>
+    </form>
+  {% endcall %}
+
+  {% include "admin/alumnos/components/_listado_filtros.html" %}
+  {% include "admin/alumnos/components/_listado_tabla.html" %}
+
+  {% import "admin/components/paginador.html" as pg with context %}
+  {% macro url_pag(n) %}{{ url_for('alumnos.listar_general', page=n, page_size=page_size, carrera=carrera or none, anio_ingreso=anio_ingreso or none, q=q or none) }}{% endmacro %}
+  {{ pg.paginador(
+       paginacion, url_pag, 'alumnos',
+       url_for('alumnos.listar_general'),
+       page_size,
+       {'carrera': carrera, 'anio_ingreso': anio_ingreso or '', 'q': q}
+  ) }}
+
+</section>
+
+{# ── Modal: nuevo estudiante ── #}
+{% include "admin/alumnos/components/_modal_nuevo_alumno.html" %}
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{{ url_for('static', filename='js/row_actions.js') }}"></script>
+{% endblock %}

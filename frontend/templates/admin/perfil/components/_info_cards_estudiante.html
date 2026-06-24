@@ -1,0 +1,34 @@
+{# Tarjetas de datos del estudiante (DNI, legajo, email, estado, asistencia, promedio). #}
+<div class="info-grid">
+  <div class="info-card">
+    <span class="info-card-label">DNI</span>
+    <span class="info-card-value">{{ perfil.dni }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Legajo</span>
+    <span class="info-card-value">{{ perfil.legajo }}</span>
+  </div>
+  {# FIX: email largo → word-break ya aplicado en CSS #}
+  <div class="info-card">
+    <span class="info-card-label">Email</span>
+    <span class="info-card-value" style="font-size:.9rem">{{ perfil.email }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Estado en el curso</span>
+    <span class="info-card-value">{{ perfil.estado_cursada }}</span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Asistencia</span>
+    <span class="info-card-value">
+      {% if perfil.tiene_asistencia %}
+        {{ perfil.asistencia }}
+      {% else %}
+        <span style="font-size:.85rem;font-weight:400;color:var(--text-soft)">Sin datos</span>
+      {% endif %}
+    </span>
+  </div>
+  <div class="info-card">
+    <span class="info-card-label">Promedio</span>
+    <span class="info-card-value">{{ perfil.promedio_curso }}</span>
+  </div>
+</div>

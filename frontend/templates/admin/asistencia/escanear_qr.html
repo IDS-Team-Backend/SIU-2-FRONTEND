@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/asistencia.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="qr-scan">
+
+  <div class="page-header">
+    <div>
+      <a href="{{ url_for('clases.ver_clase', curso_id=curso_id, clase_id=clase_id) }}" class="eval-volver">
+        <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle">arrow_back</span>
+        Volver a la clase
+      </a>
+      <h1>Escanear QR</h1>
+    </div>
+  </div>
+
+  <div class="qr-scan__layout">
+
+    {# ── Lector ── #}
+    <div class="qr-scan__card">
+      <div id="qr-reader"></div>
+
+      <div id="qr-estado" class="qr-scan__estado qr-scan__estado--esperando">
+        <span class="material-symbols-rounded">qr_code_scanner</span>
+        <span>Esperando QR...</span>
+      </div>
+    </div>
+
+    {# ── Últimos registros ── #}
+    <div class="qr-scan__card">
+      <h2 class="mi-asistencia__section-title">Registros de esta sesión</h2>
+      <ul id="qr-registros" class="qr-scan__registros">
+        <li class="qr-scan__registros-empty">Todavía no se registró ninguna asistencia.</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+  const CLASE_ID  = {{ clase_id }};
+  const ESCANEAR_URL = "{{ url_for('clases.escanear_qr_post', curso_id=curso_id, clase_id=clase_id) }}";
+  const CSRF_TOKEN = "{{ session.get('_csrf_token', '') }}";
+
+  function capitalize(texto) {
+    if (!texto) return ''; 
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
+  let procesando = false;
+
+  function setEstado(tipo, texto) {
+    const el = document.getElementById("qr-estado");
+    el.className = `qr-scan__estado qr-scan__estado--${tipo}`;
+    el.querySelector("span:last-child").textContent = texto;
+  }
+
+  function agregarRegistro(asistencia) {
+    const lista = document.getElementById("qr-registros");
+    const empty = lista.querySelector(".qr-scan__registros-empty");
+    if (empty) empty.remove();
+
+    const li = document.createElement("li");
+    li.className = `qr-scan__registro qr-scan__registro--${asistencia.estado}`;
+    li.innerHTML = `
+      <span class="qr-scan__registro-nombre">${asistencia.apellido}, ${asistencia.nombre}</span>
+      <span class="entrega-badge asistencia-badge--${asistencia.estado}">${capitalize(asistencia.estado)}</span>
+    `;
+    lista.prepend(li);
+  }
+
+  function agregarError(mensaje) {
+    const lista = document.getElementById("qr-registros");
+    const empty = lista.querySelector(".qr-scan__registros-empty");
+    if (empty) empty.remove();
+
+    const li = document.createElement("li");
+    li.className = "qr-scan__registro qr-scan__registro--error";
+    li.innerHTML = `<span>${mensaje}</span>`;
+    lista.prepend(li);
+  }
+
+  async function onQRDetectado(token) {
+    if (procesando) return;
+    procesando = true;
+    setEstado("procesando", "Registrando...");
+
+    try {
+      const res = await fetch(ESCANEAR_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setEstado("ok", `${data.apellido}, ${data.nombre} — ${capitalize(data.estado)}`);
+        agregarRegistro(data);
+      } else {
+        setEstado("error", data.error.error || "Error al registrar.");
+        agregarError(data.error.error || "Error al registrar.");
+      }
+    } catch (e) {
+      setEstado("error", "Error de conexión.");
+      console.log("Error al registrar asistencia:", e);
+    }
+
+    // pausa de 2s antes de aceptar el siguiente escaneo
+    setTimeout(() => {
+      procesando = false;
+      setEstado("esperando", "Esperando QR...");
+    }, 2000);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    // camara trasera del celu
+    html5QrCode.start({ facingMode: "environment" }, config, onQRDetectado)
+      .catch((err) => {
+        
+        // sino intentamos con camara frente/webcam
+        html5QrCode.start({ facingMode: "user" }, config, onQRDetectado)
+          .catch(() => {
+            // catch final
+            setEstado("error", "No se pudo acceder a ninguna cámara. Revisá los permisos.");
+          });
+      });
+  });
+</script>
+{% endblock %}

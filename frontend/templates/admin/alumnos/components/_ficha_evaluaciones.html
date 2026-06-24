@@ -1,0 +1,65 @@
+{# Panel de evaluaciones del curso con la nota del alumno (individual o grupal). #}
+{% import "components/empty_state.html" as es with context %}
+<div class="panel perfil-panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <h2 class="panel-title" style="margin:0">Evaluaciones del curso</h2>
+    {% if eval_paginacion.total > 0 %}
+      <span style="font-size:.85rem;color:var(--text-soft)">
+        {{ eval_paginacion.total }} evaluación{% if eval_paginacion.total != 1 %}es{% endif %}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if not ficha.evaluaciones %}
+    {{ es.empty_state('quiz', 'No hay evaluaciones cargadas todavía.') }}
+  {% else %}
+    <table class="perfil-table">
+      <thead>
+        <tr>
+          <th>Instancia</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Nota</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in evaluaciones_pagina %}
+        <tr>
+          <td>{{ e.titulo }}</td>
+          <td>
+            <span class="badge badge--pill" style="background:#f0f4ff;color:#3730a3;font-size:.75rem">
+              {{ e.tipo | default('—') }}
+            </span>
+          </td>
+          <td>{{ e.fecha|formatear_fecha or '—' }}</td>
+          <td>
+            {% if e.nota is not none %}
+              <span class="estado-badge {{ 'estado-aprobada' if e.nota >= 4 else 'estado-desaprobada' }}">
+                {{ e.nota }}
+              </span>
+            {% else %}
+              <span class="estado-badge estado-pendiente">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if e.estado == 'Aprobada' %}
+              <span class="estado-badge estado-aprobada">{{ e.estado }}</span>
+            {% elif e.estado == 'Desaprobada' %}
+              <span class="estado-badge estado-desaprobada">{{ e.estado }}</span>
+            {% else %}
+              <span class="estado-badge estado-pendiente">{{ e.estado }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if eval_paginacion.total_paginas > 1 %}
+      {% import "admin/components/paginador.html" as pg with context %}
+      {% macro url_pag(n) %}{{ url_for('alumnos.ver_ficha', curso_id=curso_id, estudiante_id=ficha.id, eval_page=n, asis_page=asis_paginacion.page) }}{% endmacro %}
+      {{ pg.paginador(eval_paginacion, url_pag, 'evaluación' if eval_paginacion.total == 1 else 'evaluaciones') }}
+    {% endif %}
+  {% endif %}
+</div>

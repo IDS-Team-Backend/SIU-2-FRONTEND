@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finalizar registración - Sistema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="login-body">
+
+  <div class="login-container">
+    <div class="login-header">
+      <span class="material-symbols-rounded login-logo">how_to_reg</span>
+      <h1>Finalizá tu registración</h1>
+      <p>Ingresá el código que te enviamos por email y definí tu contraseña</p>
+    </div>
+
+{% if error %}
+  <div class="alert alert-danger">
+    {{ error }}
+  </div>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-wrapper">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+    <form action="{{ url_for('auth.finalizar_registracion') }}" method="POST" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-icon-wrapper">
+          <span class="material-symbols-rounded input-icon">mail</span>
+          <input type="email" id="email" name="email" class="form-control"
+                 value="{{ email or '' }}" placeholder="tu@email.com" required autocomplete="email">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="codigo">Código de verificación</label>
+        <div class="input-icon-wrapper">
+          <span class="material-symbols-rounded input-icon">pin</span>
+          <input type="text" id="codigo" name="codigo" class="form-control" value="{{ codigo or '' }}"
+                 placeholder="123456" inputmode="numeric" required autocomplete="one-time-code">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="nueva_password">Nueva contraseña</label>
+        <div class="input-icon-wrapper">
+          <span class="material-symbols-rounded input-icon">lock</span>
+          <input type="password" id="nueva_password" name="nueva_password" class="form-control"
+                 placeholder="••••••••" required minlength="8" autocomplete="new-password">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmar_password">Confirmar contraseña</label>
+        <div class="input-icon-wrapper">
+          <span class="material-symbols-rounded input-icon">lock</span>
+          <input type="password" id="confirmar_password" name="confirmar_password" class="form-control"
+                 placeholder="••••••••" required minlength="8" autocomplete="new-password">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login">
+        Activar mi cuenta
+        <span class="material-symbols-rounded">arrow_forward</span>
+      </button>
+    </form>
+
+    <a href="{{ url_for('auth.login') }}" class="btn-volver-curso">
+      <span class="material-symbols-rounded">arrow_back</span>
+      Volver al login
+    </a>
+  </div>
+
+</body>
+</html>

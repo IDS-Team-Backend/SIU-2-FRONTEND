@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+{% import "components/page_header.html" as ph with context %}
+
+<section>
+
+  {{ ph.page_header('Historial de cursadas',
+                    cursadas | length ~ ' cursada' ~ ('s' if cursadas | length != 1 else '') ~ ' en el sistema') }}
+
+  {% include "admin/historial/components/_tabla.html" %}
+
+</section>
+{% endblock %}

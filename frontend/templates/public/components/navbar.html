@@ -1,0 +1,16 @@
+<header class="nav-publico">
+  <nav class="topbar">
+    <a class="{% if active_page == 'curso' %}active{% endif %}" href="{{ url_for('public.curso') }}">
+      <span class="material-symbols-rounded">school</span>Curso
+    </a>
+    <a class="{% if active_page == 'cronograma' %}active{% endif %}" href="{{ url_for('public.cronograma') }}">
+      <span class="material-symbols-rounded">calendar_month</span>Cronograma
+    </a>
+    <a class="{% if active_page == 'material' %}active{% endif %}" href="{{ url_for('public.material') }}">
+      <span class="material-symbols-rounded">menu_book</span>Material
+    </a>
+  </nav>
+  <a class="btn btn-primary" href="{{ url_for('auth.login') }}">
+    <span class="material-symbols-rounded">login</span>Ingresar
+  </a>
+</header>

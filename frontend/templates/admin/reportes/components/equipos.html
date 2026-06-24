@@ -1,0 +1,57 @@
+{# Template para reporte de equipos #}
+
+<form method="GET" style="margin-bottom:20px; display:flex; gap:10px; align-items:end;">
+      <input type="hidden" name="tab" value="equipos">
+      <div class="form-group">
+          <label for="evaluacion_id">
+              Evaluacion
+          </label>
+          <select
+              id="evaluacion_id"
+              name="evaluacion_id"
+              class="form-control"
+              onchange="this.form.submit()"
+          >
+              <option value="">
+                  Todas las evaluaciones
+              </option>
+              {% for evaluacion in evaluaciones %}
+                  <option
+                      value="{{ evaluacion.id }}"
+                      {% if evaluacion_filtro|string == evaluacion.id|string %}
+                          selected
+                      {% endif %}
+                  >
+                      {{ evaluacion.titulo }}
+                  </option>
+              {% endfor %}
+          </select>
+      </div>
+  </form>
+<div class="card-grid" style="margin-top: 20px;">
+  {% for equipo in equipos %}
+    <article class="card" style="border-left: 5px solid #3498db;">
+      <h2>{{ equipo.equipo_nombre }}</h2>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">
+        <strong>Evaluacion:</strong> {{ equipo.evaluacion_contexto }}
+      </p>
+      <strong>Integrantes asignados:</strong>
+      <ul style="margin-top: 5px; padding-left: 20px;">
+        {% if equipo.integrantes is string %}
+          {% for integrante in equipo.integrantes.split(' | ') %}
+            <li>{{ integrante }}</li>
+          {% endfor %}
+        {% elif equipo.integrantes %}
+          {% for integrante in equipo.integrantes %}
+            {# Si es una lista de diccionarios usa integrante.nombre, si es lista de strings usa integrante #}
+            <li>{{ integrante.nombre if integrante is mapping else integrante }}</li>
+          {% endfor %}
+        {% else %}
+          <li>Sin integrantes</li>
+        {% endif %}
+      </ul>
+    </article>
+  {% else %}
+    <p>No hay equipos registrados en esta comisión.</p>
+  {% endfor %}
+</div>

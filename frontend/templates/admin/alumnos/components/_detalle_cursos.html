@@ -1,0 +1,41 @@
+{# Panel: cursos del alumno como tarjetas clickeables (llevan a la ficha por curso). #}
+{% import "components/empty_state.html" as es with context %}
+<div class="panel perfil-panel">
+  <div class="estu-cursos__head">
+    <h2 class="panel-title" style="margin:0">Cursos</h2>
+    {% if detalle.cursos %}
+      <span class="estu-cursos__count">
+        {{ detalle.cursos | length }} {{ 'curso' if detalle.cursos | length == 1 else 'cursos' }}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if not detalle.cursos %}
+    {{ es.empty_state('school', 'El alumno no está inscripto en ningún curso.') }}
+  {% else %}
+    <div class="estu-cursos">
+      {% for c in detalle.cursos %}
+      <a class="estu-curso" href="{{ url_for('alumnos.ver_ficha', curso_id=c.curso_id, estudiante_id=detalle.id) }}">
+        <span class="estu-curso__icon material-symbols-rounded">menu_book</span>
+        <div class="estu-curso__body">
+          <div class="estu-curso__top">
+            <span class="estu-curso__name">{{ c.curso_nombre }}</span>
+            {% if c.estado == 'activo' %}
+              <span class="badge badge--success badge--pill">Activo</span>
+            {% elif c.estado == 'abandono' %}
+              <span class="badge badge--danger badge--pill">Abandono</span>
+            {% else %}
+              <span class="badge badge--pill">{{ c.estado }}</span>
+            {% endif %}
+          </div>
+          <span class="estu-curso__meta">Inscripción: {{ c.fecha_inscripcion|formatear_fecha or '—' }}</span>
+        </div>
+        <span class="estu-curso__cta">
+          <span class="estu-curso__cta-text">Ver ficha</span>
+          <span class="material-symbols-rounded">chevron_right</span>
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

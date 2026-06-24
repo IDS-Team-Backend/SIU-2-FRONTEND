@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% import "components/page_header.html" as ph %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/alumnos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/gestion.css') }}">
+{% endblock %}
+
+{% set rol_labels = {'titular': 'Titular', 'jefe_tp': 'Jefe de TP', 'ayudante': 'Ayudante', 'colaborador': 'Colaborador'} %}
+
+{% block content %}
+<section>
+
+  {% call ph.page_header('Gestión de la cursada', 'Editá la información del curso y su equipo docente') %}
+    <a href="{{ url_for('private.curso', curso_id=curso_id) }}" class="btn btn-outline">
+      <span class="material-symbols-rounded" style="font-size:18px">visibility</span>
+      Ver curso
+    </a>
+  {% endcall %}
+
+  {# ── Estado de la cursada ── #}
+  {% include "admin/gestion/components/_estado_card.html" %}
+
+  {# ── Información + Equipo docente (2 columnas) ── #}
+  <div class="gestion-grid">
+    {% include "admin/gestion/components/_info_card.html" %}
+    {% include "admin/gestion/components/_equipo_card.html" %}
+  </div>
+
+{# ── Modal: Agregar integrante (buscar profesor por legajo) ── #}
+{% include "admin/gestion/components/_modal_agregar.html" %}
+
+{% endblock %}

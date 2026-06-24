@@ -1,0 +1,69 @@
+{% import "admin/evaluaciones/components/_resultado_macros.html" as r with context %}
+{# Tabla única: un equipo por fila con su entrega, su nota (coloreada + 💬) y un
+   menú de acciones (⋮). #}
+<div class="eval-tabla-wrapper">
+  <table class="table eval-tabla">
+    <thead>
+      <tr>
+        <th>Equipo</th>
+        <th class="th--center">Integrantes</th>
+        <th>Entrega</th>
+        <th class="th--center">Nota</th>
+        <th class="th--center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for equipo in equipos %}
+        {% set nota = notas_por_sujeto.get(equipo.id) %}
+        {% set entrega = entregas_por_sujeto.get(equipo.id) %}
+        <tr>
+          <td>
+            <span class="text-bold">{{ equipo.nombre }}</span>
+          </td>
+
+          <td class="td--center">
+            <a href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, accion='editar_equipo', equipo_id=equipo.id) }}"
+               class="integrantes-chip" title="Editar equipo e integrantes">
+              <span class="material-symbols-rounded">group</span>{{ equipo.integrantes|length }}
+            </a>
+          </td>
+
+          <td>{{ r.entrega_celda(entrega) }}</td>
+
+          <td class="td--center">{{ r.nota_celda(nota) }}</td>
+
+          <td class="td--center">
+            <div class="row-menu">
+              <button type="button" class="row-menu__toggle" aria-haspopup="true" aria-expanded="false" title="Acciones">
+                <span class="material-symbols-rounded">more_vert</span>
+              </button>
+              <div class="row-menu__list" role="menu">
+                <a class="row-menu__item" role="menuitem"
+                   href="{{ url_for('evaluaciones.ver_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, accion='editar_equipo', equipo_id=equipo.id) }}">Editar equipo e integrantes</a>
+
+                <div class="row-menu__sep"></div>
+
+                {{ r.menu_resultado('equipo', curso_id, evaluacion.id, equipo.id, equipo.nombre, entrega, nota) }}
+
+                <div class="row-menu__sep"></div>
+
+                <form action="{{ url_for('evaluaciones.borrar_equipo_evaluacion', curso_id=curso_id, evaluacion_id=evaluacion.id, equipo_id=equipo.id) }}"
+                      method="POST" onsubmit="return confirm('¿Eliminar el equipo {{ equipo.nombre }}?');">
+                  <button type="submit" class="row-menu__item row-menu__item--danger">Eliminar equipo</button>
+                </form>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5">
+            <div class="tabla-vacia" style="padding:2rem;text-align:center">
+              <p class="text-muted" style="margin:0">Todavía no hay equipos. Creá el primero con “Nuevo equipo”.</p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

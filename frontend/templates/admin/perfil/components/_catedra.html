@@ -1,0 +1,15 @@
+{# Panel de la cátedra a cargo del profesor. #}
+<div class="panel perfil-panel">
+  <h2 class="panel-title">Cátedra a cargo</h2>
+  <ul class="docentes-list">
+    <li class="docente-item">
+      <span class="material-symbols-rounded">menu_book</span>
+      <div>
+        <div class="docente-nombre">{{ perfil.catedra.codigo }} · {{ perfil.catedra.nombre }}</div>
+        <div class="docente-rol">
+          {{ perfil.catedra.rol }} · {{ perfil.catedra.modalidad }} · {{ perfil.catedra.carga_horaria }} hs/semana · {{ perfil.catedra.alumnos }} alumnos inscriptos
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

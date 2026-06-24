@@ -1,0 +1,125 @@
+import os
+import requests
+from flask import abort, request
+from datetime import datetime
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:5000").rstrip("/")
+TIMEOUT = int(os.getenv("BACKEND_TIMEOUT", "10"))
+TOKEN_COOKIE_NAME = "access_token_cookie"
+
+
+def obtener_token():
+    return request.cookies.get(TOKEN_COOKIE_NAME)
+
+
+def armar_cookies_backend():
+    token = obtener_token()
+
+    if not token:
+        return None
+
+    return {
+        TOKEN_COOKIE_NAME: token
+    }
+
+
+def limpiar_params(params):
+    if not params:
+        return None
+
+    limpios = {}
+
+    for clave, valor in params.items():
+        if valor not in (None, ""):
+            limpios[clave] = valor
+
+    return limpios
+
+
+def extraer_mensaje_error(response, data):
+    if isinstance(data, dict):
+        # Formato actual del backend:
+        # {"errors": [{"code": "...", "message": "..."}]}
+        errors = data.get("errors")
+
+        if isinstance(errors, list) and len(errors) > 0:
+            primer_error = errors[0]
+
+            if isinstance(primer_error, dict):
+                return (
+                    primer_error.get("message")
+                    or primer_error.get("description")
+                    or f"Error del backend ({response.status_code})"
+                )
+
+        # Otros formatos posibles
+        return (
+            data.get("error")
+            or data.get("message")
+            or data.get("mensaje")
+            or data.get("detail")
+            or f"Error del backend ({response.status_code})"
+        )
+
+    return f"Error del backend ({response.status_code})"
+
+
+def _request(method, path, params=None, json_body=None, auth=True, is_binary=False) -> (bool, dict or bytes):
+    url = f"{BACKEND_URL}{path}"
+
+    try:
+        response = requests.request(
+            method=method,
+            url=url,
+            params=limpiar_params(params),
+            json=json_body,
+            cookies=armar_cookies_backend() if auth else None,
+            timeout=TIMEOUT,
+        )
+    except requests.RequestException as exc:
+        return False, {
+            "error": f"No se pudo conectar con el backend: {exc}"
+        }
+
+    if response.status_code == 204:
+        return True, None
+
+    try:
+        data = response.json()
+    except ValueError:
+        data = {}
+
+    if not response.ok:
+        if response.status_code == 401:
+            abort(401)
+        mensaje = extraer_mensaje_error(response, data)
+
+        return False, {
+        "error": mensaje,
+        "status_code": response.status_code,
+        }
+
+    if is_binary:
+            return True, response.content  # Retorna los bytes puros del archivo
+
+    return True, data
+
+
+def get(path, *, params=None, auth=True, is_binary=False):
+    return _request("GET", path, params=params, auth=auth, is_binary=is_binary)
+
+
+def post(path, *, json=None, params=None, auth=True):
+    return _request("POST", path, params=params, json_body=json, auth=auth)
+
+
+def put(path, *, json=None, params=None, auth=True):
+    return _request("PUT", path, params=params, json_body=json, auth=auth)
+
+
+def patch(path, *, json=None, params=None, auth=True):
+    return _request("PATCH", path, params=params, json_body=json, auth=auth)
+
+
+def delete(path, *, params=None, auth=True):
+    return _request("DELETE", path, params=params, auth=auth)

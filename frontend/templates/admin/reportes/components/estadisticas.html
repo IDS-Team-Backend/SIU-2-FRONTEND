@@ -1,0 +1,30 @@
+{# Template para reporte de estadísticas #}
+<div class="stats-grid">
+    <div class="chart-card chart-full">
+        <h3>Asistencia por clase</h3>
+        <canvas id="asistenciaChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Distribución de notas</h3>
+        <canvas id="notasChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Estado de cursada</h3>
+        <canvas id="estadoChart"></canvas>
+    </div>
+    <div class="chart-card chart-full">
+        <h3>Evolución del rendimiento del curso</h3>
+        <canvas id="rendimientoChart"></canvas>
+    </div>
+    <div class="chart-card chart-full">
+        <h3>Promedio por tipo de evaluación</h3>
+        <canvas id="tipoChart"></canvas>
+    </div>
+    <div class="chart-card chart-full">
+        <h3>Promedio por porcentaje de asistencia</h3>
+        <canvas id="promedioPorAsistenciaChart"></canvas>
+    </div>
+</div>
+
+<div id="data-container-stats" data-json='{{ (estadisticas | default({})) | tojson | safe }}'></div>
+

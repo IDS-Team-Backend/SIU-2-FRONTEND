@@ -1,0 +1,60 @@
+{# Modal server-side "Nuevo profesor". Se muestra cuando mostrar_modal es verdadero.
+   Usa la macro modal compartida. Requiere en contexto: form_data. #}
+{% import "components/modal.html" as modal with context %}
+
+{% if mostrar_modal %}
+  {% call modal.modal('Nuevo profesor',
+                      cerrar_url=url_for('profesores.listar_profesores'),
+                      size='md',
+                      subtitulo='Se le enviará un email para finalizar su registración y definir su contraseña') %}
+    <form action="{{ url_for('profesores.crear_profesor') }}" method="post">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="nombre" class="form-group__label">Nombre</label>
+          <input type="text" id="nombre" name="nombre" class="form-control" required
+                 value="{{ form_data.get('nombre') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="apellido" class="form-group__label">Apellido</label>
+          <input type="text" id="apellido" name="apellido" class="form-control" required
+                 value="{{ form_data.get('apellido') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="email" class="form-group__label">Email</label>
+          <input type="email" id="email" name="email" class="form-control" required
+                 value="{{ form_data.get('email') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="dni" class="form-group__label">DNI</label>
+          <input type="text" id="dni" name="dni" class="form-control" inputmode="numeric" required
+                 placeholder="12345678" value="{{ form_data.get('dni') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="legajo" class="form-group__label">Legajo</label>
+          <input type="text" id="legajo" name="legajo" class="form-control" inputmode="numeric" required
+                 value="{{ form_data.get('legajo') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="titulo" class="form-group__label">Título</label>
+          <input type="text" id="titulo" name="titulo" class="form-control" required
+                 value="{{ form_data.get('titulo') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="departamento" class="form-group__label">Departamento</label>
+          <input type="text" id="departamento" name="departamento" class="form-control" required
+                 value="{{ form_data.get('departamento') or '' }}">
+        </div>
+        <div class="form-group">
+          <label for="fecha_ingreso" class="form-group__label">Fecha de ingreso</label>
+          <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="form-control" required
+                 value="{{ form_data.get('fecha_ingreso') or '' }}">
+        </div>
+      </div>
+
+      <div class="form-actions" style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">
+        <a href="{{ url_for('profesores.listar_profesores') }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Crear profesor</button>
+      </div>
+    </form>
+  {% endcall %}
+{% endif %}
